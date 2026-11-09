@@ -28,7 +28,7 @@
         html { scroll-behavior: smooth; }
 
         body {
-            background-color: var(--forest);
+            background: linear-gradient(rgba(10, 26, 20, 0.85), rgba(7, 18, 14, 0.90)), url('assets/dubainoche.jpg') center center / cover no-repeat fixed;
             color: var(--cream);
             font-family: 'Montserrat', sans-serif;
             min-height: 100vh;
@@ -36,7 +36,8 @@
 
         /* ══════════════ HEADER ══════════════ */
         header {
-            background: var(--forest);
+            background: rgba(13, 43, 34, 0.85);
+            backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(201,168,76,0.25);
             padding: 30px 20px 24px;
             text-align: center;
@@ -427,8 +428,7 @@
 
     <div class="header-inner">
         <div class="logo-wrap">
-            <img src="assets/logo-nova-publicidad.png" alt="NOVA Agencia de Publicidad">
-            <span class="logo-sub">Agencia de Publicidad</span>
+            <img src="assets/logo-publicidad.png" alt="Agencia NOVA Publicidad y Eventos" style="height: 82px; width: auto; object-fit: contain; filter: drop-shadow(0 0 16px rgba(0, 180, 216, 0.45));">
         </div>
 
         <div class="gold-line"></div>
@@ -688,6 +688,168 @@
         </div>
     </div>
 
+    <!-- ╔══════════════════════════════╗
+         ║  4. FOTOMURALES              ║
+         ╚══════════════════════════════╝ -->
+    <div class="product-card" id="card-fotomurales">
+        <!-- CARRUSEL -->
+        <div class="carousel-side">
+            <div class="carousel-track" id="track-fotomurales">
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80" alt="Fotomural para sala moderna">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80" alt="Pared decorativa con fotomural corporativo">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80" alt="Fotomural de naturaleza para dormitorio">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" alt="Fotomural arquitectónico de alta gama">
+                </div>
+            </div>
+            <button class="carousel-btn prev" onclick="moveCarousel('fotomurales',-1)">&#8592;</button>
+            <button class="carousel-btn next" onclick="moveCarousel('fotomurales',1)">&#8594;</button>
+            <div class="carousel-dots" id="dots-fotomurales">
+                <div class="carousel-dot active" onclick="goToSlide('fotomurales',0)"></div>
+                <div class="carousel-dot" onclick="goToSlide('fotomurales',1)"></div>
+                <div class="carousel-dot" onclick="goToSlide('fotomurales',2)"></div>
+                <div class="carousel-dot" onclick="goToSlide('fotomurales',3)"></div>
+            </div>
+        </div>
+
+        <!-- INFO -->
+        <div class="info-side">
+            <div>
+                <p class="product-label">Gran Formato · 2026</p>
+                <h2 class="product-name">Fotomurales</h2>
+                <p class="product-desc">Vinil adhesivo laminado · Papel tapiz texturizado · Alta resolución 1440 DPI · Lavable</p>
+
+                <table class="price-table">
+                    <thead>
+                        <tr>
+                            <th>Material / Tipo</th>
+                            <th>Medida</th>
+                            <th>Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Vinil Adhesivo Mate / Brillo</td>
+                            <td>Por m²</td>
+                            <td>S/ 38.00</td>
+                        </tr>
+                        <tr>
+                            <td>Papel Tapiz Canvas Texturado</td>
+                            <td>Por m²</td>
+                            <td>S/ 55.00</td>
+                        </tr>
+                        <tr>
+                            <td>Fotomural Habitación / Oficina</td>
+                            <td>3.0 × 2.4 m</td>
+                            <td>S/ 260.00</td>
+                        </tr>
+                        <tr>
+                            <td>Medida especial + Instalación</td>
+                            <td>Personalizado</td>
+                            <td>Cotizar</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <a class="btn-order"
+               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20cotizar%20un%20Fotomural%20personalizado.%20Medidas%20y%20espacio%3A%20"
+               target="_blank" rel="noopener">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.3a8.216 8.216 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24m-2.54 4.58v7.5h3.45c1.45 0 2.39-.75 2.39-1.95 0-.82-.53-1.42-1.32-1.63.63-.25 1.05-.82 1.05-1.55 0-1.12-.89-1.78-2.28-1.78zm1.53 1.34h1.72c.57 0 .93.31.93.75 0 .46-.36.77-.93.77h-1.72zm0 2.58h1.86c.63 0 1.01.32 1.01.8 0 .49-.38.82-1.01.82H11.03z"/>
+                </svg>
+                Hacer Pedido
+            </a>
+        </div>
+    </div>
+
+    <!-- ╔══════════════════════════════╗
+         ║  5. LETREROS Y GIGANTOGRAFÍAS ║
+         ╚══════════════════════════════╝ -->
+    <div class="product-card" id="card-gigantografias">
+        <!-- CARRUSEL -->
+        <div class="carousel-side">
+            <div class="carousel-track" id="track-gigantografias">
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" alt="Letrero comercial exterior">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80" alt="Letras 3D en acrílico con iluminación LED">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80" alt="Gigantografía en lona banner para fachadas">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1572945753563-8049567831f4?auto=format&fit=crop&w=800&q=80" alt="Caja de luz backlight publicitaria">
+                </div>
+            </div>
+            <button class="carousel-btn prev" onclick="moveCarousel('gigantografias',-1)">&#8592;</button>
+            <button class="carousel-btn next" onclick="moveCarousel('gigantografias',1)">&#8594;</button>
+            <div class="carousel-dots" id="dots-gigantografias">
+                <div class="carousel-dot active" onclick="goToSlide('gigantografias',0)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',1)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',2)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',3)"></div>
+            </div>
+        </div>
+
+        <!-- INFO -->
+        <div class="info-side">
+            <div>
+                <p class="product-label">Publicidad Exterior & Fachadas · 2026</p>
+                <h2 class="product-name">Letreros y Gigantografías</h2>
+                <p class="product-desc">Lona banner 13oz / 15oz · Bastidores de fierro · Cajas de luz LED · Letras 3D en acrílico</p>
+
+                <table class="price-table">
+                    <thead>
+                        <tr>
+                            <th>Producto / Formato</th>
+                            <th>Especificación</th>
+                            <th>Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Gigantografía Lona Banner 13oz</td>
+                            <td>Con ojalillos / m²</td>
+                            <td>S/ 18.00</td>
+                        </tr>
+                        <tr>
+                            <td>Letrero Bastidor Metálico (2×1 m)</td>
+                            <td>Estructura + Lona</td>
+                            <td>S/ 120.00</td>
+                        </tr>
+                        <tr>
+                            <td>Caja de Luz Luminosa LED (3×1 m)</td>
+                            <td>Backlight + Acrílico</td>
+                            <td>S/ 480.00</td>
+                        </tr>
+                        <tr>
+                            <td>Letras 3D Acrílico Retroiluminado</td>
+                            <td>Fachada corporativa</td>
+                            <td>Cotizar</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <a class="btn-order"
+               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20cotizar%20Letreros%20y%20Gigantograf%C3%ADas.%20Tipo%20de%20negocio%20y%20medidas%3A%20"
+               target="_blank" rel="noopener">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.3a8.216 8.216 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24m-2.54 4.58v7.5h3.45c1.45 0 2.39-.75 2.39-1.95 0-.82-.53-1.42-1.32-1.63.63-.25 1.05-.82 1.05-1.55 0-1.12-.89-1.78-2.28-1.78zm1.53 1.34h1.72c.57 0 .93.31.93.75 0 .46-.36.77-.93.77h-1.72zm0 2.58h1.86c.63 0 1.01.32 1.01.8 0 .49-.38.82-1.01.82H11.03z"/>
+                </svg>
+                Hacer Pedido
+            </a>
+        </div>
+    </div>
+
 </main>
 
 <div class="shimmer-bar"></div>
@@ -697,8 +859,7 @@
 ══════════════════════════════════════ -->
 <footer>
     <div class="logo-wrap" style="margin-bottom:14px;">
-        <img src="assets/logo-nova-publicidad.png" alt="NOVA" style="height:42px;">
-        <span class="logo-sub">Agencia de Publicidad</span>
+        <img src="assets/logo-publicidad.png" alt="Agencia NOVA Publicidad y Eventos" style="height:55px; width: auto; object-fit: contain; filter: drop-shadow(0 0 14px rgba(0, 180, 216, 0.45));">
     </div>
     <p>
         © 2026 NOVA Agencia de Publicidad · Cusco, Perú<br>
@@ -721,6 +882,7 @@
     function updateCarousel(id) {
         const c = carousels[id];
         const track = document.getElementById('track-' + id);
+        if (!track) return;
         track.style.transform = `translateX(-${c.current * 100}%)`;
         const dots = document.querySelectorAll('#dots-' + id + ' .carousel-dot');
         dots.forEach((d, i) => d.classList.toggle('active', i === c.current));
@@ -728,13 +890,16 @@
 
     function moveCarousel(id, dir) {
         const c = carousels[id];
+        if (!c) return;
         c.current = (c.current + dir + c.total) % c.total;
         updateCarousel(id);
         resetAuto(id);
     }
 
     function goToSlide(id, idx) {
-        carousels[id].current = idx;
+        const c = carousels[id];
+        if (!c) return;
+        c.current = idx;
         updateCarousel(id);
         resetAuto(id);
     }
@@ -752,6 +917,8 @@
     initCarousel('tarjetas', 4);
     initCarousel('volantes', 4);
     initCarousel('afiches', 4);
+    initCarousel('fotomurales', 4);
+    initCarousel('gigantografias', 4);
 </script>
 
 </body>

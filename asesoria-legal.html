@@ -25,56 +25,30 @@
 <body>
 
     <!-- ==========================================
-         PRELOADER AUREOLE CON LOGO HEXAGONAL M
+          PRELOADER CON LOGOTIPO ASESORÍA LEGAL INTEGRAL
          ========================================== -->
     <div class="preloader" id="preloader">
-        <div class="preloader-logo">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
-                <polygon points="50,6 88.1,28 88.1,72 50,94 11.9,72 11.9,28" 
-                         fill="#1c0b0e" 
-                         stroke="#c43848" 
-                         stroke-width="3" />
-                <polygon points="50,13 81.5,31.5 81.5,68.5 50,87 18.5,68.5 18.5,31.5" 
-                         fill="none" 
-                         stroke="#a6533c" 
-                         stroke-width="1.2" 
-                         stroke-opacity="0.8" 
-                         stroke-dasharray="3, 2" />
-                <text x="50" y="63" text-anchor="middle" font-family="'Cinzel', serif" font-size="34" font-weight="700" fill="#df8c63">M</text>
-            </svg>
+        <div class="preloader-logo" style="width: auto; height: auto;">
+            <img src="assets/logo-asesoria-legal-integral.png" 
+                 alt="Asesoría Legal Integral" 
+                 style="max-height: 70px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 15px rgba(0,0,0,0.8));">
         </div>
         <div class="preloader-spinner"></div>
         <p class="preloader-text">ASESORÍA LEGAL INTEGRAL</p>
     </div>
 
     <!-- ==========================================
-         NAVBAR AUREOLE CON LOGOTIPO HEXÁGONO 'M'
+         NAVBAR CON LOGOTIPO OFICIAL ASESORÍA LEGAL INTEGRAL
          ========================================== -->
     <nav class="navbar navbar-expand-lg">
         <div class="container navbar-container">
             
-            <!-- LOGOTIPO EN LA PARTE SUPERIOR: HEXÁGONO CON LA LETRA M -->
-            <a class="navbar-brand" href="#inicio" aria-label="Inicio">
-                <div class="brand-hex-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
-                        <polygon points="50,6 88.1,28 88.1,72 50,94 11.9,72 11.9,28" 
-                                 fill="#1c0b0e" 
-                                 stroke="#c43848" 
-                                 stroke-width="3.5" 
-                                 stroke-linejoin="round" />
-                        <polygon points="50,13 81.5,31.5 81.5,68.5 50,87 18.5,68.5 18.5,31.5" 
-                                 fill="none" 
-                                 stroke="#a6533c" 
-                                 stroke-width="1.2" 
-                                 stroke-opacity="0.8" 
-                                 stroke-dasharray="3, 2" />
-                        <text x="50" y="63" text-anchor="middle" font-family="'Cinzel', serif" font-size="34" font-weight="700" fill="#df8c63">M</text>
-                    </svg>
-                </div>
-                <div class="brand-title-text">
-                    ASESORÍA LEGAL INTEGRAL
-                    <span>ESTUDIO JURÍDICO</span>
-                </div>
+            <!-- LOGOTIPO EN LA PARTE SUPERIOR: ASESORÍA LEGAL INTEGRAL -->
+            <a class="navbar-brand d-flex align-items-center" href="#inicio" aria-label="Inicio">
+                <img src="assets/logo-asesoria-legal-integral.png" 
+                     alt="Asesoría Legal Integral" 
+                     class="img-fluid"
+                     style="height: 52px; max-height: 58px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6));">
             </a>
 
             <!-- Botón Hamburguesa Móvil -->
@@ -145,82 +119,6 @@
             </div>
         </section>
 
-        <!-- ==========================================
-             CUERPO: LOS TRES PILARES DE DERECHO
-             DERECHO NOTARIAL, DERECHO REGISTRAL Y DERECHO CIVIL
-             CON FOTOS RESTAURADAS Y VALIDACIÓN A PRUEBA DE FALLOS
-             ========================================== -->
-        <section class="specialties-section" id="especialidades">
-            <div class="container">
-                <p class="section-subtitle">Nuestras Especialidades</p>
-                <h2 class="section-title">Pilares Fundamentales del Estudio</h2>
-                
-                <div class="row mt-5">
-                    
-                    <!-- CUADRO 1: DERECHO NOTARIAL -->
-                    <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
-                        <a href="#seccion-notarial" class="specialty-card d-block" style="background: #1a0f12 url('assets/notarial.jpg') center/cover no-repeat;">
-                            <img src="assets/notarial.jpg" 
-                                 onerror="if(!this.dataset.t){this.dataset.t=1;this.src='notarial.jpg';}else{this.src='https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80';}"
-                                 alt="Derecho Notarial - Firma de escrituras públicas y fe notarial" 
-                                 loading="lazy">
-                            <div class="specialty-overlay">
-                                <span class="specialty-tag">Fe Pública &amp; Formalización</span>
-                                <h3 class="specialty-title">DERECHO NOTARIAL</h3>
-                                <p class="specialty-desc">
-                                    Redacción y protocolización de escrituras públicas, transferencias de bienes, constitución de empresas, poderes, testamentos y saneamiento notarial.
-                                </p>
-                                <span class="specialty-more mt-2 d-inline-flex align-items-center" style="font-size: 0.78rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--color-gold-light);">
-                                    Ver desglose de servicios <i class="bi bi-arrow-down-short fs-5 ms-1"></i>
-                                </span>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- CUADRO 2: DERECHO REGISTRAL -->
-                    <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
-                        <a href="#seccion-registral" class="specialty-card d-block" style="background: #111a15 url('assets/registral.jpg') center/cover no-repeat;">
-                            <img src="assets/registral.jpg" 
-                                 onerror="if(!this.dataset.t){this.dataset.t=1;this.src='registral.jpg';}else{this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80';}"
-                                 alt="Derecho Registral - Saneamiento predial y títulos en SUNARP" 
-                                 loading="lazy">
-                            <div class="specialty-overlay">
-                                <span class="specialty-tag" style="color: #cbd5e1;">SUNARP &amp; Publicidad</span>
-                                <h3 class="specialty-title">DERECHO REGISTRAL</h3>
-                                <p class="specialty-desc">
-                                    Saneamiento físico-legal de predios, inmatriculaciones, independizaciones, declaratorias de fábrica y levantamiento de hipotecas y gravámenes.
-                                </p>
-                                <span class="specialty-more mt-2 d-inline-flex align-items-center" style="font-size: 0.78rem; letter-spacing: 1.5px; text-transform: uppercase; color: #cbd5e1;">
-                                    Ver desglose de servicios <i class="bi bi-arrow-down-short fs-5 ms-1"></i>
-                                </span>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- CUADRO 3: DERECHO CIVIL -->
-                    <div class="col-lg-4 col-md-12">
-                        <a href="#seccion-civil" class="specialty-card d-block" style="background: #14111a url('assets/civil.jpg') center/cover no-repeat;">
-                            <img src="assets/civil.jpg" 
-                                 onerror="if(!this.dataset.t){this.dataset.t=1;this.src='civil.jpg';}else{this.src='https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80';}"
-                                 alt="Derecho Civil - Defensa patrimonial y justicia civil" 
-                                 loading="lazy">
-                            <div class="specialty-overlay">
-                                <span class="specialty-tag">Defensa Patrimonial</span>
-                                <h3 class="specialty-title">DERECHO CIVIL</h3>
-                                <p class="specialty-desc">
-                                    Asesoría integral en contratos civiles, arrendamientos, prescripción adquisitiva, desalojos, sucesiones intestadas y responsabilidad civil.
-                                </p>
-                                <span class="specialty-more mt-2 d-inline-flex align-items-center" style="font-size: 0.78rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--color-gold-light);">
-                                    Ver desglose de servicios <i class="bi bi-arrow-down-short fs-5 ms-1"></i>
-                                </span>
-                            </div>
-                        </a>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
     </div>
 
     <!-- ==========================================
@@ -230,9 +128,22 @@
         <div class="container">
             <div class="row align-items-center">
                 
-                <!-- Columna Izquierda: Introducción y Título -->
+                <!-- Columna Izquierda: Introducción y Título con Imagen de Fondo Transparente -->
                 <div class="col-lg-5 col-xl-4 mb-5 mb-lg-0">
                     <div class="detail-intro-col">
+                        <!-- Imagen representativa de Derecho Notarial con fondo transparente -->
+                        <div class="specialty-intro-image mb-4 rounded-4 overflow-hidden shadow-lg" style="position: relative; border: 1px solid rgba(196,56,72,0.35); max-width: 360px;">
+                            <img src="assets/notarial.jpg" 
+                                 onerror="if(!this.dataset.t){this.dataset.t=1;this.src='notarial.jpg';}"
+                                 alt="Derecho Notarial" 
+                                 class="w-100 d-block" 
+                                 style="height: 190px; object-fit: cover; filter: brightness(0.9) contrast(1.1);">
+                            <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(14,7,8,0.92) 0%, rgba(14,7,8,0.25) 60%, transparent 100%);"></div>
+                            <span style="position: absolute; bottom: 12px; left: 16px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #df8c63;">
+                                <i class="bi bi-shield-check me-1"></i> Fe Pública &amp; Notaría
+                            </span>
+                        </div>
+
                         <div class="detail-label-wrap">
                             <span class="detail-label-line"></span>
                             <span class="detail-label">ESPECIALIDAD NOTARIAL</span>
@@ -422,6 +333,19 @@
                 <!-- Columna Derecha: Introducción y Título -->
                 <div class="col-lg-5 col-xl-4 mb-5 mb-lg-0 order-1 order-lg-2">
                     <div class="detail-intro-col">
+                        <!-- Imagen representativa de Derecho Registral con fondo transparente -->
+                        <div class="specialty-intro-image mb-4 rounded-4 overflow-hidden shadow-lg" style="position: relative; border: 1px solid rgba(160,172,188,0.35); max-width: 360px;">
+                            <img src="assets/registral.jpg" 
+                                 onerror="if(!this.dataset.t){this.dataset.t=1;this.src='registral.jpg';}"
+                                 alt="Derecho Registral" 
+                                 class="w-100 d-block" 
+                                 style="height: 190px; object-fit: cover; filter: brightness(0.9) contrast(1.1);">
+                            <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(22,25,30,0.92) 0%, rgba(22,25,30,0.25) 60%, transparent 100%);"></div>
+                            <span style="position: absolute; bottom: 12px; left: 16px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #cbd5e1;">
+                                <i class="bi bi-bank me-1"></i> SUNARP &amp; Saneamiento
+                            </span>
+                        </div>
+
                         <div class="detail-label-wrap">
                             <span class="detail-label-line"></span>
                             <span class="detail-label">ESPECIALIDAD REGISTRAL</span>
@@ -467,6 +391,19 @@
                 <!-- Columna Izquierda: Introducción y Título -->
                 <div class="col-lg-5 col-xl-4 mb-5 mb-lg-0">
                     <div class="detail-intro-col">
+                        <!-- Imagen representativa de Derecho Civil con fondo transparente -->
+                        <div class="specialty-intro-image mb-4 rounded-4 overflow-hidden shadow-lg" style="position: relative; border: 1px solid rgba(196,56,72,0.35); max-width: 360px;">
+                            <img src="assets/civil.jpg" 
+                                 onerror="if(!this.dataset.t){this.dataset.t=1;this.src='civil.jpg';}"
+                                 alt="Derecho Civil" 
+                                 class="w-100 d-block" 
+                                 style="height: 190px; object-fit: cover; filter: brightness(0.9) contrast(1.1);">
+                            <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(16,7,8,0.92) 0%, rgba(16,7,8,0.25) 60%, transparent 100%);"></div>
+                            <span style="position: absolute; bottom: 12px; left: 16px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #df8c63;">
+                                <i class="bi bi-file-earmark-text me-1"></i> Contratos &amp; Patrimonio
+                            </span>
+                        </div>
+
                         <div class="detail-label-wrap">
                             <span class="detail-label-line"></span>
                             <span class="detail-label">ESPECIALIDAD CIVIL</span>
@@ -544,59 +481,6 @@
             </div>
         </div>
     </section>
-
-    <!-- ==========================================
-         FOOTER INSTITUCIONAL TEJADA CONSULTORES / ASESORÍA LEGAL
-         ========================================== -->
-    <footer class="footer">
-        <div class="container">
-            <div class="row align-items-center">
-                
-                <!-- Columna 1: Marca y Logotipo Oficial -->
-                <div class="col-lg-7 col-md-7 mb-4 mb-md-0">
-                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 18px;">
-                        <img src="assets/logo-tejada-consultores.png"
-                             onerror="if(!this.dataset.t){this.dataset.t=1;this.src='logo-tejada-consultores.png';}"
-                             alt="Tejada Consultores - Abogados e Ingenieros"
-                             style="max-height: 52px; width: auto; object-fit: contain;">
-                    </div>
-                    <p class="footer-text">
-                        Estudio jurídico y consultoría especializada en derecho notarial, registral y civil patrimonial. Saneamiento legal y seguridad jurídica para su patrimonio.
-                    </p>
-                    <div class="footer-social">
-                        <a href="https://wa.me/51948301540" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
-                        <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-                        <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-                        <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
-                    </div>
-                </div>
-
-                <!-- Columna 2: Enlaces de Navegación -->
-                <div class="col-lg-4 col-md-5 ms-lg-auto">
-                    <h4 class="footer-title">Navegación</h4>
-                    <ul class="footer-links">
-                        <li><a href="#inicio">Inicio</a></li>
-                        <li><a href="#especialidades">Nuestras Especialidades</a></li>
-                        <li><a href="#seccion-notarial">Derecho Notarial</a></li>
-                        <li><a href="#seccion-registral">Derecho Registral</a></li>
-                        <li><a href="#seccion-civil">Derecho Civil</a></li>
-                        <li><a href="index.html" style="color: #df8c63;">← Volver a Agencia NOVA</a></li>
-                    </ul>
-                </div>
-
-            </div>
-
-            <!-- Barra Inferior de Copyright -->
-            <div class="footer-bottom">
-                <p class="mb-0">© 2026 Tejada Consultores · Asesoría Legal Integral. Todos los derechos reservados.</p>
-                <div style="font-size: 0.8rem; color: #a89899;">
-                    <a href="index.html" class="me-2" style="color: #df8c63;">Agencia NOVA</a> | 
-                    <a href="#inicio" class="me-2">Privacidad</a> | 
-                    <a href="#inicio" class="ms-2">Términos</a>
-                </div>
-            </div>
-        </div>
-    </footer>
 
     <!-- ==========================================
          BOTÓN FLOTANTE DIRECTO A WHATSAPP BUSINESS

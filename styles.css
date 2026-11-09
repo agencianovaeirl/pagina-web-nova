@@ -642,24 +642,31 @@ section {
     border-bottom: 1px solid var(--color-border);
 }
 
-/* Fondos temáticos con tonalidades rojas oscuras reducidas en un 20% */
+/* Fondos temáticos con imágenes de especialidad y overlay transparente */
 .notarial-section {
     background-color: #0e0708;
-    background-image: radial-gradient(circle at 10% 20%, rgba(196, 56, 72, 0.05) 0%, transparent 50%);
+    background-image: linear-gradient(135deg, rgba(14, 7, 8, 0.90) 0%, rgba(20, 10, 12, 0.94) 100%), url('assets/notarial.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
 }
 
 .registral-section {
     background-color: #1e2025;
-    background-image: 
-        radial-gradient(circle at 85% 25%, rgba(200, 212, 228, 0.06) 0%, transparent 55%),
-        radial-gradient(circle at 15% 75%, rgba(15, 17, 20, 0.45) 0%, transparent 60%);
+    background-image: linear-gradient(135deg, rgba(22, 25, 30, 0.90) 0%, rgba(15, 17, 21, 0.94) 100%), url('assets/registral.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     border-top: 1px solid rgba(160, 172, 188, 0.22);
     border-bottom: 1px solid rgba(160, 172, 188, 0.22);
 }
 
 .civil-section {
     background-color: #100708;
-    background-image: radial-gradient(circle at 15% 80%, rgba(196, 56, 72, 0.05) 0%, transparent 50%);
+    background-image: linear-gradient(135deg, rgba(16, 7, 8, 0.90) 0%, rgba(22, 11, 14, 0.94) 100%), url('assets/civil.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
 }
 
 /* Columna de Título e Introducción */

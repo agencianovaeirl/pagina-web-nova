@@ -348,17 +348,17 @@
                         </p>
                     </div>
 
-                    <div class="relative z-10 pt-8 border-t border-white/10 mt-8 flex flex-col gap-2">
-                        <span class="text-xs text-[#bec9c1]">Líneas de Atención Inmediata:</span>
+                    <div class="relative z-10 pt-6 border-t border-white/10 mt-6 flex flex-col gap-2">
+                        <span class="text-xs text-[#bec9c1]">Línea de Atención Inmediata:</span>
                         <div class="flex items-center gap-3 font-bold text-[#f2ca50] text-sm">
                             <span class="material-symbols-outlined text-[18px]">phone</span>
-                            <span>948 301 540 &bull; 925 811 681</span>
+                            <span>948 301 540</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Form Right Panel -->
-                <div class="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-center bg-[#f5fbf6] text-[#171d1a]">
+                <div class="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-center bg-[#f5fbf6] text-[#171d1a]">
                     <form id="form-visita-bienes-raices" class="flex flex-col gap-4" onsubmit="event.preventDefault(); handleFormSubmit();">
                         <div class="flex flex-col gap-1">
                             <h3 class="text-xl sm:text-2xl font-black text-[#122b1c] font-heading">Completa tus datos de contacto</h3>
@@ -379,25 +379,12 @@
                         </div>
 
                         <div class="flex flex-col gap-1">
-                            <label for="client-interest" class="font-label text-xs uppercase tracking-wider text-[#122b1c] font-bold">Propiedad de Interés</label>
-                            <select id="client-interest" class="w-full bg-white text-[#171d1a] px-4 py-2.5 rounded-xl text-xs sm:text-sm border border-[#bec9c1] focus:ring-2 focus:ring-[#d4af37] focus:outline-none cursor-pointer">
-                                <option value="oxapampa">Refugio Bosque Los Pinos</option>
-                                <option value="cieneguilla">Villa Cordillera Alta</option>
-                                <option value="urubamba">Finca El Manantial (Valle Sagrado)</option>
-                                <option value="lunahuana">Lote Mirador del Valle</option>
-                                <option value="pozuzo">Cabaña Vista Ocaso</option>
-                                <option value="huaraz">Pradera Silvestre Estate</option>
-                                <option value="asesoria-general">Quiero asesoría general para compra segura de tierras</option>
-                            </select>
-                        </div>
-
-                        <div class="flex flex-col gap-1">
                             <label for="client-message" class="font-label text-xs uppercase tracking-wider text-[#122b1c] font-bold">Comentarios o Requerimientos Particulares</label>
-                            <textarea id="client-message" rows="3" placeholder="Indícanos fechas tentativas para tu visita o si buscas metrajes específicos..." 
+                            <textarea id="client-message" rows="2" placeholder="Indícanos fechas tentativas para tu visita o si buscas metrajes específicos..." 
                                       class="w-full bg-white text-[#171d1a] px-4 py-2.5 rounded-xl text-xs sm:text-sm border border-[#bec9c1] focus:ring-2 focus:ring-[#d4af37] focus:outline-none"></textarea>
                         </div>
 
-                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-1">
                             <label class="flex items-center gap-2 cursor-pointer text-xs text-[#414b46]">
                                 <input type="checkbox" required checked class="rounded accent-[#d4af37]">
                                 <span>Acepto política de privacidad y contacto directo</span>
@@ -411,7 +398,7 @@
                         <!-- Feedback placeholder -->
                         <div id="form-feedback" class="hidden p-4 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs sm:text-sm font-semibold flex items-center gap-2">
                             <span class="material-symbols-outlined text-[20px] text-emerald-600">check_circle</span>
-                            <span>¡Solicitud enviada con éxito! Te contactaremos al WhatsApp en breve.</span>
+                            <span>¡Solicitud enviada y registrada con éxito! Te contactaremos al WhatsApp en breve.</span>
                         </div>
                     </form>
                 </div>
@@ -425,7 +412,7 @@
     <footer class="w-full bg-[#06120a] text-[#bec9c1] border-t border-[#d4af37]/25 py-10">
         <div class="max-w-[1360px] mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-xs sm:text-sm">
             <div class="flex items-center gap-3">
-                <img src="assets/logo-nova-sin-fondo.png" alt="Agencia NOVA" class="h-8 w-auto object-contain">
+                <img src="assets/nova-verde-sin-fondo.png" alt="Agencia NOVA" class="h-9 w-auto object-contain">
                 <span>&copy; 2026 Agencia NOVA E.I.R.L. - Saneamiento Inmobiliario & Asesoría Legal Integral.</span>
             </div>
             <div class="flex items-center gap-6 font-semibold">
@@ -552,9 +539,6 @@
                     </div>
                     <p id="admin-password-error" class="hidden text-xs text-red-400 mt-2 font-bold flex items-center gap-1">
                         <span class="material-symbols-outlined text-[16px]">error</span> Clave incorrecta. Inténtalo nuevamente.
-                    </p>
-                    <p class="text-[11px] text-slate-400 mt-2">
-                        <span class="text-emerald-400 font-bold">Clave autorizada:</span> <code class="bg-black/40 px-1.5 py-0.5 rounded text-[#f2ca50]">NOVA2026</code>
                     </p>
                 </div>
 
@@ -1461,6 +1445,7 @@
             }
 
             saveProperties(props);
+            uploadDataToSupabaseStorage('catalogo', 'catalogo_propiedades.json', props);
             closePropertyFormModal();
             renderAdminPropertyList();
             renderCatalog();
@@ -1529,17 +1514,75 @@
             if (e.target === formModal) closePropertyFormModal();
         });
 
+        // ==========================================
+        // INTEGRACIÓN CON SUPABASE STORAGE
+        // Bucket: INMOBILIARIA (Proyecto: zrtfayhgoeoqwakbuakn)
+        // https://supabase.com/dashboard/project/zrtfayhgoeoqwakbuakn/storage/files/buckets/INMOBILIARIA
+        // ==========================================
+        const SUPABASE_PROJECT_REF = "zrtfayhgoeoqwakbuakn";
+        const SUPABASE_URL = `https://${SUPABASE_PROJECT_REF}.supabase.co`;
+        const SUPABASE_BUCKET = "INMOBILIARIA";
+
+        async function uploadDataToSupabaseStorage(folder, filename, dataObj) {
+            try {
+                const jsonStr = JSON.stringify(dataObj, null, 2);
+                const blob = new Blob([jsonStr], { type: 'application/json' });
+                const storagePath = `${folder}/${filename}`;
+                const uploadEndpoint = `${SUPABASE_URL}/storage/v1/object/${SUPABASE_BUCKET}/${storagePath}`;
+                
+                const customKey = localStorage.getItem('NOVA_SUPABASE_KEY') || '';
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'x-upsert': 'true'
+                };
+                if (customKey) {
+                    headers['Authorization'] = `Bearer ${customKey}`;
+                    headers['apikey'] = customKey;
+                }
+                
+                const res = await fetch(uploadEndpoint, {
+                    method: 'POST',
+                    headers: headers,
+                    body: blob
+                });
+                
+                if (res.ok) {
+                    console.log(`[Supabase Storage] ✅ Guardado exitoso en ${SUPABASE_BUCKET}/${storagePath}`);
+                    return true;
+                } else {
+                    console.info(`[Supabase Storage] Status:`, res.status, res.statusText);
+                }
+            } catch (err) {
+                console.warn('[Supabase Storage Sync]', err.message);
+            }
+            return false;
+        }
+
         // FORMULARIO DE CONCIERGE / VISITAS
         function handleFormSubmit() {
             const name = document.getElementById('client-name').value;
             const phone = document.getElementById('client-phone').value;
-            const prop = document.getElementById('client-interest').value;
             const msg = document.getElementById('client-message').value;
 
+            // 1. Guardar todos los datos de ingreso en la carpeta de Supabase Storage (Bucket INMOBILIARIA)
+            const visitRecord = {
+                nombre: name,
+                telefono: phone,
+                mensaje: msg || 'Solicito coordinación de visita o asesoría.',
+                fecha: new Date().toLocaleDateString('es-PE'),
+                hora: new Date().toLocaleTimeString('es-PE'),
+                timestamp: new Date().toISOString(),
+                pagina: 'terrenos.html',
+                seccion: 'Agenda tu Visita Guiada'
+            };
+            const safeName = name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+            const filename = `visita_${Date.now()}_${safeName}.json`;
+            uploadDataToSupabaseStorage('visitas', filename, visitRecord);
+
+            // 2. Coordinación por WhatsApp directo
             const text = `Hola Agencia NOVA, deseo agendar una visita o sesión de asesoría:%0A` +
                          `*Nombre:* ${encodeURIComponent(name)}%0A` +
                          `*Teléfono:* ${encodeURIComponent(phone)}%0A` +
-                         `*Propiedad:* ${encodeURIComponent(prop)}%0A` +
                          `*Mensaje:* ${encodeURIComponent(msg || 'Solicito coordinación.')}`;
 
             window.open(`https://wa.me/51948301540?text=${text}`, '_blank');
