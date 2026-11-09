@@ -20,3 +20,6 @@ $RECYCLE.BIN/
 *.sw?
 .DS_Store
 
+# Scripts and tokens
+*.ps1
+.env*

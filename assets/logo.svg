@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <defs>
+    <!-- Gradiente Rojo Vino Carmesí para el borde exterior -->
+    <linearGradient id="wineHexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e24d5d"/>
+      <stop offset="45%" stop-color="#b82837"/>
+      <stop offset="100%" stop-color="#69121b"/>
+    </linearGradient>
+
+    <!-- Gradiente Marrón Caoba / Cuero para el anillo y la letra M -->
+    <linearGradient id="brownGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#df8c63"/>
+      <stop offset="50%" stop-color="#a6533c"/>
+      <stop offset="100%" stop-color="#5a271a"/>
+    </linearGradient>
+
+    <!-- Fondo Oscuro Vino Tinto / Caoba Noir -->
+    <linearGradient id="darkWineBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#240c0f"/>
+      <stop offset="50%" stop-color="#160709"/>
+      <stop offset="100%" stop-color="#0d0405"/>
+    </linearGradient>
+
+    <!-- Resplandor Carmesí Sutil -->
+    <filter id="hexGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3.5" flood-color="#b82837" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Polígono Hexagonal Exterior con Borde Rojo Vino Carmesí -->
+  <polygon points="50,6 88.1,28 88.1,72 50,94 11.9,72 11.9,28" 
+           fill="url(#darkWineBg)" 
+           stroke="url(#wineHexGrad)" 
+           stroke-width="3.5" 
+           stroke-linejoin="round"
+           filter="url(#hexGlow)" />
+
+  <!-- Anillo Hexagonal Interior en Marrón Caoba Punteado -->
+  <polygon points="50,13 81.5,31.5 81.5,68.5 50,87 18.5,68.5 18.5,31.5" 
+           fill="none" 
+           stroke="url(#brownGrad)" 
+           stroke-width="1.2" 
+           stroke-opacity="0.85"
+           stroke-dasharray="3, 2" />
+
+  <!-- Letra Central 'M' en Tipografía Serif Majestuosa (Marrón Caoba & Cognac) -->
+  <text x="50" y="63" 
+        text-anchor="middle" 
+        font-family="'Cinzel', 'Playfair Display', serif" 
+        font-size="36" 
+        font-weight="700" 
+        letter-spacing="0.5"
+        fill="url(#brownGrad)"
+        style="text-shadow: 0 2px 8px rgba(0,0,0,0.9);">M</text>
+</svg>

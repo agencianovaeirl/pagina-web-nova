@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Asesoría Legal Integral - Especialistas en Derecho Notarial, Derecho Registral y Derecho Civil. Seguridad jurídica, saneamiento y protección patrimonial.">
+    <title>M | Asesoría Legal Integral - Notarial, Registral y Civil</title>
+
+    <!-- Favicon con Logo Hexagonal M -->
+    <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+
+    <!-- Fuentes Oficiales AUREOLE (Cormorant Garamond, Montserrat, Cinzel) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 Grid & Utilities -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+
+    <!-- Hoja de Estilos AUREOLE -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- ==========================================
+         PRELOADER AUREOLE CON LOGO HEXAGONAL M
+         ========================================== -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+                <polygon points="50,6 88.1,28 88.1,72 50,94 11.9,72 11.9,28" 
+                         fill="#1c0b0e" 
+                         stroke="#c43848" 
+                         stroke-width="3" />
+                <polygon points="50,13 81.5,31.5 81.5,68.5 50,87 18.5,68.5 18.5,31.5" 
+                         fill="none" 
+                         stroke="#a6533c" 
+                         stroke-width="1.2" 
+                         stroke-opacity="0.8" 
+                         stroke-dasharray="3, 2" />
+                <text x="50" y="63" text-anchor="middle" font-family="'Cinzel', serif" font-size="34" font-weight="700" fill="#df8c63">M</text>
+            </svg>
+        </div>
+        <div class="preloader-spinner"></div>
+        <p class="preloader-text">ASESORÍA LEGAL INTEGRAL</p>
+    </div>
+
+    <!-- ==========================================
+         NAVBAR AUREOLE CON LOGOTIPO HEXÁGONO 'M'
+         ========================================== -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container navbar-container">
+            
+            <!-- LOGOTIPO EN LA PARTE SUPERIOR: HEXÁGONO CON LA LETRA M -->
+            <a class="navbar-brand" href="#inicio" aria-label="Inicio">
+                <div class="brand-hex-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+                        <polygon points="50,6 88.1,28 88.1,72 50,94 11.9,72 11.9,28" 
+                                 fill="#1c0b0e" 
+                                 stroke="#c43848" 
+                                 stroke-width="3.5" 
+                                 stroke-linejoin="round" />
+                        <polygon points="50,13 81.5,31.5 81.5,68.5 50,87 18.5,68.5 18.5,31.5" 
+                                 fill="none" 
+                                 stroke="#a6533c" 
+                                 stroke-width="1.2" 
+                                 stroke-opacity="0.8" 
+                                 stroke-dasharray="3, 2" />
+                        <text x="50" y="63" text-anchor="middle" font-family="'Cinzel', serif" font-size="34" font-weight="700" fill="#df8c63">M</text>
+                    </svg>
+                </div>
+                <div class="brand-title-text">
+                    ASESORÍA LEGAL INTEGRAL
+                    <span>ESTUDIO JURÍDICO</span>
+                </div>
+            </a>
+
+            <!-- Botón Hamburguesa Móvil -->
+            <button class="navbar-toggler" id="navbarToggler" type="button" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <!-- MENÚ: RETORNO A NOVA, INICIO, NOTARIAL, REGISTRAL, CIVIL -->
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html" style="color: #df8c63; font-weight: 700; letter-spacing: 0.5px;">
+                        <i class="bi bi-arrow-left me-1"></i> VOLVER A NOVA
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#inicio">INICIO</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#seccion-notarial">NOTARIAL</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#seccion-registral">REGISTRAL</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#seccion-civil">CIVIL</a>
+                </li>
+                <li class="nav-item ms-lg-3">
+                    <a href="https://wa.me/51948301540?text=Hola,%20solicito%20asesor%C3%ADa%20legal%20inmediata." target="_blank" rel="noopener noreferrer" class="btn btn-primary">CONSULTA INMEDIATA</a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+
+    <!-- Menú Drawer Móvil -->
+    <div class="mobile-menu-drawer" id="mobileMenuDrawer">
+        <button class="mobile-close-btn" id="mobileCloseBtn">&times;</button>
+        <a href="index.html" class="mobile-nav-link" style="color: #df8c63; font-weight: 700;"><i class="bi bi-arrow-left me-1"></i> VOLVER A AGENCIA NOVA</a>
+        <a href="#inicio" class="mobile-nav-link">INICIO</a>
+        <a href="#seccion-notarial" class="mobile-nav-link">NOTARIAL</a>
+        <a href="#seccion-registral" class="mobile-nav-link">REGISTRAL</a>
+        <a href="#seccion-civil" class="mobile-nav-link">CIVIL</a>
+        <a href="https://wa.me/51948301540?text=Hola,%20solicito%20asesor%C3%ADa%20legal%20inmediata." target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-3">CONSULTA INMEDIATA</a>
+    </div>
+
+    <!-- ==========================================
+         FONDO EXTENDIDO: PRIMERA Y SEGUNDA SECCIÓN
+         (Hero Principal + Nuestras Especialidades)
+         ========================================== -->
+    <div class="hero-specialties-wrap">
+
+        <!-- ==========================================
+             HERO SECTION AUREOLE (#inicio)
+             ========================================== -->
+        <section class="hero" id="inicio">
+            <div class="hero-content">
+                <p class="hero-subtitle">Excelencia Jurídica &amp; Solidez Patrimonial</p>
+                <h1 class="hero-title">
+                    ASESORÍA LEGAL
+                    <span>Integral, Notarial y Registral</span>
+                </h1>
+                <div class="hero-buttons">
+                    <a href="https://wa.me/51948301540?text=Hola,%20solicito%20asesor%C3%ADa%20legal%20integral." target="_blank" rel="noopener noreferrer" class="btn btn-primary">Agendar Consulta</a>
+                    <a href="#especialidades" class="btn btn-outline">Nuestras Especialidades</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             CUERPO: LOS TRES PILARES DE DERECHO
+             DERECHO NOTARIAL, DERECHO REGISTRAL Y DERECHO CIVIL
+             CON FOTOS RESTAURADAS Y VALIDACIÓN A PRUEBA DE FALLOS
+             ========================================== -->
+        <section class="specialties-section" id="especialidades">
+            <div class="container">
+                <p class="section-subtitle">Nuestras Especialidades</p>
+                <h2 class="section-title">Pilares Fundamentales del Estudio</h2>
+                
+                <div class="row mt-5">
+                    
+                    <!-- CUADRO 1: DERECHO NOTARIAL -->
+                    <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                        <a href="#seccion-notarial" class="specialty-card d-block" style="background: #1a0f12 url('assets/notarial.jpg') center/cover no-repeat;">
+                            <img src="assets/notarial.jpg" 
+                                 onerror="if(!this.dataset.t){this.dataset.t=1;this.src='notarial.jpg';}else{this.src='https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80';}"
+                                 alt="Derecho Notarial - Firma de escrituras públicas y fe notarial" 
+                                 loading="lazy">
+                            <div class="specialty-overlay">
+                                <span class="specialty-tag">Fe Pública &amp; Formalización</span>
+                                <h3 class="specialty-title">DERECHO NOTARIAL</h3>
+                                <p class="specialty-desc">
+                                    Redacción y protocolización de escrituras públicas, transferencias de bienes, constitución de empresas, poderes, testamentos y saneamiento notarial.
+                                </p>
+                                <span class="specialty-more mt-2 d-inline-flex align-items-center" style="font-size: 0.78rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--color-gold-light);">
+                                    Ver desglose de servicios <i class="bi bi-arrow-down-short fs-5 ms-1"></i>
+                                </span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- CUADRO 2: DERECHO REGISTRAL -->
+                    <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                        <a href="#seccion-registral" class="specialty-card d-block" style="background: #111a15 url('assets/registral.jpg') center/cover no-repeat;">
+                            <img src="assets/registral.jpg" 
+                                 onerror="if(!this.dataset.t){this.dataset.t=1;this.src='registral.jpg';}else{this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80';}"
+                                 alt="Derecho Registral - Saneamiento predial y títulos en SUNARP" 
+                                 loading="lazy">
+                            <div class="specialty-overlay">
+                                <span class="specialty-tag" style="color: #cbd5e1;">SUNARP &amp; Publicidad</span>
+                                <h3 class="specialty-title">DERECHO REGISTRAL</h3>
+                                <p class="specialty-desc">
+                                    Saneamiento físico-legal de predios, inmatriculaciones, independizaciones, declaratorias de fábrica y levantamiento de hipotecas y gravámenes.
+                                </p>
+                                <span class="specialty-more mt-2 d-inline-flex align-items-center" style="font-size: 0.78rem; letter-spacing: 1.5px; text-transform: uppercase; color: #cbd5e1;">
+                                    Ver desglose de servicios <i class="bi bi-arrow-down-short fs-5 ms-1"></i>
+                                </span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- CUADRO 3: DERECHO CIVIL -->
+                    <div class="col-lg-4 col-md-12">
+                        <a href="#seccion-civil" class="specialty-card d-block" style="background: #14111a url('assets/civil.jpg') center/cover no-repeat;">
+                            <img src="assets/civil.jpg" 
+                                 onerror="if(!this.dataset.t){this.dataset.t=1;this.src='civil.jpg';}else{this.src='https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80';}"
+                                 alt="Derecho Civil - Defensa patrimonial y justicia civil" 
+                                 loading="lazy">
+                            <div class="specialty-overlay">
+                                <span class="specialty-tag">Defensa Patrimonial</span>
+                                <h3 class="specialty-title">DERECHO CIVIL</h3>
+                                <p class="specialty-desc">
+                                    Asesoría integral en contratos civiles, arrendamientos, prescripción adquisitiva, desalojos, sucesiones intestadas y responsabilidad civil.
+                                </p>
+                                <span class="specialty-more mt-2 d-inline-flex align-items-center" style="font-size: 0.78rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--color-gold-light);">
+                                    Ver desglose de servicios <i class="bi bi-arrow-down-short fs-5 ms-1"></i>
+                                </span>
+                            </div>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ==========================================
+         DETALLE 1: ESPECIALIDAD NOTARIAL (#seccion-notarial)
+         ========================================== -->
+    <section class="detail-section notarial-section" id="seccion-notarial">
+        <div class="container">
+            <div class="row align-items-center">
+                
+                <!-- Columna Izquierda: Introducción y Título -->
+                <div class="col-lg-5 col-xl-4 mb-5 mb-lg-0">
+                    <div class="detail-intro-col">
+                        <div class="detail-label-wrap">
+                            <span class="detail-label-line"></span>
+                            <span class="detail-label">ESPECIALIDAD NOTARIAL</span>
+                        </div>
+                        <h2 class="detail-title">
+                            DERECHO
+                            <span class="detail-title-italic">Notarial</span>
+                        </h2>
+                        <p class="detail-desc">
+                            Blindamos sus acuerdos con absoluta seguridad jurídica. Actuamos como el filtro preventivo que garantiza la validez y permanencia de sus actos civiles y societarios.
+                        </p>
+                        <div class="detail-indicators">
+                            <div class="indicator-item">
+                                <span class="indicator-title">FE PÚBLICA</span>
+                                <span class="indicator-sub">Formalidad Plena</span>
+                            </div>
+                            <div class="indicator-sep"></div>
+                            <div class="indicator-item">
+                                <span class="indicator-title">SEGURIDAD</span>
+                                <span class="indicator-sub">Protección Legal</span>
+                            </div>
+                        </div>
+                        <a href="https://wa.me/51948301540?text=Hola,%20solicito%20asesor%C3%ADa%20especializada%20en%20Derecho%20Notarial." target="_blank" rel="noopener noreferrer" class="detail-cta">
+                            <span>CONSULTAR ESPECIALISTA</span>
+                            <div class="detail-cta-circle">
+                                <i class="bi bi-pen"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Matriz de 8 Cuadros de Servicios Notariales -->
+                <div class="col-lg-7 col-xl-8">
+                    <div class="service-matrix grid-8">
+                        
+                        <!-- 1. Constitución de Empresas -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-buildings service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">CONSTITUCIÓN DE EMPRESAS</h4>
+                            <p class="service-matrix-desc">
+                                Asesoría integral para la formalización de todo tipo de sociedades (SAC, SRL, EIRL, etc.), desde la minuta hasta la escritura pública.
+                            </p>
+                        </div>
+
+                        <!-- 2. Compraventa de Bienes -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-house-check service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">COMPRAVENTA DE BIENES</h4>
+                            <p class="service-matrix-desc">
+                                Redacción y revisión de minutas y escrituras públicas para la transferencia segura de bienes muebles e inmuebles.
+                            </p>
+                        </div>
+
+                        <!-- 3. Sucesiones y Testamentos -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-file-earmark-text service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">SUCESIONES Y TESTAMENTOS</h4>
+                            <p class="service-matrix-desc">
+                                Trámite de sucesión intestada notarial y asesoría para el otorgamiento de testamentos, asegurando la correcta transmisión del patrimonio.
+                            </p>
+                        </div>
+
+                        <!-- 4. Prescripción Adquisitiva -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-bank service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">PRESCRIPCIÓN ADQUISITIVA</h4>
+                            <p class="service-matrix-desc">
+                                Procedimiento notarial para la declaración de propiedad por posesión continua, pacífica y pública.
+                            </p>
+                        </div>
+
+                        <!-- 5. Divorcio Notarial -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-people service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">DIVORCIO NOTARIAL</h4>
+                            <p class="service-matrix-desc">
+                                Trámite rápido y eficiente de separación convencional y divorcio ulterior en sede notarial.
+                            </p>
+                        </div>
+
+                        <!-- 6. Otorgamiento de Poderes -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-pencil-square service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">OTORGAMIENTO DE PODERES</h4>
+                            <p class="service-matrix-desc">
+                                Elaboración de poderes por escritura pública, fuera de registro o carta poder, así como su revocatoria.
+                            </p>
+                        </div>
+
+                        <!-- 7. Rectificación de Partidas -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-journal-bookmark service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">RECTIFICACIÓN DE PARTIDAS</h4>
+                            <p class="service-matrix-desc">
+                                Corrección de errores u omisiones en partidas de nacimiento, matrimonio o defunción por vía notarial.
+                            </p>
+                        </div>
+
+                        <!-- 8. Asesoría Notarial Personalizada -->
+                        <div class="service-matrix-item service-matrix-highlight">
+                            <i class="bi bi-shield-check service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">ASESORÍA NOTARIAL A MEDIDA</h4>
+                            <p class="service-matrix-desc">
+                                Trámite específico o consulta de fe pública con revisión directa de minutas por abogados sénior.
+                            </p>
+                            <a href="https://wa.me/51948301540?text=Hola,%20solicito%20asesor%C3%ADa%20especializada%20en%20Derecho%20Notarial." target="_blank" rel="noopener noreferrer" class="service-item-link">
+                                Agendar Notarial <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         DETALLE 2: ESPECIALIDAD REGISTRAL (#seccion-registral)
+         Tonalidad Gris Semi Oscuro / Titanio
+         ========================================== -->
+    <section class="detail-section registral-section" id="seccion-registral">
+        <div class="container">
+            <div class="row align-items-center">
+                
+                <!-- Columna Izquierda: Matriz de 6 Cuadros de Servicios Registrales (SUNARP) -->
+                <div class="col-lg-7 col-xl-8 order-2 order-lg-1">
+                    <div class="service-matrix grid-6">
+                        
+                        <!-- 1. Saneamiento Físico Legal -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-map service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">SANEAMIENTO FÍSICO LEGAL</h4>
+                            <p class="service-matrix-desc">
+                                Regularización integral de predios: independización, acumulación, subdivisión, declaratoria de fábrica y rectificación de áreas y linderos.
+                            </p>
+                        </div>
+
+                        <!-- 2. Levantamiento de Observaciones -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-shield-check service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">LEVANTAMIENTO DE OBSERVACIONES</h4>
+                            <p class="service-matrix-desc">
+                                Análisis técnico-jurídico y subsanación de tachas u observaciones emitidas por los Registradores Públicos, incluyendo apelaciones ante el Tribunal Registral.
+                            </p>
+                        </div>
+
+                        <!-- 3. Inscripción de Propiedad y Sociedades -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-file-earmark-ruled service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">INSCRIPCIÓN DE PROPIEDAD Y SOCIEDADES</h4>
+                            <p class="service-matrix-desc">
+                                Gestión eficiente para la inscripción de transferencias de inmuebles, vehículos y todo tipo de actos societarios (nombramiento de gerentes, aumentos de capital).
+                            </p>
+                        </div>
+
+                        <!-- 4. Cancelación de Cargas -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-slash-circle service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">CANCELACIÓN DE CARGAS</h4>
+                            <p class="service-matrix-desc">
+                                Procedimientos para el levantamiento y cancelación de hipotecas, embargos, medidas cautelares y otras afectaciones inscritas.
+                            </p>
+                        </div>
+
+                        <!-- 5. Estudio de Títulos -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-search service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">ESTUDIO DE TÍTULOS</h4>
+                            <p class="service-matrix-desc">
+                                Análisis exhaustivo de antecedentes registrales para detectar contingencias antes de la adquisición de un inmueble o empresa.
+                            </p>
+                        </div>
+
+                        <!-- 6. Publicidad y Calificación SUNARP -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-building-lock service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">PUBLICIDAD REGISTRAL &amp; SUNARP</h4>
+                            <p class="service-matrix-desc">
+                                Búsqueda catastral, certificados de cargas y gravámenes (CRI) y defensa de la fe pública registral a nivel nacional.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Introducción y Título -->
+                <div class="col-lg-5 col-xl-4 mb-5 mb-lg-0 order-1 order-lg-2">
+                    <div class="detail-intro-col">
+                        <div class="detail-label-wrap">
+                            <span class="detail-label-line"></span>
+                            <span class="detail-label">ESPECIALIDAD REGISTRAL</span>
+                        </div>
+                        <h2 class="detail-title">
+                            DERECHO
+                            <span class="detail-title-italic">Registral</span>
+                        </h2>
+                        <p class="detail-desc">
+                            Garantizamos la seguridad y oponibilidad de sus derechos. Saneamos su patrimonio inmobiliario y empresarial para maximizar su valor en el mercado.
+                        </p>
+                        <div class="detail-indicators">
+                            <div class="indicator-item">
+                                <span class="indicator-num">01</span>
+                                <span class="indicator-title">INSCRIPCIÓN</span>
+                            </div>
+                            <div class="indicator-sep"></div>
+                            <div class="indicator-item">
+                                <span class="indicator-num">02</span>
+                                <span class="indicator-title">PATRIMONIO</span>
+                            </div>
+                        </div>
+                        <a href="https://wa.me/51948301540?text=Hola,%20solicito%20asesor%C3%ADa%20especializada%20en%20Derecho%20Registral%20y%20SUNARP." target="_blank" rel="noopener noreferrer" class="detail-cta">
+                            <span>SANEAMIENTO INTEGRAL</span>
+                            <div class="detail-cta-circle">
+                                <i class="bi bi-bank"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         DETALLE 3: ESPECIALIDAD CIVIL (#seccion-civil)
+         ========================================== -->
+    <section class="detail-section civil-section" id="seccion-civil">
+        <div class="container">
+            <div class="row align-items-center">
+                
+                <!-- Columna Izquierda: Introducción y Título -->
+                <div class="col-lg-5 col-xl-4 mb-5 mb-lg-0">
+                    <div class="detail-intro-col">
+                        <div class="detail-label-wrap">
+                            <span class="detail-label-line"></span>
+                            <span class="detail-label">ESPECIALIDAD CIVIL</span>
+                        </div>
+                        <h2 class="detail-title">
+                            DERECHO
+                            <span class="detail-title-italic">Civil</span>
+                        </h2>
+                        <p class="detail-desc">
+                            Protegemos sus intereses patrimoniales y derechos ciudadanos. Ofrecemos soluciones estratégicas en litigios complejos y asesoría preventiva en acuerdos contractuales.
+                        </p>
+                        <div class="detail-indicators">
+                            <div class="indicator-item">
+                                <span class="indicator-num">01</span>
+                                <span class="indicator-title">PROPIEDAD</span>
+                            </div>
+                            <div class="indicator-sep"></div>
+                            <div class="indicator-item">
+                                <span class="indicator-num">02</span>
+                                <span class="indicator-title">SUCESIONES</span>
+                            </div>
+                        </div>
+                        <a href="https://wa.me/51948301540?text=Hola,%20solicito%20asesor%C3%ADa%20especializada%20en%20Derecho%20Civil." target="_blank" rel="noopener noreferrer" class="detail-cta">
+                            <span>ASESORÍA ESPECIALIZADA</span>
+                            <div class="detail-cta-circle">
+                                <i class="bi bi-hammer"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Matriz de 4 Cuadros de Servicios Civiles (2x2) -->
+                <div class="col-lg-7 col-xl-8">
+                    <div class="service-matrix grid-4">
+                        
+                        <!-- 1. Propiedad y Posesión -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-house-door service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">PROPIEDAD Y POSESIÓN</h4>
+                            <p class="service-matrix-desc">
+                                Demandas para desalojar a inquilinos que no pagan o morosos, y defensa frente a ocupaciones ilegales de predios.
+                            </p>
+                        </div>
+
+                        <!-- 2. Contratos -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-file-earmark-text service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">CONTRATOS</h4>
+                            <p class="service-matrix-desc">
+                                Elaboración, revisión e incumplimiento de contratos civiles (compraventas, arrendamientos, donaciones, comodato).
+                            </p>
+                        </div>
+
+                        <!-- 3. Derechos Reales -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-diagram-3 service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">DERECHOS REALES</h4>
+                            <p class="service-matrix-desc">
+                                Servidumbres, usufructos y derechos de adquisición preferente para una gestión técnica de sus activos.
+                            </p>
+                        </div>
+
+                        <!-- 4. Sucesiones y Herencias -->
+                        <div class="service-matrix-item">
+                            <i class="bi bi-people service-matrix-icon"></i>
+                            <h4 class="service-matrix-title">SUCESIONES Y HERENCIAS</h4>
+                            <p class="service-matrix-desc">
+                                Trámites de sucesión intestada, división y partición de bienes herederos, y anticipos de legítima.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         FOOTER INSTITUCIONAL TEJADA CONSULTORES / ASESORÍA LEGAL
+         ========================================== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row align-items-center">
+                
+                <!-- Columna 1: Marca y Logotipo Oficial -->
+                <div class="col-lg-7 col-md-7 mb-4 mb-md-0">
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 18px;">
+                        <img src="assets/logo-tejada-consultores.png"
+                             onerror="if(!this.dataset.t){this.dataset.t=1;this.src='logo-tejada-consultores.png';}"
+                             alt="Tejada Consultores - Abogados e Ingenieros"
+                             style="max-height: 52px; width: auto; object-fit: contain;">
+                    </div>
+                    <p class="footer-text">
+                        Estudio jurídico y consultoría especializada en derecho notarial, registral y civil patrimonial. Saneamiento legal y seguridad jurídica para su patrimonio.
+                    </p>
+                    <div class="footer-social">
+                        <a href="https://wa.me/51948301540" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+
+                <!-- Columna 2: Enlaces de Navegación -->
+                <div class="col-lg-4 col-md-5 ms-lg-auto">
+                    <h4 class="footer-title">Navegación</h4>
+                    <ul class="footer-links">
+                        <li><a href="#inicio">Inicio</a></li>
+                        <li><a href="#especialidades">Nuestras Especialidades</a></li>
+                        <li><a href="#seccion-notarial">Derecho Notarial</a></li>
+                        <li><a href="#seccion-registral">Derecho Registral</a></li>
+                        <li><a href="#seccion-civil">Derecho Civil</a></li>
+                        <li><a href="index.html" style="color: #df8c63;">← Volver a Agencia NOVA</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- Barra Inferior de Copyright -->
+            <div class="footer-bottom">
+                <p class="mb-0">© 2026 Tejada Consultores · Asesoría Legal Integral. Todos los derechos reservados.</p>
+                <div style="font-size: 0.8rem; color: #a89899;">
+                    <a href="index.html" class="me-2" style="color: #df8c63;">Agencia NOVA</a> | 
+                    <a href="#inicio" class="me-2">Privacidad</a> | 
+                    <a href="#inicio" class="ms-2">Términos</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================================
+         BOTÓN FLOTANTE DIRECTO A WHATSAPP BUSINESS
+         ========================================== -->
+    <div class="whatsapp-floating-container">
+        <span class="whatsapp-badge-bubble">
+            <span class="badge-dot"></span>
+            ¿BRO en qué opdemos ayudarte?
+        </span>
+        <a href="https://wa.me/51948301540?text=Hola,%20solicito%20asesor%C3%ADa%20legal%20integral%20en%20materia%20notarial,%20registral%20o%20civil." 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           class="whatsapp-float-btn" 
+           aria-label="Contactar por WhatsApp Business">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" fill="#ffffff">
+                <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.3a8.216 8.216 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24m-2.54 4.58v7.5h3.45c1.45 0 2.39-.75 2.39-1.95 0-.82-.53-1.42-1.32-1.63.63-.25 1.05-.82 1.05-1.55 0-1.12-.89-1.78-2.28-1.78zm1.53 1.34h1.72c.57 0 .93.31.93.75 0 .46-.36.77-.93.77h-1.72zm0 2.58h1.86c.63 0 1.01.32 1.01.8 0 .49-.38.82-1.01.82H11.03z"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Toast de Notificación -->
+    <div class="modal-toast" id="toastAlert" role="alert" aria-live="polite">
+        <i class="bi bi-check-circle-fill text-warning fs-4"></i>
+        <span id="toastMessage">Consulta recibida correctamente.</span>
+    </div>
+
+    <!-- Scripts Bootstrap 5.3 & AUREOLE Custom Script -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

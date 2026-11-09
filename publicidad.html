@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVA · Agencia de Publicidad | Catálogo 2026</title>
+    <meta name="description" content="Catálogo de impresión NOVA: Tarjetas, Volantes y Afiches. Calidad profesional en Cusco, Perú.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --forest:   #0d2b22;
+            --forest2:  #12372a;
+            --forest3:  #1a4a38;
+            --gold:     #c9a84c;
+            --gold2:    #e8c97a;
+            --cream:    #f5ede0;
+            --cream2:   #faf4ec;
+            --text-dark:#0d1a14;
+            --radius:   18px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--forest);
+            color: var(--cream);
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ══════════════ HEADER ══════════════ */
+        header {
+            background: var(--forest);
+            border-bottom: 1px solid rgba(201,168,76,0.25);
+            padding: 30px 20px 24px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header-inner { max-width: 900px; margin: 0 auto; }
+
+        .back-btn {
+            position: absolute;
+            left: 20px; top: 28px;
+            display: inline-flex; align-items: center; gap: 6px;
+            color: var(--gold); font-size: 0.75rem; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .back-btn:hover { opacity: 0.7; }
+
+        .logo-wrap {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .logo-wrap img {
+            height: 70px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 18px rgba(201,168,76,0.3));
+        }
+        .logo-sub {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--gold);
+            width: 100%;
+            text-align: center;
+        }
+
+        .gold-line {
+            width: 100%; max-width: 340px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 16px auto;
+        }
+
+        header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            color: var(--cream);
+            line-height: 1.1;
+        }
+        header h1 em {
+            font-style: italic;
+            color: var(--gold2);
+        }
+
+        header p.subtitle {
+            font-size: 0.78rem;
+            font-weight: 400;
+            color: rgba(245,237,224,0.6);
+            letter-spacing: 0.1em;
+            margin-top: 8px;
+        }
+
+        /* ══════════════ SHIMMER DIVIDER ══════════════ */
+        .shimmer-bar {
+            height: 2px;
+            background: linear-gradient(90deg, var(--forest), var(--gold), var(--gold2), var(--gold), var(--forest));
+            background-size: 300% 100%;
+            animation: shimmerAnim 4s linear infinite;
+        }
+        @keyframes shimmerAnim {
+            0%   { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        /* ══════════════ MAIN CONTENT ══════════════ */
+        main {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 50px 18px 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        /* ══════════════ PRODUCT CARD ══════════════ */
+        .product-card {
+            background: var(--forest2);
+            border: 1px solid rgba(201,168,76,0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 360px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+            transition: box-shadow 0.4s ease, transform 0.4s ease;
+        }
+        .product-card:hover {
+            box-shadow: 0 28px 80px rgba(0,0,0,0.6), 0 0 30px rgba(201,168,76,0.08);
+            transform: translateY(-3px);
+        }
+
+        /* ── CARRUSEL ── */
+        .carousel-side {
+            position: relative;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .carousel-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.55s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+
+        /* Overlay dorado sutil sobre cada foto */
+        .carousel-slide::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(13,43,34,0.15) 0%, rgba(201,168,76,0.06) 100%);
+            pointer-events: none;
+        }
+
+        /* Miniaturas en la parte inferior */
+        .carousel-dots {
+            position: absolute;
+            bottom: 12px;
+            left: 0; right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            z-index: 10;
+        }
+        .carousel-dot {
+            width: 26px; height: 3px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: background 0.3s, width 0.3s;
+        }
+        .carousel-dot.active {
+            background: var(--gold);
+            width: 36px;
+        }
+
+        /* Flechas */
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            border: 1px solid rgba(201,168,76,0.5);
+            background: rgba(13,43,34,0.65);
+            color: var(--gold2);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 10;
+            transition: background 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .carousel-btn:hover { background: rgba(201,168,76,0.25); }
+        .carousel-btn.prev { left: 10px; }
+        .carousel-btn.next { right: 10px; }
+
+        /* ── INFO SIDE ── */
+        .info-side {
+            padding: 36px 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+        .info-side::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 36px; bottom: 36px;
+            width: 1px;
+            background: linear-gradient(180deg, transparent, rgba(201,168,76,0.35), transparent);
+        }
+
+        .product-label {
+            font-size: 0.62rem;
+            font-weight: 800;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+
+        .product-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.7rem, 3vw, 2.4rem);
+            font-weight: 700;
+            color: var(--cream);
+            line-height: 1.1;
+            margin-bottom: 6px;
+        }
+
+        .product-desc {
+            font-size: 0.73rem;
+            color: rgba(245,237,224,0.5);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* Tabla de precios compacta */
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+        .price-table thead tr {
+            border-bottom: 1px solid rgba(201,168,76,0.25);
+        }
+        .price-table th {
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--gold);
+            padding: 6px 0;
+            text-align: left;
+        }
+        .price-table th:last-child { text-align: right; }
+        .price-table td {
+            font-size: 0.75rem;
+            color: rgba(245,237,224,0.85);
+            padding: 7px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            vertical-align: middle;
+        }
+        .price-table td:last-child {
+            text-align: right;
+            font-weight: 800;
+            color: var(--gold2);
+            font-size: 0.8rem;
+        }
+        .price-table td:first-child { color: var(--cream); font-weight: 600; }
+
+        /* Badge de acabado */
+        .finish-badge {
+            display: inline-block;
+            font-size: 0.55rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 2px 7px;
+            border-radius: 99px;
+            border: 1px solid rgba(201,168,76,0.4);
+            color: var(--gold);
+            margin-left: 5px;
+        }
+
+        /* Botón Pedidos */
+        .btn-order {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 13px 20px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+            color: var(--text-dark);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.25s, transform 0.25s, box-shadow 0.25s;
+            box-shadow: 0 8px 24px rgba(201,168,76,0.35);
+        }
+        .btn-order:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 14px 36px rgba(201,168,76,0.5);
+        }
+        .btn-order svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+        /* ══════════════ NOTA AL PIE DE CATEGORÍA ══════════════ */
+        .card-note {
+            font-size: 0.62rem;
+            color: rgba(245,237,224,0.35);
+            text-align: center;
+            margin-top: -30px;
+        }
+
+        /* ══════════════ FLOATING WA BTN ══════════════ */
+        .wa-float {
+            position: fixed;
+            bottom: 26px; right: 26px;
+            z-index: 1000;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .wa-bubble {
+            background: #fff;
+            color: #0d2b22;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 99px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            animation: floatBubble 2.5s ease-in-out infinite;
+        }
+        @keyframes floatBubble { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+        .wa-circle {
+            width: 56px; height: 56px;
+            background: #25D366;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 6px 22px rgba(37,211,102,0.5);
+            transition: transform 0.2s;
+            animation: waPulse 2.5s infinite;
+        }
+        .wa-circle:hover { transform: scale(1.1); }
+        @keyframes waPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(37,211,102,0.5); }
+            70%      { box-shadow: 0 0 0 14px rgba(37,211,102,0); }
+        }
+
+        /* ══════════════ FOOTER ══════════════ */
+        footer {
+            background: var(--forest);
+            border-top: 1px solid rgba(201,168,76,0.2);
+            text-align: center;
+            padding: 30px 20px;
+        }
+        footer p { font-size: 0.7rem; color: rgba(245,237,224,0.35); line-height: 2; }
+        footer a { color: var(--gold); text-decoration: none; }
+
+        /* ══════════════ RESPONSIVE ══════════════ */
+        @media (max-width: 660px) {
+            .product-card {
+                grid-template-columns: 1fr;
+                min-height: auto;
+            }
+            .carousel-side { height: 260px; }
+            .info-side { padding: 24px 20px; }
+            .info-side::before { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── FLOATING WHATSAPP ── -->
+<div class="wa-float">
+    <span class="wa-bubble hidden sm:block">📦 Haz tu pedido</span>
+    <a href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20deseo%20hacer%20un%20pedido%20de%20impresi%C3%B3n." target="_blank" rel="noopener" class="wa-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="#fff">
+            <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.3a8.216 8.216 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24m-2.54 4.58v7.5h3.45c1.45 0 2.39-.75 2.39-1.95 0-.82-.53-1.42-1.32-1.63.63-.25 1.05-.82 1.05-1.55 0-1.12-.89-1.78-2.28-1.78zm1.53 1.34h1.72c.57 0 .93.31.93.75 0 .46-.36.77-.93.77h-1.72zm0 2.58h1.86c.63 0 1.01.32 1.01.8 0 .49-.38.82-1.01.82H11.03z"/>
+        </svg>
+    </a>
+</div>
+
+<!-- ══════════════════════════════════════
+     HEADER
+══════════════════════════════════════ -->
+<header>
+    <a href="index.html" class="back-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Volver
+    </a>
+
+    <div class="header-inner">
+        <div class="logo-wrap">
+            <img src="assets/logo-nova-publicidad.png" alt="NOVA Agencia de Publicidad">
+            <span class="logo-sub">Agencia de Publicidad</span>
+        </div>
+
+        <div class="gold-line"></div>
+
+        <h1>Catálogo de<br><em>Impresión 2026</em></h1>
+        <p class="subtitle">Calidad profesional · Entrega rápida · Cusco, Perú</p>
+    </div>
+</header>
+
+<div class="shimmer-bar"></div>
+
+<!-- ══════════════════════════════════════
+     MAIN
+══════════════════════════════════════ -->
+<main>
+
+    <!-- ╔══════════════════════════════╗
+         ║  1. TARJETAS PERSONALES      ║
+         ╚══════════════════════════════╝ -->
+    <div class="product-card" id="card-tarjetas">
+        <!-- CARRUSEL -->
+        <div class="carousel-side">
+            <div class="carousel-track" id="track-tarjetas">
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?auto=format&fit=crop&w=800&q=80" alt="Tarjetas de presentación">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80" alt="Tarjetas business card mockup">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&w=800&q=80" alt="Tarjetas stack">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=800&q=80" alt="Business cards design">
+                </div>
+            </div>
+            <button class="carousel-btn prev" onclick="moveCarousel('tarjetas',-1)">&#8592;</button>
+            <button class="carousel-btn next" onclick="moveCarousel('tarjetas',1)">&#8594;</button>
+            <div class="carousel-dots" id="dots-tarjetas">
+                <div class="carousel-dot active" onclick="goToSlide('tarjetas',0)"></div>
+                <div class="carousel-dot" onclick="goToSlide('tarjetas',1)"></div>
+                <div class="carousel-dot" onclick="goToSlide('tarjetas',2)"></div>
+                <div class="carousel-dot" onclick="goToSlide('tarjetas',3)"></div>
+            </div>
+        </div>
+
+        <!-- INFO -->
+        <div class="info-side">
+            <div>
+                <p class="product-label">Impresión · 2026</p>
+                <h2 class="product-name">Tarjetas<br>Personales</h2>
+                <p class="product-desc">Couché 300g · Full color · Acabado a elegir</p>
+
+                <table class="price-table">
+                    <thead>
+                        <tr>
+                            <th>Acabado</th>
+                            <th>Cant.</th>
+                            <th>Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Mate <span class="finish-badge">1 cara</span></td>
+                            <td>100 u.</td>
+                            <td>S/ 10.60</td>
+                        </tr>
+                        <tr>
+                            <td>Brillante <span class="finish-badge">2 caras</span></td>
+                            <td>100 u.</td>
+                            <td>S/ 100.00</td>
+                        </tr>
+                        <tr>
+                            <td>Laminado Mate</td>
+                            <td>100 u.</td>
+                            <td>S/ 80.00</td>
+                        </tr>
+                        <tr>
+                            <td>Laminado Brillante</td>
+                            <td>100 u.</td>
+                            <td>S/ 80.10</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <a class="btn-order"
+               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20hacer%20un%20pedido%20de%20Tarjetas%20Personales.%20Formato%20y%20cantidad%3A%20"
+               target="_blank" rel="noopener">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.3a8.216 8.216 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24m-2.54 4.58v7.5h3.45c1.45 0 2.39-.75 2.39-1.95 0-.82-.53-1.42-1.32-1.63.63-.25 1.05-.82 1.05-1.55 0-1.12-.89-1.78-2.28-1.78zm1.53 1.34h1.72c.57 0 .93.31.93.75 0 .46-.36.77-.93.77h-1.72zm0 2.58h1.86c.63 0 1.01.32 1.01.8 0 .49-.38.82-1.01.82H11.03z"/>
+                </svg>
+                Hacer Pedido
+            </a>
+        </div>
+    </div>
+
+    <!-- ╔══════════════════════════════╗
+         ║  2. VOLANTES                 ║
+         ╚══════════════════════════════╝ -->
+    <div class="product-card" id="card-volantes">
+        <!-- INFO al lado izquierdo en este bloque -->
+        <div class="info-side" style="order:1;">
+            <div>
+                <p class="product-label">Impresión · 2026</p>
+                <h2 class="product-name">Volantes</h2>
+                <p class="product-desc">Couché 150g · Full color · Varios formatos</p>
+
+                <table class="price-table">
+                    <thead>
+                        <tr>
+                            <th>Formato</th>
+                            <th>Cant.</th>
+                            <th>Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1/4 Oficio <span class="finish-badge">10×15</span></td>
+                            <td>Millar</td>
+                            <td>S/ 100.00</td>
+                        </tr>
+                        <tr>
+                            <td>Medio Oficio <span class="finish-badge">15×21</span></td>
+                            <td>Millar</td>
+                            <td>S/ 100.00</td>
+                        </tr>
+                        <tr>
+                            <td>Directo <span class="finish-badge">A4</span></td>
+                            <td>Millar</td>
+                            <td>S/ 100.00</td>
+                        </tr>
+                        <tr>
+                            <td>Doble carta</td>
+                            <td>Millar</td>
+                            <td>Cotizar</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <a class="btn-order"
+               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20hacer%20un%20pedido%20de%20Volantes.%20Formato%20y%20cantidad%3A%20"
+               target="_blank" rel="noopener">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.3a8.216 8.216 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24m-2.54 4.58v7.5h3.45c1.45 0 2.39-.75 2.39-1.95 0-.82-.53-1.42-1.32-1.63.63-.25 1.05-.82 1.05-1.55 0-1.12-.89-1.78-2.28-1.78zm1.53 1.34h1.72c.57 0 .93.31.93.75 0 .46-.36.77-.93.77h-1.72zm0 2.58h1.86c.63 0 1.01.32 1.01.8 0 .49-.38.82-1.01.82H11.03z"/>
+                </svg>
+                Hacer Pedido
+            </a>
+        </div>
+
+        <!-- CARRUSEL al lado derecho -->
+        <div class="carousel-side" style="order:2;">
+            <div class="carousel-track" id="track-volantes">
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=800&q=80" alt="Volantes flyers diseño">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?auto=format&fit=crop&w=800&q=80" alt="Flyers impresos">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=800&q=80" alt="Volantes folletos">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=800&q=80" alt="Material gráfico impreso">
+                </div>
+            </div>
+            <button class="carousel-btn prev" onclick="moveCarousel('volantes',-1)">&#8592;</button>
+            <button class="carousel-btn next" onclick="moveCarousel('volantes',1)">&#8594;</button>
+            <div class="carousel-dots" id="dots-volantes">
+                <div class="carousel-dot active" onclick="goToSlide('volantes',0)"></div>
+                <div class="carousel-dot" onclick="goToSlide('volantes',1)"></div>
+                <div class="carousel-dot" onclick="goToSlide('volantes',2)"></div>
+                <div class="carousel-dot" onclick="goToSlide('volantes',3)"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ╔══════════════════════════════╗
+         ║  3. AFICHES                  ║
+         ╚══════════════════════════════╝ -->
+    <div class="product-card" id="card-afiches">
+        <!-- CARRUSEL -->
+        <div class="carousel-side">
+            <div class="carousel-track" id="track-afiches">
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80" alt="Afiches posters">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?auto=format&fit=crop&w=800&q=80" alt="Afiche impreso gran formato">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?auto=format&fit=crop&w=800&q=80" alt="Poster design print">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://images.unsplash.com/photo-1513682121497-80211f36a7d3?auto=format&fit=crop&w=800&q=80" alt="Cartel publicitario">
+                </div>
+            </div>
+            <button class="carousel-btn prev" onclick="moveCarousel('afiches',-1)">&#8592;</button>
+            <button class="carousel-btn next" onclick="moveCarousel('afiches',1)">&#8594;</button>
+            <div class="carousel-dots" id="dots-afiches">
+                <div class="carousel-dot active" onclick="goToSlide('afiches',0)"></div>
+                <div class="carousel-dot" onclick="goToSlide('afiches',1)"></div>
+                <div class="carousel-dot" onclick="goToSlide('afiches',2)"></div>
+                <div class="carousel-dot" onclick="goToSlide('afiches',3)"></div>
+            </div>
+        </div>
+
+        <!-- INFO -->
+        <div class="info-side">
+            <div>
+                <p class="product-label">Impresión · 2026</p>
+                <h2 class="product-name">Afiches</h2>
+                <p class="product-desc">Couché 150g · Full color · Sin laminado</p>
+
+                <table class="price-table">
+                    <thead>
+                        <tr>
+                            <th>Tamaño</th>
+                            <th>Cant.</th>
+                            <th>Precio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A3 <span class="finish-badge">30×42 cm</span></td>
+                            <td>100 u.</td>
+                            <td>S/ 400.00</td>
+                        </tr>
+                        <tr>
+                            <td>50 × 70 cm</td>
+                            <td>100 u.</td>
+                            <td>S/ 500.00</td>
+                        </tr>
+                        <tr>
+                            <td>35 × 50 cm</td>
+                            <td>100 u.</td>
+                            <td>S/ 600.00</td>
+                        </tr>
+                        <tr>
+                            <td>Formato personalizado</td>
+                            <td>—</td>
+                            <td>Cotizar</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <a class="btn-order"
+               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20hacer%20un%20pedido%20de%20Afiches.%20Tama%C3%B1o%20y%20cantidad%3A%20"
+               target="_blank" rel="noopener">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.3a8.216 8.216 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24m-2.54 4.58v7.5h3.45c1.45 0 2.39-.75 2.39-1.95 0-.82-.53-1.42-1.32-1.63.63-.25 1.05-.82 1.05-1.55 0-1.12-.89-1.78-2.28-1.78zm1.53 1.34h1.72c.57 0 .93.31.93.75 0 .46-.36.77-.93.77h-1.72zm0 2.58h1.86c.63 0 1.01.32 1.01.8 0 .49-.38.82-1.01.82H11.03z"/>
+                </svg>
+                Hacer Pedido
+            </a>
+        </div>
+    </div>
+
+</main>
+
+<div class="shimmer-bar"></div>
+
+<!-- ══════════════════════════════════════
+     FOOTER
+══════════════════════════════════════ -->
+<footer>
+    <div class="logo-wrap" style="margin-bottom:14px;">
+        <img src="assets/logo-nova-publicidad.png" alt="NOVA" style="height:42px;">
+        <span class="logo-sub">Agencia de Publicidad</span>
+    </div>
+    <p>
+        © 2026 NOVA Agencia de Publicidad · Cusco, Perú<br>
+        <a href="index.html">Agencia NOVA E.I.R.L.</a> ·
+        <a href="https://wa.me/51948301540" target="_blank">WhatsApp 948 301 540</a>
+    </p>
+</footer>
+
+<!-- ══════════════════════════════════════
+     SCRIPT – CARRUSELES
+══════════════════════════════════════ -->
+<script>
+    const carousels = {};
+
+    function initCarousel(id, total) {
+        carousels[id] = { current: 0, total, timer: null };
+        startAuto(id);
+    }
+
+    function updateCarousel(id) {
+        const c = carousels[id];
+        const track = document.getElementById('track-' + id);
+        track.style.transform = `translateX(-${c.current * 100}%)`;
+        const dots = document.querySelectorAll('#dots-' + id + ' .carousel-dot');
+        dots.forEach((d, i) => d.classList.toggle('active', i === c.current));
+    }
+
+    function moveCarousel(id, dir) {
+        const c = carousels[id];
+        c.current = (c.current + dir + c.total) % c.total;
+        updateCarousel(id);
+        resetAuto(id);
+    }
+
+    function goToSlide(id, idx) {
+        carousels[id].current = idx;
+        updateCarousel(id);
+        resetAuto(id);
+    }
+
+    function startAuto(id) {
+        carousels[id].timer = setInterval(() => moveCarousel(id, 1), 3800);
+    }
+
+    function resetAuto(id) {
+        clearInterval(carousels[id].timer);
+        startAuto(id);
+    }
+
+    // Inicializar todos los carruseles
+    initCarousel('tarjetas', 4);
+    initCarousel('volantes', 4);
+    initCarousel('afiches', 4);
+</script>
+
+</body>
+</html>
