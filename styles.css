@@ -830,12 +830,16 @@ section {
 }
 
 .service-matrix-item {
-    padding: 24px 22px; /* Reducido 30% de 34px 28px */
+    padding: 22px 20px;
     border-bottom: 1px solid rgba(196, 56, 72, 0.2);
     border-right: 1px solid rgba(196, 56, 72, 0.2);
     transition: var(--transition-smooth);
     position: relative;
     background: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 96px;
 }
 
 .service-matrix-item:nth-child(2n) {
@@ -847,6 +851,13 @@ section {
 .service-matrix.grid-6 .service-matrix-item:nth-last-child(-n+2),
 .service-matrix.grid-4 .service-matrix-item:nth-last-child(-n+2) {
     border-bottom: none;
+}
+
+.service-matrix.grid-7 .service-matrix-item:last-child {
+    grid-column: 1 / -1;
+    border-right: none;
+    border-bottom: none;
+    text-align: center;
 }
 
 .service-matrix-item:hover {
@@ -869,13 +880,13 @@ section {
 
 .service-matrix-title {
     font-family: var(--font-primary);
-    font-size: 1.05rem; /* Ajustado de 1.18rem */
+    font-size: 1.02rem;
     font-weight: 700;
     letter-spacing: 1.2px;
     text-transform: uppercase;
     color: #ffffff;
-    margin-bottom: 6px; /* Reducido de 10px */
-    line-height: 1.3;
+    margin-bottom: 0;
+    line-height: 1.35;
     transition: color 0.3s ease;
 }
 
