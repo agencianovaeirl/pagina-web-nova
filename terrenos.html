@@ -645,9 +645,10 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-300 mb-1">Tabla de Terrenos en Supabase</label>
+                        <label class="block font-semibold text-slate-300 mb-1">Tabla de Terrenos (Esquema public)</label>
                         <input type="text" id="sb-cfg-table" placeholder="nova_propiedades" value="nova_propiedades"
                                class="w-full bg-[#0d2216] border border-white/20 rounded-xl px-3 py-2 text-white text-xs focus:border-[#d4af37] outline-none font-mono">
+                        <span class="text-[10px] text-slate-400 mt-0.5 block">Esquema: <strong>public</strong> &bull; Tabla: <strong>nova_propiedades</strong></span>
                     </div>
                     <div>
                         <label class="block font-semibold text-slate-300 mb-1">Bucket de Fotos en Supabase Storage</label>
@@ -1823,6 +1824,16 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
             const baseUrl = getSupabaseUrl();
             const anonKey = getSupabaseAnonKey();
 
+            if (!anonKey) {
+                updateSupabaseStatusBadge('warning', 'Falta Clave Anon');
+                const errMsg = 'Falta ingresar la Clave Pública Anon de Supabase. Haz clic en "Conexión Supabase", pega tu clave anon y presiona "Guardar Configuración".';
+                if (showFeedback) {
+                    showSupabaseMsg(`⚠️ ${errMsg}`, 'error');
+                }
+                console.warn('[Supabase]', errMsg);
+                return false;
+            }
+
             updateSupabaseStatusBadge('syncing', 'Consultando Supabase...');
 
             try {
@@ -1839,9 +1850,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                 const uniqueTables = [...new Set(candidateTables)];
                 let data = null;
                 let usedTable = table;
+                let lastError = null;
 
                 for (const t of uniqueTables) {
-                    const endpoint = `${baseUrl}/rest/v1/${encodeURIComponent(t)}?select=*&order=created_at.desc.nullslast`;
+                    // Consulta limpia a la tabla en el esquema public (sin forzar created_at)
+                    const endpoint = `${baseUrl}/rest/v1/${encodeURIComponent(t)}?select=*`;
                     const res = await fetch(endpoint, {
                         headers: getSupabaseHeaders()
                     });
@@ -1851,13 +1864,19 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                         usedTable = t;
                         break;
                     } else if (res.status === 401) {
-                        // Requiere clave anon
-                        throw new Error(`Se requiere la clave Anon de Supabase (HTTP 401). Ingrésala en "Conexión Supabase".`);
+                        const errJson = await res.json().catch(() => ({}));
+                        throw new Error(`Error 401 (No Autorizado): La clave Anon es incorrecta o no tiene permisos (${errJson.message || 'Unauthorized'}). Revisa tu clave en el panel de Supabase.`);
+                    } else if (res.status === 404) {
+                        lastError = `No se encontró la tabla "${t}" en el esquema public (HTTP 404). Verifica que el nombre esté en minúsculas y en el esquema público de Supabase.`;
+                        continue;
+                    } else {
+                        const errJson = await res.json().catch(() => ({ message: res.statusText }));
+                        lastError = `Error HTTP ${res.status} en "${t}": ${errJson.message || errJson.hint || res.statusText}`;
                     }
                 }
 
                 if (!data) {
-                    throw new Error(`No se encontró la tabla "${table}" en Supabase.`);
+                    throw new Error(lastError || `No se pudo conectar a la tabla "${table}". Verifica que la tabla exista en el esquema "public" de Supabase.`);
                 }
 
                 if (Array.isArray(data) && data.length > 0) {
