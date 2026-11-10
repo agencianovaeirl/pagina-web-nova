@@ -345,6 +345,38 @@
             margin-left: 5px;
         }
 
+        /* Contenedor con scroll elegante para tablas extensas */
+        .table-scroll-wrap {
+            max-height: 290px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 6px;
+        }
+        .table-scroll-wrap::-webkit-scrollbar {
+            width: 5px;
+        }
+        .table-scroll-wrap::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 4px;
+        }
+        .table-scroll-wrap::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.35);
+            border-radius: 4px;
+        }
+        .table-scroll-wrap::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 212, 255, 0.7);
+        }
+        .table-group-title {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--cyan);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 10px 4px 4px !important;
+            border-bottom: 1px dashed rgba(0, 212, 255, 0.25) !important;
+            background: rgba(0, 212, 255, 0.04);
+        }
+
         /* Botón Pedidos */
         .btn-order {
             display: inline-flex;
@@ -509,43 +541,65 @@
             <div>
                 <p class="product-label">Impresión · 2026</p>
                 <h2 class="product-name">Tarjetas<br>Personales</h2>
-                <p class="product-desc">Couché 300g · Full color · Acabado a elegir</p>
+                <p class="product-desc">Couché 300g · Full color · Acabados de alta gama</p>
 
-                <table class="price-table">
-                    <thead>
-                        <tr>
-                            <th>Acabado</th>
-                            <th>Cant.</th>
-                            <th>Precio</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Mate <span class="finish-badge">1 cara</span></td>
-                            <td>100 u.</td>
-                            <td>S/ 10.60</td>
-                        </tr>
-                        <tr>
-                            <td>Brillante <span class="finish-badge">2 caras</span></td>
-                            <td>100 u.</td>
-                            <td>S/ 100.00</td>
-                        </tr>
-                        <tr>
-                            <td>Laminado Mate</td>
-                            <td>100 u.</td>
-                            <td>S/ 80.00</td>
-                        </tr>
-                        <tr>
-                            <td>Laminado Brillante</td>
-                            <td>100 u.</td>
-                            <td>S/ 80.10</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-scroll-wrap">
+                    <table class="price-table">
+                        <thead>
+                            <tr>
+                                <th>Acabado / Modelo</th>
+                                <th>Cantidad</th>
+                                <th>Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Mate</td>
+                                <td>1 Millar</td>
+                                <td>S/ 70.00</td>
+                            </tr>
+                            <tr>
+                                <td>Brillante</td>
+                                <td>1 Millar</td>
+                                <td>S/ 70.00</td>
+                            </tr>
+                            <tr>
+                                <td>Sectorizado <span class="finish-badge">UV</span></td>
+                                <td>1 Millar</td>
+                                <td>S/ 140.00</td>
+                            </tr>
+                            <tr>
+                                <td>Laminado</td>
+                                <td>1 Millar</td>
+                                <td>S/ 220.00</td>
+                            </tr>
+                            <tr>
+                                <td>Troquelado</td>
+                                <td>1 Millar</td>
+                                <td>S/ 140.00</td>
+                            </tr>
+                            <tr>
+                                <td>Hot Stamping <span class="finish-badge">Foil</span></td>
+                                <td>1 Millar</td>
+                                <td>S/ 170.00</td>
+                            </tr>
+                            <tr>
+                                <td>Repujado <span class="finish-badge">Relieve</span></td>
+                                <td>1 Millar</td>
+                                <td>S/ 190.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="font-size: 0.74rem; color: var(--sky); margin-top: -6px; margin-bottom: 22px; display: flex; align-items: center; gap: 8px;">
+                    <span class="finish-badge" style="margin-left:0; border-color: rgba(56,189,248,0.5); background: rgba(56,189,248,0.12);">Opcional</span>
+                    <span>Boleado de esquinas: <strong style="color:var(--cyan);">+ S/ 5.00</strong></span>
+                </div>
             </div>
 
             <a class="btn-order"
-               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20hacer%20un%20pedido%20de%20Tarjetas%20Personales.%20Formato%20y%20cantidad%3A%20"
+               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20hacer%20un%20pedido%20de%20Tarjetas%20Personales."
                target="_blank" rel="noopener">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.3a8.216 8.216 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24m-2.54 4.58v7.5h3.45c1.45 0 2.39-.75 2.39-1.95 0-.82-.53-1.42-1.32-1.63.63-.25 1.05-.82 1.05-1.55 0-1.12-.89-1.78-2.28-1.78zm1.53 1.34h1.72c.57 0 .93.31.93.75 0 .46-.36.77-.93.77h-1.72zm0 2.58h1.86c.63 0 1.01.32 1.01.8 0 .49-.38.82-1.01.82H11.03z"/>
@@ -564,43 +618,124 @@
             <div>
                 <p class="product-label">Impresión · 2026</p>
                 <h2 class="product-name">Volantes</h2>
-                <p class="product-desc">Couché 150g · Full color · Varios formatos</p>
+                <p class="product-desc">Full color · Papel Couché · Varios formatos y gramajes</p>
 
-                <table class="price-table">
-                    <thead>
-                        <tr>
-                            <th>Formato</th>
-                            <th>Cant.</th>
-                            <th>Precio</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1/4 Oficio <span class="finish-badge">10×15</span></td>
-                            <td>Millar</td>
-                            <td>S/ 100.00</td>
-                        </tr>
-                        <tr>
-                            <td>Medio Oficio <span class="finish-badge">15×21</span></td>
-                            <td>Millar</td>
-                            <td>S/ 100.00</td>
-                        </tr>
-                        <tr>
-                            <td>Directo <span class="finish-badge">A4</span></td>
-                            <td>Millar</td>
-                            <td>S/ 100.00</td>
-                        </tr>
-                        <tr>
-                            <td>Doble carta</td>
-                            <td>Millar</td>
-                            <td>Cotizar</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-scroll-wrap">
+                    <table class="price-table">
+                        <thead>
+                            <tr>
+                                <th>Formato y Gramaje</th>
+                                <th>Cant.</th>
+                                <th>Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Grupo 1/4 Oficio -->
+                            <tr>
+                                <td colspan="3" class="table-group-title">Formato 1/4 Oficio</td>
+                            </tr>
+                            <tr>
+                                <td>1/4 Oficio 1 Cara · 90gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 70.00</td>
+                            </tr>
+                            <tr>
+                                <td>1/4 Oficio 2 Caras · 115gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 75.00</td>
+                            </tr>
+                            <tr>
+                                <td>1/4 Oficio 2 Caras · 150gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 80.00</td>
+                            </tr>
+                            <tr>
+                                <td>1/4 Oficio 2 Caras · 200gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 115.00</td>
+                            </tr>
+
+                            <!-- Grupo 20 x 21 -->
+                            <tr>
+                                <td colspan="3" class="table-group-title">Formato 20 × 21 cm</td>
+                            </tr>
+                            <tr>
+                                <td>20 × 21 1 Cara · 90gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 130.00</td>
+                            </tr>
+                            <tr>
+                                <td>20 × 21 2 Caras · 115gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 135.00</td>
+                            </tr>
+                            <tr>
+                                <td>20 × 21 2 Caras · 150gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 155.00</td>
+                            </tr>
+                            <tr>
+                                <td>20 × 21 2 Caras · 200gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 245.00</td>
+                            </tr>
+
+                            <!-- Grupo 1/2 Oficio -->
+                            <tr>
+                                <td colspan="3" class="table-group-title">Formato 1/2 Oficio</td>
+                            </tr>
+                            <tr>
+                                <td>1/2 Oficio 1 Cara · 90gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 99.00</td>
+                            </tr>
+                            <tr>
+                                <td>1/2 Oficio 2 Caras · 115gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 110.00</td>
+                            </tr>
+                            <tr>
+                                <td>1/2 Oficio 2 Caras · 150gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 120.00</td>
+                            </tr>
+                            <tr>
+                                <td>1/2 Oficio 2 Caras · 200gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 180.00</td>
+                            </tr>
+
+                            <!-- Grupo A4 u Oficio Tríptico -->
+                            <tr>
+                                <td colspan="3" class="table-group-title">A4 u Oficio / Tríptico</td>
+                            </tr>
+                            <tr>
+                                <td>A4 u Oficio Tríptico 1 Cara · 90gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 165.00</td>
+                            </tr>
+                            <tr>
+                                <td>A4 u Oficio Tríptico 2 Caras · 115gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 190.00</td>
+                            </tr>
+                            <tr>
+                                <td>A4 u Oficio Tríptico 2 Caras · 150gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 210.00</td>
+                            </tr>
+                            <tr>
+                                <td>A4 u Oficio Tríptico 2 Caras · 200gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 330.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <a class="btn-order"
-               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20hacer%20un%20pedido%20de%20Volantes.%20Formato%20y%20cantidad%3A%20"
+               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20hacer%20un%20pedido%20de%20Volantes."
                target="_blank" rel="noopener">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.3a8.216 8.216 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24m-2.54 4.58v7.5h3.45c1.45 0 2.39-.75 2.39-1.95 0-.82-.53-1.42-1.32-1.63.63-.25 1.05-.82 1.05-1.55 0-1.12-.89-1.78-2.28-1.78zm1.53 1.34h1.72c.57 0 .93.31.93.75 0 .46-.36.77-.93.77h-1.72zm0 2.58h1.86c.63 0 1.01.32 1.01.8 0 .49-.38.82-1.01.82H11.03z"/>
@@ -679,43 +814,89 @@
             <div>
                 <p class="product-label">Impresión · 2026</p>
                 <h2 class="product-name">Afiches</h2>
-                <p class="product-desc">Couché 150g · Full color · Sin laminado</p>
+                <p class="product-desc">Couché brillante · Full color · Impresión offset de alta definición</p>
 
-                <table class="price-table">
-                    <thead>
-                        <tr>
-                            <th>Tamaño</th>
-                            <th>Cant.</th>
-                            <th>Precio</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>A3 <span class="finish-badge">30×42 cm</span></td>
-                            <td>100 u.</td>
-                            <td>S/ 400.00</td>
-                        </tr>
-                        <tr>
-                            <td>50 × 70 cm</td>
-                            <td>100 u.</td>
-                            <td>S/ 500.00</td>
-                        </tr>
-                        <tr>
-                            <td>35 × 50 cm</td>
-                            <td>100 u.</td>
-                            <td>S/ 600.00</td>
-                        </tr>
-                        <tr>
-                            <td>Formato personalizado</td>
-                            <td>—</td>
-                            <td>Cotizar</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-scroll-wrap">
+                    <table class="price-table">
+                        <thead>
+                            <tr>
+                                <th>Formato y Gramaje</th>
+                                <th>Cant.</th>
+                                <th>Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Grupo A3 -->
+                            <tr>
+                                <td colspan="3" class="table-group-title">Formato A3</td>
+                            </tr>
+                            <tr>
+                                <td>A3 1 Cara · 90gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 295.00</td>
+                            </tr>
+                            <tr>
+                                <td>A3 1 Cara · 115gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 310.00</td>
+                            </tr>
+                            <tr>
+                                <td>A3 1 Cara · 150gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 350.00</td>
+                            </tr>
+                            <tr>
+                                <td>A3 1 Cara · 200gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 600.00</td>
+                            </tr>
+
+                            <!-- Grupo 35 x 50 -->
+                            <tr>
+                                <td colspan="3" class="table-group-title">Formato 35 × 50 cm</td>
+                            </tr>
+                            <tr>
+                                <td>35 × 50 1 Cara · 90gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 450.00</td>
+                            </tr>
+                            <tr>
+                                <td>35 × 50 1 Cara · 115gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 470.00</td>
+                            </tr>
+                            <tr>
+                                <td>35 × 50 1 Cara · 150gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 500.00</td>
+                            </tr>
+
+                            <!-- Grupo 70 x 50 -->
+                            <tr>
+                                <td colspan="3" class="table-group-title">Formato 70 × 50 cm</td>
+                            </tr>
+                            <tr>
+                                <td>70 × 50 1 Cara · 90gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 670.00</td>
+                            </tr>
+                            <tr>
+                                <td>70 × 50 1 Cara · 115gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 700.00</td>
+                            </tr>
+                            <tr>
+                                <td>70 × 50 1 Cara · 150gr</td>
+                                <td>1 Millar</td>
+                                <td>S/ 770.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <a class="btn-order"
-               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20hacer%20un%20pedido%20de%20Afiches.%20Tama%C3%B1o%20y%20cantidad%3A%20"
+               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20hacer%20un%20pedido%20de%20Afiches."
                target="_blank" rel="noopener">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.3a8.216 8.216 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24m-2.54 4.58v7.5h3.45c1.45 0 2.39-.75 2.39-1.95 0-.82-.53-1.42-1.32-1.63.63-.25 1.05-.82 1.05-1.55 0-1.12-.89-1.78-2.28-1.78zm1.53 1.34h1.72c.57 0 .93.31.93.75 0 .46-.36.77-.93.77h-1.72zm0 2.58h1.86c.63 0 1.01.32 1.01.8 0 .49-.38.82-1.01.82H11.03z"/>
@@ -780,43 +961,60 @@
             <div>
                 <p class="product-label">Gran Formato · 2026</p>
                 <h2 class="product-name">Gigantografías</h2>
-                <p class="product-desc">Lona banner 13oz · Full color HD · Ojalillos reforzados · Alta resistencia a intemperie</p>
+                <p class="product-desc">Banners, fotomurales, letreros comerciales y letras en 3D</p>
 
-                <table class="price-table">
-                    <thead>
-                        <tr>
-                            <th>Material / Formato</th>
-                            <th>Medida</th>
-                            <th>Precio</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Lona Banner 13oz con ojalillos</td>
-                            <td>Por m²</td>
-                            <td>S/ 18.00</td>
-                        </tr>
-                        <tr>
-                            <td>Banner Mate Antirreflejo</td>
-                            <td>Por m²</td>
-                            <td>S/ 24.00</td>
-                        </tr>
-                        <tr>
-                            <td>Gigantografía 3.0 × 2.0 m</td>
-                            <td>Completa</td>
-                            <td>S/ 98.00</td>
-                        </tr>
-                        <tr>
-                            <td>Estructura Metálica + Instalación</td>
-                            <td>Personalizado</td>
-                            <td>Cotizar</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-scroll-wrap">
+                    <table class="price-table">
+                        <thead>
+                            <tr>
+                                <th>Producto / Servicio</th>
+                                <th>Detalle</th>
+                                <th>Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Banner Pedestal</td>
+                                <td>200 × 100 cm</td>
+                                <td>S/ 115.00</td>
+                            </tr>
+                            <tr>
+                                <td>Banner Roll Screen</td>
+                                <td>200 × 100 cm</td>
+                                <td>S/ 160.00</td>
+                            </tr>
+                            <tr>
+                                <td>Fotomural Banner</td>
+                                <td>Por m²</td>
+                                <td>S/ 22.00</td>
+                            </tr>
+                            <tr>
+                                <td>Fotomural Vinil</td>
+                                <td>Por m²</td>
+                                <td>S/ 30.00</td>
+                            </tr>
+                            <tr>
+                                <td>Instalación Fotomural</td>
+                                <td>Servicio</td>
+                                <td>S/ 50.00</td>
+                            </tr>
+                            <tr>
+                                <td>Letreros Publicitarios</td>
+                                <td>Según modelo</td>
+                                <td><span class="finish-badge" style="font-size:0.65rem; color:var(--cyan); border-color:rgba(0,212,255,0.6);">A Cotizar</span></td>
+                            </tr>
+                            <tr>
+                                <td>Letras en 3D</td>
+                                <td>Según modelo</td>
+                                <td><span class="finish-badge" style="font-size:0.65rem; color:var(--cyan); border-color:rgba(0,212,255,0.6);">A Cotizar</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <a class="btn-order"
-               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20cotizar%20Gigantograf%C3%ADas.%20Medidas%20y%20especificaciones%3A%20"
+               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20cotizar%20Gigantograf%C3%ADas%20y%20Banners."
                target="_blank" rel="noopener">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.3a8.216 8.216 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24m-2.54 4.58v7.5h3.45c1.45 0 2.39-.75 2.39-1.95 0-.82-.53-1.42-1.32-1.63.63-.25 1.05-.82 1.05-1.55 0-1.12-.89-1.78-2.28-1.78zm1.53 1.34h1.72c.57 0 .93.31.93.75 0 .46-.36.77-.93.77h-1.72zm0 2.58h1.86c.63 0 1.01.32 1.01.8 0 .49-.38.82-1.01.82H11.03z"/>
