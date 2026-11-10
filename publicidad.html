@@ -179,6 +179,20 @@
             .product-card {
                 height: 665px;
             }
+            /* Sección Afiches: +25% de altura adicional (830px) */
+            #card-afiches {
+                height: 830px;
+            }
+            #card-afiches .table-scroll-wrap {
+                max-height: 520px;
+            }
+            /* Sección Gigantografías: -10% de altura (600px) */
+            #card-gigantografias {
+                height: 600px;
+            }
+            #card-gigantografias .table-scroll-wrap {
+                max-height: 330px;
+            }
             .info-side {
                 height: 100%;
                 overflow: hidden;
@@ -464,12 +478,18 @@
         @media (max-width: 660px) {
             .product-card {
                 grid-template-columns: 1fr;
-                height: auto;
-                min-height: auto;
+                height: auto !important;
+                min-height: auto !important;
             }
             .carousel-side { 
                 height: 350px; 
                 order: 1 !important;
+            }
+            #card-afiches .carousel-side {
+                height: 435px;
+            }
+            #card-gigantografias .carousel-side {
+                height: 315px;
             }
             .info-side { 
                 padding: 26px 20px; 
