@@ -161,7 +161,48 @@
             </div>
         </section>
 
-        <!-- 2. SEARCH & FILTER CONSOLE (Ubicaciones y Tipos Corregidos con Colores Distintivos) -->
+        <!-- 2. SECCIÓN MAPA INTERACTIVO (VISTA SATELITAL - TODAS LAS PROPIEDADES EN UN SOLO MAPA) -->
+        <section id="mapa-propiedades" class="max-w-[1360px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
+            <div class="rounded-3xl bg-[#091810] border border-[#d4af37]/30 shadow-2xl p-6 sm:p-10 relative overflow-hidden">
+                
+                <!-- Ambient Glow -->
+                <div class="absolute -top-32 -right-32 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col gap-4">
+
+                    <!-- Menú Superior del Mapa (Conservado como se solicitó) -->
+                    <div id="map-property-selector" class="flex flex-wrap gap-2 pt-1">
+                        <!-- Populated dynamically with 'Ver Todos' + each property pill button -->
+                    </div>
+
+                    <!-- Map Container: Unified Multi-Property Map with Embedded Leaflet -->
+                    <div class="relative w-full rounded-2xl overflow-hidden border border-[#d4af37]/30 shadow-2xl bg-black min-h-[460px] lg:min-h-[530px]">
+                        
+                        <!-- Leaflet Interactive Map Container (Showing ALL properties with pins simultaneously) -->
+                        <div id="unified-leaflet-map" class="w-full h-[460px] lg:h-[530px] z-10"></div>
+
+                        <!-- Badge Indicador: Vista Satelital HD Exclusiva -->
+                        <div class="absolute top-4 left-14 z-20 py-2 px-3.5 rounded-xl border border-[#d4af37]/40 shadow-2xl bg-[#081810]/90 backdrop-blur-md text-xs font-black text-[#f2ca50] flex items-center gap-1.5 select-none">
+                            <span class="material-symbols-outlined text-[16px]">satellite_alt</span>
+                            <span>Vista Satelital HD</span>
+                        </div>
+
+                        <!-- Botón ABRIR EN GOOGLE MAPS (Conservado dentro del mapa) -->
+                        <a id="map-external-link" href="https://maps.google.com" target="_blank"
+                           class="absolute top-4 right-4 z-20 py-2.5 px-4 rounded-xl bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-2xl transition-all border border-[#f2ca50] hover:scale-105 active:scale-95"
+                           title="Abrir ubicación en la aplicación de Google Maps">
+                            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+                            <span>Abrir en Google Maps</span>
+                        </a>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. SEARCH & FILTER CONSOLE (Ubicaciones y Tipos Corregidos con Colores Distintivos) -->
         <section id="buscador-filtros" class="w-full bg-[#0d1c14] py-6 shadow-inner border-t border-b border-[#d4af37]/20 relative z-20">
             <div class="max-w-[1360px] mx-auto px-4 sm:px-6 flex flex-col gap-4">
                 
@@ -288,48 +329,7 @@
             </div>
         </section>
 
-        <!-- 4. SECCIÓN MAPA INTERACTIVO (TODAS LAS PROPIEDADES EN UN SOLO MAPA) -->
-        <section id="mapa-propiedades" class="max-w-[1360px] mx-auto px-4 sm:px-6 py-12 sm:py-16">
-            <div class="rounded-3xl bg-[#091810] border border-[#d4af37]/30 shadow-2xl p-6 sm:p-10 relative overflow-hidden">
-                
-                <!-- Ambient Glow -->
-                <div class="absolute -top-32 -right-32 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none"></div>
-
-                <div class="relative z-10 flex flex-col gap-4">
-
-                    <!-- Menú Superior del Mapa (Conservado como se solicitó) -->
-                    <div id="map-property-selector" class="flex flex-wrap gap-2 pt-1">
-                        <!-- Populated dynamically with 'Ver Todos' + each property pill button -->
-                    </div>
-
-                    <!-- Map Container: Unified Multi-Property Map with Embedded Leaflet -->
-                    <div class="relative w-full rounded-2xl overflow-hidden border border-[#d4af37]/30 shadow-2xl bg-black min-h-[460px] lg:min-h-[530px]">
-                        
-                        <!-- Leaflet Interactive Map Container (Showing ALL properties with pins simultaneously) -->
-                        <div id="unified-leaflet-map" class="w-full h-[460px] lg:h-[530px] z-10"></div>
-
-                        <!-- Badge Indicador: Vista Satelital HD Exclusiva -->
-                        <div class="absolute top-4 left-14 z-20 py-2 px-3.5 rounded-xl border border-[#d4af37]/40 shadow-2xl bg-[#081810]/90 backdrop-blur-md text-xs font-black text-[#f2ca50] flex items-center gap-1.5 select-none">
-                            <span class="material-symbols-outlined text-[16px]">satellite_alt</span>
-                            <span>Vista Satelital HD</span>
-                        </div>
-
-                        <!-- Botón ABRIR EN GOOGLE MAPS (Conservado dentro del mapa) -->
-                        <a id="map-external-link" href="https://maps.google.com" target="_blank"
-                           class="absolute top-4 right-4 z-20 py-2.5 px-4 rounded-xl bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-2xl transition-all border border-[#f2ca50] hover:scale-105 active:scale-95"
-                           title="Abrir ubicación en la aplicación de Google Maps">
-                            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
-                            <span>Abrir en Google Maps</span>
-                        </a>
-
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <!-- 5. INTERACTIVE CONVERSION & CONCIERGE CTA SECTION -->
+        <!-- 4. INTERACTIVE CONVERSION & CONCIERGE CTA SECTION -->
         <section id="contacto-concierge" class="max-w-[1360px] mx-auto px-4 sm:px-6 pt-2 pb-20">
             <div class="rounded-3xl bg-[#0e2216] overflow-hidden shadow-2xl grid grid-cols-1 lg:grid-cols-12 border border-[#d4af37]/35">
                 
