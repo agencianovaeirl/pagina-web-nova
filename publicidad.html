@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NOVA · Agencia de Publicidad | Catálogo 2026</title>
-    <meta name="description" content="Catálogo de impresión NOVA: Tarjetas, Volantes y Afiches. Calidad profesional en Cusco, Perú.">
+    <meta name="description" content="Catálogo de impresión NOVA: Tarjetas, Volantes, Afiches y Gigantografías. Calidad profesional en Cusco, Perú.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,15 +12,19 @@
 
     <style>
         :root {
-            --forest:   #0d2b22;
-            --forest2:  #12372a;
-            --forest3:  #1a4a38;
-            --gold:     #c9a84c;
-            --gold2:    #e8c97a;
-            --cream:    #f5ede0;
-            --cream2:   #faf4ec;
-            --text-dark:#0d1a14;
-            --radius:   18px;
+            --bg-dark:       #060d19;
+            --navy-card:     rgba(10, 24, 46, 0.85);
+            --navy-inner:    rgba(14, 34, 66, 0.92);
+            --cyan:          #00d4ff;
+            --cyan-glow:     rgba(0, 212, 255, 0.35);
+            --sky:           #38bdf8;
+            --blue:          #0284c7;
+            --blue-dark:     #034570;
+            --cream:         #f0f9ff;
+            --cream2:        #ffffff;
+            --text-dark:     #031120;
+            --text-muted:    #94a3b8;
+            --radius:        18px;
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,89 +32,111 @@
         html { scroll-behavior: smooth; }
 
         body {
-            background: linear-gradient(rgba(10, 26, 20, 0.85), rgba(7, 18, 14, 0.90)), url('assets/dubainoche.jpg') center center / cover no-repeat fixed;
+            background: linear-gradient(rgba(5, 12, 24, 0.80), rgba(7, 18, 36, 0.88)), url('assets/dubainoche.jpg') center center / cover no-repeat fixed;
             color: var(--cream);
             font-family: 'Montserrat', sans-serif;
             min-height: 100vh;
         }
 
-        /* ══════════════ HEADER ══════════════ */
+        /* ══════════════ HEADER CON FONDO EXTENDIDO Y LOGO A LA IZQUIERDA ══════════════ */
         header {
-            background: rgba(13, 43, 34, 0.85);
+            background: rgba(6, 15, 30, 0.40);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(201,168,76,0.25);
-            padding: 30px 20px 24px;
-            text-align: center;
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.25);
+            padding: 24px 24px 22px;
             position: relative;
+            width: 100%;
         }
 
-        .header-inner { max-width: 900px; margin: 0 auto; }
-
-        .back-btn {
-            position: absolute;
-            left: 20px; top: 28px;
-            display: inline-flex; align-items: center; gap: 6px;
-            color: var(--gold); font-size: 0.75rem; font-weight: 700;
-            letter-spacing: 0.1em; text-transform: uppercase;
-            text-decoration: none;
-            transition: opacity 0.2s;
-        }
-        .back-btn:hover { opacity: 0.7; }
-
-        .logo-wrap {
-            display: inline-flex;
-            flex-direction: column;
+        .header-top-bar {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: space-between;
+            gap: 20px;
         }
-        .logo-wrap img {
-            height: 70px;
+
+        .logo-left-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-left-wrap img {
+            height: 75px;
             width: auto;
             object-fit: contain;
-            filter: drop-shadow(0 0 18px rgba(201,168,76,0.3));
+            filter: drop-shadow(0 0 18px rgba(0, 212, 255, 0.65));
+            transition: transform 0.3s ease;
         }
-        .logo-sub {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.68rem;
-            font-weight: 800;
-            letter-spacing: 0.35em;
+        .logo-left-wrap img:hover {
+            transform: scale(1.03);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--cyan);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
-            color: var(--gold);
-            width: 100%;
+            text-decoration: none;
+            padding: 9px 18px;
+            border-radius: 99px;
+            background: rgba(0, 212, 255, 0.10);
+            border: 1px solid rgba(0, 212, 255, 0.35);
+            backdrop-filter: blur(6px);
+            transition: all 0.25s;
+        }
+        .back-btn:hover {
+            background: rgba(0, 212, 255, 0.25);
+            color: #ffffff;
+            box-shadow: 0 0 18px rgba(0, 212, 255, 0.45);
+            transform: translateX(-2px);
+        }
+
+        .header-inner {
+            max-width: 900px;
+            margin: 16px auto 0;
             text-align: center;
         }
 
-        .gold-line {
-            width: 100%; max-width: 340px;
+        .cyan-line {
+            width: 100%;
+            max-width: 340px;
             height: 1px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            margin: 16px auto;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+            margin: 12px auto 14px;
         }
 
         header h1 {
             font-family: 'Cormorant Garamond', serif;
             font-size: clamp(2rem, 5vw, 3.2rem);
             font-weight: 700;
-            color: var(--cream);
+            color: #ffffff;
             line-height: 1.1;
+            text-shadow: 0 0 25px rgba(0, 212, 255, 0.35);
         }
         header h1 em {
             font-style: italic;
-            color: var(--gold2);
+            color: var(--cyan);
         }
 
         header p.subtitle {
             font-size: 0.78rem;
             font-weight: 400;
-            color: rgba(245,237,224,0.6);
+            color: rgba(224, 242, 254, 0.75);
             letter-spacing: 0.1em;
             margin-top: 8px;
         }
 
-        /* ══════════════ SHIMMER DIVIDER ══════════════ */
+        /* ══════════════ SHIMMER DIVIDER (CELESTE Y AZUL) ══════════════ */
         .shimmer-bar {
             height: 2px;
-            background: linear-gradient(90deg, var(--forest), var(--gold), var(--gold2), var(--gold), var(--forest));
+            background: linear-gradient(90deg, #034570, #00d4ff, #70e1ff, #00d4ff, #034570);
             background-size: 300% 100%;
             animation: shimmerAnim 4s linear infinite;
         }
@@ -129,20 +155,23 @@
             gap: 40px;
         }
 
-        /* ══════════════ PRODUCT CARD ══════════════ */
+        /* ══════════════ PRODUCT CARD (TONALIDAD CELESTES Y AZULES) ══════════════ */
         .product-card {
-            background: var(--forest2);
-            border: 1px solid rgba(201,168,76,0.2);
+            background: var(--navy-card);
+            border: 1px solid rgba(0, 212, 255, 0.22);
             border-radius: 20px;
             overflow: hidden;
             display: grid;
             grid-template-columns: 1fr 1fr;
             min-height: 360px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.45);
-            transition: box-shadow 0.4s ease, transform 0.4s ease;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: box-shadow 0.4s ease, transform 0.4s ease, border-color 0.4s ease;
         }
         .product-card:hover {
-            box-shadow: 0 28px 80px rgba(0,0,0,0.6), 0 0 30px rgba(201,168,76,0.08);
+            box-shadow: 0 28px 80px rgba(0,0,0,0.7), 0 0 35px rgba(0, 212, 255, 0.22);
+            border-color: rgba(0, 212, 255, 0.48);
             transform: translateY(-3px);
         }
 
@@ -172,16 +201,16 @@
             display: block;
         }
 
-        /* Overlay dorado sutil sobre cada foto */
+        /* Overlay celeste/azul sutil sobre cada foto */
         .carousel-slide::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, rgba(13,43,34,0.15) 0%, rgba(201,168,76,0.06) 100%);
+            background: linear-gradient(135deg, rgba(3, 20, 48, 0.20) 0%, rgba(0, 212, 255, 0.08) 100%);
             pointer-events: none;
         }
 
-        /* Miniaturas en la parte inferior */
+        /* Miniaturas / dots en la parte inferior */
         .carousel-dots {
             position: absolute;
             bottom: 12px;
@@ -192,15 +221,16 @@
             z-index: 10;
         }
         .carousel-dot {
-            width: 26px; height: 3px;
+            width: 22px; height: 4px;
             background: rgba(255,255,255,0.3);
             border-radius: 2px;
             cursor: pointer;
-            transition: background 0.3s, width 0.3s;
+            transition: background 0.3s, width 0.3s, box-shadow 0.3s;
         }
         .carousel-dot.active {
-            background: var(--gold);
-            width: 36px;
+            background: var(--cyan);
+            width: 34px;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.85);
         }
 
         /* Flechas */
@@ -208,19 +238,23 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            width: 34px; height: 34px;
+            width: 36px; height: 36px;
             border-radius: 50%;
-            border: 1px solid rgba(201,168,76,0.5);
-            background: rgba(13,43,34,0.65);
-            color: var(--gold2);
-            font-size: 1rem;
+            border: 1px solid rgba(0, 212, 255, 0.5);
+            background: rgba(6, 18, 38, 0.75);
+            color: var(--cyan);
+            font-size: 1.1rem;
             cursor: pointer;
             display: flex; align-items: center; justify-content: center;
             z-index: 10;
-            transition: background 0.2s;
+            transition: background 0.25s, transform 0.2s, color 0.25s;
             backdrop-filter: blur(4px);
         }
-        .carousel-btn:hover { background: rgba(201,168,76,0.25); }
+        .carousel-btn:hover {
+            background: rgba(0, 212, 255, 0.35);
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(0, 212, 255, 0.5);
+        }
         .carousel-btn.prev { left: 10px; }
         .carousel-btn.next { right: 10px; }
 
@@ -237,7 +271,7 @@
             position: absolute;
             left: 0; top: 36px; bottom: 36px;
             width: 1px;
-            background: linear-gradient(180deg, transparent, rgba(201,168,76,0.35), transparent);
+            background: linear-gradient(180deg, transparent, rgba(0, 212, 255, 0.35), transparent);
         }
 
         .product-label {
@@ -245,59 +279,56 @@
             font-weight: 800;
             letter-spacing: 0.28em;
             text-transform: uppercase;
-            color: var(--gold);
+            color: var(--cyan);
             margin-bottom: 8px;
         }
-
         .product-name {
             font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(1.7rem, 3vw, 2.4rem);
+            font-size: clamp(1.8rem, 3vw, 2.3rem);
             font-weight: 700;
-            color: var(--cream);
-            line-height: 1.1;
+            color: #ffffff;
+            line-height: 1.15;
             margin-bottom: 6px;
         }
-
         .product-desc {
-            font-size: 0.73rem;
-            color: rgba(245,237,224,0.5);
-            line-height: 1.6;
-            margin-bottom: 20px;
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            margin-bottom: 22px;
         }
 
-        /* Tabla de precios compacta */
+        /* Tabla de Precios */
         .price-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 24px;
         }
-        .price-table thead tr {
-            border-bottom: 1px solid rgba(201,168,76,0.25);
-        }
         .price-table th {
-            font-size: 0.6rem;
+            font-size: 0.58rem;
             font-weight: 700;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.16em;
             text-transform: uppercase;
-            color: var(--gold);
-            padding: 6px 0;
+            color: var(--sky);
+            padding: 0 0 8px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.25);
             text-align: left;
         }
         .price-table th:last-child { text-align: right; }
         .price-table td {
-            font-size: 0.75rem;
-            color: rgba(245,237,224,0.85);
-            padding: 7px 0;
+            font-size: 0.78rem;
+            padding: 9px 0;
             border-bottom: 1px solid rgba(255,255,255,0.06);
-            vertical-align: middle;
+            color: var(--cream);
         }
         .price-table td:last-child {
             text-align: right;
-            font-weight: 800;
-            color: var(--gold2);
-            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--cyan);
+            font-size: 0.9rem;
+            text-shadow: 0 0 12px rgba(0, 212, 255, 0.35);
         }
-        .price-table td:first-child { color: var(--cream); font-weight: 600; }
+        .price-table td:first-child { color: #ffffff; font-weight: 600; }
 
         /* Badge de acabado */
         .finish-badge {
@@ -308,8 +339,9 @@
             text-transform: uppercase;
             padding: 2px 7px;
             border-radius: 99px;
-            border: 1px solid rgba(201,168,76,0.4);
-            color: var(--gold);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            background: rgba(0, 212, 255, 0.08);
+            color: var(--sky);
             margin-left: 5px;
         }
 
@@ -321,7 +353,7 @@
             gap: 10px;
             width: 100%;
             padding: 13px 20px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+            background: linear-gradient(135deg, #00d4ff 0%, #0284c7 100%);
             color: var(--text-dark);
             font-family: 'Montserrat', sans-serif;
             font-size: 0.78rem;
@@ -333,22 +365,14 @@
             cursor: pointer;
             text-decoration: none;
             transition: opacity 0.25s, transform 0.25s, box-shadow 0.25s;
-            box-shadow: 0 8px 24px rgba(201,168,76,0.35);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.35);
         }
         .btn-order:hover {
-            opacity: 0.9;
+            opacity: 0.92;
             transform: translateY(-2px);
-            box-shadow: 0 14px 36px rgba(201,168,76,0.5);
+            box-shadow: 0 14px 36px rgba(0, 212, 255, 0.55);
         }
         .btn-order svg { width: 18px; height: 18px; flex-shrink: 0; }
-
-        /* ══════════════ NOTA AL PIE DE CATEGORÍA ══════════════ */
-        .card-note {
-            font-size: 0.62rem;
-            color: rgba(245,237,224,0.35);
-            text-align: center;
-            margin-top: -30px;
-        }
 
         /* ══════════════ FLOATING WA BTN ══════════════ */
         .wa-float {
@@ -359,7 +383,7 @@
         }
         .wa-bubble {
             background: #fff;
-            color: #0d2b22;
+            color: #031b30;
             font-size: 0.72rem;
             font-weight: 700;
             padding: 6px 14px;
@@ -383,16 +407,6 @@
             70%      { box-shadow: 0 0 0 14px rgba(37,211,102,0); }
         }
 
-        /* ══════════════ FOOTER ══════════════ */
-        footer {
-            background: var(--forest);
-            border-top: 1px solid rgba(201,168,76,0.2);
-            text-align: center;
-            padding: 30px 20px;
-        }
-        footer p { font-size: 0.7rem; color: rgba(245,237,224,0.35); line-height: 2; }
-        footer a { color: var(--gold); text-decoration: none; }
-
         /* ══════════════ RESPONSIVE ══════════════ */
         @media (max-width: 660px) {
             .product-card {
@@ -402,6 +416,11 @@
             .carousel-side { height: 260px; }
             .info-side { padding: 24px 20px; }
             .info-side::before { display: none; }
+            .header-top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
         }
     </style>
 </head>
@@ -421,18 +440,20 @@
      HEADER
 ══════════════════════════════════════ -->
 <header>
-    <a href="index.html" class="back-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        Volver
-    </a>
-
-    <div class="header-inner">
-        <div class="logo-wrap">
-            <img src="assets/logo-publicidad.png" alt="Agencia NOVA Publicidad y Eventos" style="height: 82px; width: auto; object-fit: contain; filter: drop-shadow(0 0 16px rgba(0, 180, 216, 0.45));">
+    <div class="header-top-bar">
+        <!-- Logotipo Oficial alineado a la Izquierda -->
+        <div class="logo-left-wrap">
+            <img src="assets/logo-publicidad.png" alt="Agencia NOVA Publicidad y Eventos">
         </div>
 
-        <div class="gold-line"></div>
+        <a href="index.html" class="back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            Volver a NOVA
+        </a>
+    </div>
 
+    <div class="header-inner">
+        <div class="cyan-line"></div>
         <h1>Catálogo de<br><em>Impresión 2026</em></h1>
         <p class="subtitle">Calidad profesional · Entrega rápida · Cusco, Perú</p>
     </div>
@@ -449,20 +470,26 @@
          ║  1. TARJETAS PERSONALES      ║
          ╚══════════════════════════════╝ -->
     <div class="product-card" id="card-tarjetas">
-        <!-- CARRUSEL -->
+        <!-- CARRUSEL CON 6 FOTOS ACTUALIZADAS -->
         <div class="carousel-side">
             <div class="carousel-track" id="track-tarjetas">
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?auto=format&fit=crop&w=800&q=80" alt="Tarjetas de presentación">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/TARJETAS/tarjetas-personales-mate-lima.png?updatedAt=1794274415720" alt="Tarjetas Personales Mate">
                 </div>
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80" alt="Tarjetas business card mockup">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/TARJETAS/embossed-business-card-mockup-2-600.jpg?updatedAt=1794274414877" alt="Business Card Embossed Mockup">
                 </div>
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&w=800&q=80" alt="Tarjetas stack">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/TARJETAS/tarjeta-uv.jpg?updatedAt=1794274414507" alt="Tarjeta con barniz sectorizado UV">
                 </div>
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=800&q=80" alt="Business cards design">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/TARJETAS/images.jpg?updatedAt=1794274414439" alt="Tarjetas ejecutivas corporativas">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/TARJETAS/images%20(1).jpg?updatedAt=1794274414387" alt="Tarjetas acabado premium">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/TARJETAS/images%20(2).jpg?updatedAt=1794274414325" alt="Tarjetas de presentación elegantes">
                 </div>
             </div>
             <button class="carousel-btn prev" onclick="moveCarousel('tarjetas',-1)">&#8592;</button>
@@ -472,6 +499,8 @@
                 <div class="carousel-dot" onclick="goToSlide('tarjetas',1)"></div>
                 <div class="carousel-dot" onclick="goToSlide('tarjetas',2)"></div>
                 <div class="carousel-dot" onclick="goToSlide('tarjetas',3)"></div>
+                <div class="carousel-dot" onclick="goToSlide('tarjetas',4)"></div>
+                <div class="carousel-dot" onclick="goToSlide('tarjetas',5)"></div>
             </div>
         </div>
 
@@ -530,7 +559,7 @@
          ║  2. VOLANTES                 ║
          ╚══════════════════════════════╝ -->
     <div class="product-card" id="card-volantes">
-        <!-- INFO al lado izquierdo en este bloque -->
+        <!-- INFO al lado izquierdo -->
         <div class="info-side" style="order:1;">
             <div>
                 <p class="product-label">Impresión · 2026</p>
@@ -580,20 +609,23 @@
             </a>
         </div>
 
-        <!-- CARRUSEL al lado derecho -->
+        <!-- CARRUSEL CON 5 FOTOS ACTUALIZADAS -->
         <div class="carousel-side" style="order:2;">
             <div class="carousel-track" id="track-volantes">
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=800&q=80" alt="Volantes flyers diseño">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/VOLANTES/images.jpg?updatedAt=1794274433567" alt="Volantes publicitarios">
                 </div>
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?auto=format&fit=crop&w=800&q=80" alt="Flyers impresos">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/VOLANTES/Flyer-A6.jpg?updatedAt=1794274433454" alt="Flyer A6 alta definición">
                 </div>
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=800&q=80" alt="Volantes folletos">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/VOLANTES/images%20(2).jpg?updatedAt=1794274433322" alt="Volantes corporativos">
                 </div>
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=800&q=80" alt="Material gráfico impreso">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/VOLANTES/00011-20250415231508.jpg?updatedAt=1794274433505" alt="Folletos promocionales">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/VOLANTES/images%20(1).jpg?updatedAt=1794274432861" alt="Diseño de volantes impresos">
                 </div>
             </div>
             <button class="carousel-btn prev" onclick="moveCarousel('volantes',-1)">&#8592;</button>
@@ -603,6 +635,7 @@
                 <div class="carousel-dot" onclick="goToSlide('volantes',1)"></div>
                 <div class="carousel-dot" onclick="goToSlide('volantes',2)"></div>
                 <div class="carousel-dot" onclick="goToSlide('volantes',3)"></div>
+                <div class="carousel-dot" onclick="goToSlide('volantes',4)"></div>
             </div>
         </div>
     </div>
@@ -611,20 +644,23 @@
          ║  3. AFICHES                  ║
          ╚══════════════════════════════╝ -->
     <div class="product-card" id="card-afiches">
-        <!-- CARRUSEL -->
+        <!-- CARRUSEL CON 5 FOTOS ACTUALIZADAS -->
         <div class="carousel-side">
             <div class="carousel-track" id="track-afiches">
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80" alt="Afiches posters">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/AFICHES/images.jpg?updatedAt=1794274351711" alt="Afiches publicitarios">
                 </div>
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?auto=format&fit=crop&w=800&q=80" alt="Afiche impreso gran formato">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/AFICHES/images%20(1).jpg?updatedAt=1794274351300" alt="Posters alta resolución">
                 </div>
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?auto=format&fit=crop&w=800&q=80" alt="Poster design print">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/AFICHES/images%20(4).jpg?updatedAt=1794274351209" alt="Carteles promocionales para eventos">
                 </div>
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1513682121497-80211f36a7d3?auto=format&fit=crop&w=800&q=80" alt="Cartel publicitario">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/AFICHES/images%20(2).jpg?updatedAt=1794274351170" alt="Afiches en couché">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/AFICHES/images%20(3).jpg?updatedAt=1794274349935" alt="Posters artísticos y comerciales">
                 </div>
             </div>
             <button class="carousel-btn prev" onclick="moveCarousel('afiches',-1)">&#8592;</button>
@@ -634,6 +670,7 @@
                 <div class="carousel-dot" onclick="goToSlide('afiches',1)"></div>
                 <div class="carousel-dot" onclick="goToSlide('afiches',2)"></div>
                 <div class="carousel-dot" onclick="goToSlide('afiches',3)"></div>
+                <div class="carousel-dot" onclick="goToSlide('afiches',4)"></div>
             </div>
         </div>
 
@@ -689,104 +726,38 @@
     </div>
 
     <!-- ╔══════════════════════════════╗
-         ║  4. FOTOMURALES              ║
-         ╚══════════════════════════════╝ -->
-    <div class="product-card" id="card-fotomurales">
-        <!-- CARRUSEL -->
-        <div class="carousel-side">
-            <div class="carousel-track" id="track-fotomurales">
-                <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80" alt="Fotomural para sala moderna">
-                </div>
-                <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80" alt="Pared decorativa con fotomural corporativo">
-                </div>
-                <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80" alt="Fotomural de naturaleza para dormitorio">
-                </div>
-                <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" alt="Fotomural arquitectónico de alta gama">
-                </div>
-            </div>
-            <button class="carousel-btn prev" onclick="moveCarousel('fotomurales',-1)">&#8592;</button>
-            <button class="carousel-btn next" onclick="moveCarousel('fotomurales',1)">&#8594;</button>
-            <div class="carousel-dots" id="dots-fotomurales">
-                <div class="carousel-dot active" onclick="goToSlide('fotomurales',0)"></div>
-                <div class="carousel-dot" onclick="goToSlide('fotomurales',1)"></div>
-                <div class="carousel-dot" onclick="goToSlide('fotomurales',2)"></div>
-                <div class="carousel-dot" onclick="goToSlide('fotomurales',3)"></div>
-            </div>
-        </div>
-
-        <!-- INFO -->
-        <div class="info-side">
-            <div>
-                <p class="product-label">Gran Formato · 2026</p>
-                <h2 class="product-name">Fotomurales</h2>
-                <p class="product-desc">Vinil adhesivo laminado · Papel tapiz texturizado · Alta resolución 1440 DPI · Lavable</p>
-
-                <table class="price-table">
-                    <thead>
-                        <tr>
-                            <th>Material / Tipo</th>
-                            <th>Medida</th>
-                            <th>Precio</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Vinil Adhesivo Mate / Brillo</td>
-                            <td>Por m²</td>
-                            <td>S/ 38.00</td>
-                        </tr>
-                        <tr>
-                            <td>Papel Tapiz Canvas Texturado</td>
-                            <td>Por m²</td>
-                            <td>S/ 55.00</td>
-                        </tr>
-                        <tr>
-                            <td>Fotomural Habitación / Oficina</td>
-                            <td>3.0 × 2.4 m</td>
-                            <td>S/ 260.00</td>
-                        </tr>
-                        <tr>
-                            <td>Medida especial + Instalación</td>
-                            <td>Personalizado</td>
-                            <td>Cotizar</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <a class="btn-order"
-               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20cotizar%20un%20Fotomural%20personalizado.%20Medidas%20y%20espacio%3A%20"
-               target="_blank" rel="noopener">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.3a8.216 8.216 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24m-2.54 4.58v7.5h3.45c1.45 0 2.39-.75 2.39-1.95 0-.82-.53-1.42-1.32-1.63.63-.25 1.05-.82 1.05-1.55 0-1.12-.89-1.78-2.28-1.78zm1.53 1.34h1.72c.57 0 .93.31.93.75 0 .46-.36.77-.93.77h-1.72zm0 2.58h1.86c.63 0 1.01.32 1.01.8 0 .49-.38.82-1.01.82H11.03z"/>
-                </svg>
-                Hacer Pedido
-            </a>
-        </div>
-    </div>
-
-    <!-- ╔══════════════════════════════╗
-         ║  5. LETREROS Y GIGANTOGRAFÍAS ║
+         ║  4. GIGANTOGRAFÍAS           ║
          ╚══════════════════════════════╝ -->
     <div class="product-card" id="card-gigantografias">
-        <!-- CARRUSEL -->
+        <!-- CARRUSEL CON 9 FOTOS ACTUALIZADAS -->
         <div class="carousel-side">
             <div class="carousel-track" id="track-gigantografias">
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" alt="Letrero comercial exterior">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images.jpg?updatedAt=1794274380402" alt="Gigantografía en lona banner">
                 </div>
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=80" alt="Letras 3D en acrílico con iluminación LED">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(6).jpg?updatedAt=1794274380308" alt="Gigantografía para fachadas">
                 </div>
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=800&q=80" alt="Gigantografía en lona banner para fachadas">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(7).jpg?updatedAt=1794274380351" alt="Impresión banner gran escala">
                 </div>
                 <div class="carousel-slide">
-                    <img src="https://images.unsplash.com/photo-1572945753563-8049567831f4?auto=format&fit=crop&w=800&q=80" alt="Caja de luz backlight publicitaria">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(8).jpg?updatedAt=1794274380172" alt="Lona publicitaria con ojales">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(2).jpg?updatedAt=1794274380090" alt="Gigantografía en estructura">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(5).jpg?updatedAt=1794274379787" alt="Letrero publicitario comercial">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(4).jpg?updatedAt=1794274379254" alt="Gigantografía en exteriores">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(3).jpg?updatedAt=1794274379121" alt="Banner fotográfico HD">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(1).jpg?updatedAt=1794274378732" alt="Gigantografía publicitaria de alto impacto">
                 </div>
             </div>
             <button class="carousel-btn prev" onclick="moveCarousel('gigantografias',-1)">&#8592;</button>
@@ -796,43 +767,48 @@
                 <div class="carousel-dot" onclick="goToSlide('gigantografias',1)"></div>
                 <div class="carousel-dot" onclick="goToSlide('gigantografias',2)"></div>
                 <div class="carousel-dot" onclick="goToSlide('gigantografias',3)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',4)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',5)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',6)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',7)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',8)"></div>
             </div>
         </div>
 
         <!-- INFO -->
         <div class="info-side">
             <div>
-                <p class="product-label">Publicidad Exterior & Fachadas · 2026</p>
-                <h2 class="product-name">Letreros y Gigantografías</h2>
-                <p class="product-desc">Lona banner 13oz / 15oz · Bastidores de fierro · Cajas de luz LED · Letras 3D en acrílico</p>
+                <p class="product-label">Gran Formato · 2026</p>
+                <h2 class="product-name">Gigantografías</h2>
+                <p class="product-desc">Lona banner 13oz · Full color HD · Ojalillos reforzados · Alta resistencia a intemperie</p>
 
                 <table class="price-table">
                     <thead>
                         <tr>
-                            <th>Producto / Formato</th>
-                            <th>Especificación</th>
+                            <th>Material / Formato</th>
+                            <th>Medida</th>
                             <th>Precio</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Gigantografía Lona Banner 13oz</td>
-                            <td>Con ojalillos / m²</td>
+                            <td>Lona Banner 13oz con ojalillos</td>
+                            <td>Por m²</td>
                             <td>S/ 18.00</td>
                         </tr>
                         <tr>
-                            <td>Letrero Bastidor Metálico (2×1 m)</td>
-                            <td>Estructura + Lona</td>
-                            <td>S/ 120.00</td>
+                            <td>Banner Mate Antirreflejo</td>
+                            <td>Por m²</td>
+                            <td>S/ 24.00</td>
                         </tr>
                         <tr>
-                            <td>Caja de Luz Luminosa LED (3×1 m)</td>
-                            <td>Backlight + Acrílico</td>
-                            <td>S/ 480.00</td>
+                            <td>Gigantografía 3.0 × 2.0 m</td>
+                            <td>Completa</td>
+                            <td>S/ 98.00</td>
                         </tr>
                         <tr>
-                            <td>Letras 3D Acrílico Retroiluminado</td>
-                            <td>Fachada corporativa</td>
+                            <td>Estructura Metálica + Instalación</td>
+                            <td>Personalizado</td>
                             <td>Cotizar</td>
                         </tr>
                     </tbody>
@@ -840,7 +816,7 @@
             </div>
 
             <a class="btn-order"
-               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20cotizar%20Letreros%20y%20Gigantograf%C3%ADas.%20Tipo%20de%20negocio%20y%20medidas%3A%20"
+               href="https://wa.me/51948301540?text=Hola%20NOVA%20Publicidad,%20quiero%20cotizar%20Gigantograf%C3%ADas.%20Medidas%20y%20especificaciones%3A%20"
                target="_blank" rel="noopener">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.3a8.216 8.216 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24m-2.54 4.58v7.5h3.45c1.45 0 2.39-.75 2.39-1.95 0-.82-.53-1.42-1.32-1.63.63-.25 1.05-.82 1.05-1.55 0-1.12-.89-1.78-2.28-1.78zm1.53 1.34h1.72c.57 0 .93.31.93.75 0 .46-.36.77-.93.77h-1.72zm0 2.58h1.86c.63 0 1.01.32 1.01.8 0 .49-.38.82-1.01.82H11.03z"/>
@@ -853,20 +829,6 @@
 </main>
 
 <div class="shimmer-bar"></div>
-
-<!-- ══════════════════════════════════════
-     FOOTER
-══════════════════════════════════════ -->
-<footer>
-    <div class="logo-wrap" style="margin-bottom:14px;">
-        <img src="assets/logo-publicidad.png" alt="Agencia NOVA Publicidad y Eventos" style="height:55px; width: auto; object-fit: contain; filter: drop-shadow(0 0 14px rgba(0, 180, 216, 0.45));">
-    </div>
-    <p>
-        © 2026 NOVA Agencia de Publicidad · Cusco, Perú<br>
-        <a href="index.html">Agencia NOVA E.I.R.L.</a> ·
-        <a href="https://wa.me/51948301540" target="_blank">WhatsApp 948 301 540</a>
-    </p>
-</footer>
 
 <!-- ══════════════════════════════════════
      SCRIPT – CARRUSELES
@@ -913,12 +875,11 @@
         startAuto(id);
     }
 
-    // Inicializar todos los carruseles
-    initCarousel('tarjetas', 4);
-    initCarousel('volantes', 4);
-    initCarousel('afiches', 4);
-    initCarousel('fotomurales', 4);
-    initCarousel('gigantografias', 4);
+    // Inicializar los carruseles activos con sus respectivas cantidades de imágenes
+    initCarousel('tarjetas', 6);
+    initCarousel('volantes', 5);
+    initCarousel('afiches', 5);
+    initCarousel('gigantografias', 9);
 </script>
 
 </body>
