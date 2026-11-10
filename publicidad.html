@@ -177,11 +177,16 @@
 
         @media (min-width: 661px) {
             .product-card {
-                height: 530px;
+                height: 665px;
             }
             .info-side {
                 height: 100%;
                 overflow: hidden;
+            }
+            .info-side[style*="order:1"]::before,
+            .info-side[style*="order: 1"]::before {
+                left: auto;
+                right: 0;
             }
         }
 
@@ -362,9 +367,9 @@
 
         /* Contenedor con scroll elegante para tablas extensas */
         .table-scroll-wrap {
-            max-height: 255px;
+            max-height: 380px;
             overflow-y: auto;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
             padding-right: 6px;
         }
         .table-scroll-wrap::-webkit-scrollbar {
@@ -463,11 +468,13 @@
                 min-height: auto;
             }
             .carousel-side { 
-                height: 280px; 
+                height: 350px; 
+                order: 1 !important;
             }
             .info-side { 
-                padding: 24px 20px; 
+                padding: 26px 20px; 
                 height: auto;
+                order: 2 !important;
             }
             .info-side::before { display: none; }
             .header-top-bar {
@@ -932,54 +939,8 @@
          ║  4. GIGANTOGRAFÍAS           ║
          ╚══════════════════════════════╝ -->
     <div class="product-card" id="card-gigantografias">
-        <!-- CARRUSEL CON 9 FOTOS ACTUALIZADAS -->
-        <div class="carousel-side">
-            <div class="carousel-track" id="track-gigantografias">
-                <div class="carousel-slide">
-                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images.jpg?updatedAt=1794274380402" alt="Gigantografía en lona banner">
-                </div>
-                <div class="carousel-slide">
-                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(6).jpg?updatedAt=1794274380308" alt="Gigantografía para fachadas">
-                </div>
-                <div class="carousel-slide">
-                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(7).jpg?updatedAt=1794274380351" alt="Impresión banner gran escala">
-                </div>
-                <div class="carousel-slide">
-                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(8).jpg?updatedAt=1794274380172" alt="Lona publicitaria con ojales">
-                </div>
-                <div class="carousel-slide">
-                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(2).jpg?updatedAt=1794274380090" alt="Gigantografía en estructura">
-                </div>
-                <div class="carousel-slide">
-                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(5).jpg?updatedAt=1794274379787" alt="Letrero publicitario comercial">
-                </div>
-                <div class="carousel-slide">
-                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(4).jpg?updatedAt=1794274379254" alt="Gigantografía en exteriores">
-                </div>
-                <div class="carousel-slide">
-                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(3).jpg?updatedAt=1794274379121" alt="Banner fotográfico HD">
-                </div>
-                <div class="carousel-slide">
-                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(1).jpg?updatedAt=1794274378732" alt="Gigantografía publicitaria de alto impacto">
-                </div>
-            </div>
-            <button class="carousel-btn prev" onclick="moveCarousel('gigantografias',-1)">&#8592;</button>
-            <button class="carousel-btn next" onclick="moveCarousel('gigantografias',1)">&#8594;</button>
-            <div class="carousel-dots" id="dots-gigantografias">
-                <div class="carousel-dot active" onclick="goToSlide('gigantografias',0)"></div>
-                <div class="carousel-dot" onclick="goToSlide('gigantografias',1)"></div>
-                <div class="carousel-dot" onclick="goToSlide('gigantografias',2)"></div>
-                <div class="carousel-dot" onclick="goToSlide('gigantografias',3)"></div>
-                <div class="carousel-dot" onclick="goToSlide('gigantografias',4)"></div>
-                <div class="carousel-dot" onclick="goToSlide('gigantografias',5)"></div>
-                <div class="carousel-dot" onclick="goToSlide('gigantografias',6)"></div>
-                <div class="carousel-dot" onclick="goToSlide('gigantografias',7)"></div>
-                <div class="carousel-dot" onclick="goToSlide('gigantografias',8)"></div>
-            </div>
-        </div>
-
-        <!-- INFO -->
-        <div class="info-side">
+        <!-- INFO al lado izquierdo -->
+        <div class="info-side" style="order:1;">
             <div>
                 <p class="product-label">Gran Formato · 2026</p>
                 <h2 class="product-name">Gigantografías</h2>
@@ -1043,6 +1004,52 @@
                 </svg>
                 Hacer Pedido
             </a>
+        </div>
+
+        <!-- CARRUSEL al lado derecho -->
+        <div class="carousel-side" style="order:2;">
+            <div class="carousel-track" id="track-gigantografias">
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images.jpg?updatedAt=1794274380402" alt="Gigantografía en lona banner">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(6).jpg?updatedAt=1794274380308" alt="Gigantografía para fachadas">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(7).jpg?updatedAt=1794274380351" alt="Impresión banner gran escala">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(8).jpg?updatedAt=1794274380172" alt="Lona publicitaria con ojales">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(2).jpg?updatedAt=1794274380090" alt="Gigantografía en estructura">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(5).jpg?updatedAt=1794274379787" alt="Letrero publicitario comercial">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(4).jpg?updatedAt=1794274379254" alt="Gigantografía en exteriores">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(3).jpg?updatedAt=1794274379121" alt="Banner fotográfico HD">
+                </div>
+                <div class="carousel-slide">
+                    <img src="https://ik.imagekit.io/AGENCIANOVA/PUBLICIDAD/GIGANTOGRAFIAS/images%20(1).jpg?updatedAt=1794274378732" alt="Gigantografía publicitaria de alto impacto">
+                </div>
+            </div>
+            <button class="carousel-btn prev" onclick="moveCarousel('gigantografias',-1)">&#8592;</button>
+            <button class="carousel-btn next" onclick="moveCarousel('gigantografias',1)">&#8594;</button>
+            <div class="carousel-dots" id="dots-gigantografias">
+                <div class="carousel-dot active" onclick="goToSlide('gigantografias',0)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',1)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',2)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',3)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',4)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',5)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',6)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',7)"></div>
+                <div class="carousel-dot" onclick="goToSlide('gigantografias',8)"></div>
+            </div>
         </div>
     </div>
 
