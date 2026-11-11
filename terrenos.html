@@ -1697,24 +1697,38 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
         // Proyecto: zrtfayhgoeoqwakbuakn
         // ==========================================================================
         const DEFAULT_SUPABASE_PROJECT_REF = "zrtfayhgoeoqwakbuakn";
-        const DEFAULT_SUPABASE_URL = `https://${DEFAULT_SUPABASE_PROJECT_REF}.supabase.co`;
+        const DEFAULT_SUPABASE_URL = "https://zrtfayhgoeoqwakbuakn.supabase.co";
+        const DEFAULT_SUPABASE_KEY = "sb_publishable_jxOPrOHvCaGhZvy-4CY2RQ_NWSNxVqo";
         const DEFAULT_SUPABASE_BUCKET = "INMOBILIARIA";
         const DEFAULT_SUPABASE_TABLE = "nova_propiedades";
 
         function getSupabaseUrl() {
-            return (localStorage.getItem('NOVA_SUPABASE_URL') || DEFAULT_SUPABASE_URL).trim().replace(/\/+$/, '');
+            return (localStorage.getItem('supabase_url') || localStorage.getItem('NOVA_SUPABASE_URL') || DEFAULT_SUPABASE_URL).trim().replace(/\/+$/, '');
         }
 
         function getSupabaseAnonKey() {
-            return (localStorage.getItem('NOVA_SUPABASE_ANON_KEY') || localStorage.getItem('NOVA_SUPABASE_KEY') || '').trim();
+            return (localStorage.getItem('supabase_key') || localStorage.getItem('NOVA_SUPABASE_ANON_KEY') || localStorage.getItem('NOVA_SUPABASE_KEY') || DEFAULT_SUPABASE_KEY).trim();
         }
 
         function getSupabaseTable() {
-            return (localStorage.getItem('NOVA_SUPABASE_TABLE') || DEFAULT_SUPABASE_TABLE).trim();
+            return (localStorage.getItem('supabase_table') || localStorage.getItem('NOVA_SUPABASE_TABLE') || DEFAULT_SUPABASE_TABLE).trim();
         }
 
         function getSupabaseBucket() {
-            return (localStorage.getItem('NOVA_SUPABASE_BUCKET') || DEFAULT_SUPABASE_BUCKET).trim();
+            return (localStorage.getItem('supabase_bucket') || localStorage.getItem('NOVA_SUPABASE_BUCKET') || DEFAULT_SUPABASE_BUCKET).trim();
+        }
+
+        // Cliente Supabase JS oficial inicializado con credenciales fijas por defecto (activo para móviles y desktop)
+        let supabaseClient = null;
+        function getSupabaseClient() {
+            if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
+                try {
+                    supabaseClient = window.supabase.createClient(getSupabaseUrl(), getSupabaseAnonKey());
+                } catch (e) {
+                    console.warn('[Supabase Client Error]', e);
+                }
+            }
+            return supabaseClient;
         }
 
         function getSupabaseHeaders(extraHeaders = {}) {
@@ -1819,64 +1833,73 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
         }
 
         // CARGA Y LECTURA DE TERRENOS DESDE LA TABLA NOVA PROPIEDADES EN SUPABASE
+        // Compatible con móviles y desktop con credenciales automáticas
         async function loadPropertiesFromSupabase(showFeedback = false) {
             const table = getSupabaseTable();
             const baseUrl = getSupabaseUrl();
             const anonKey = getSupabaseAnonKey();
 
-            if (!anonKey) {
-                updateSupabaseStatusBadge('warning', 'Falta Clave Anon');
-                const errMsg = 'Falta ingresar la Clave Pública Anon de Supabase. Haz clic en "Conexión Supabase", pega tu clave anon y presiona "Guardar Configuración".';
-                if (showFeedback) {
-                    showSupabaseMsg(`⚠️ ${errMsg}`, 'error');
-                }
-                console.warn('[Supabase]', errMsg);
-                return false;
-            }
-
             updateSupabaseStatusBadge('syncing', 'Consultando Supabase...');
 
             try {
-                // Posibles nombres de tabla para máxima compatibilidad
-                const candidateTables = [
-                    table,
-                    'nova_propiedades',
-                    'nova propiedades',
-                    'nova_propiedad',
-                    'propiedades'
-                ];
-
-                // Eliminar duplicados conservando orden
-                const uniqueTables = [...new Set(candidateTables)];
                 let data = null;
                 let usedTable = table;
-                let lastError = null;
 
-                for (const t of uniqueTables) {
-                    // Consulta limpia a la tabla en el esquema public (sin forzar created_at)
-                    const endpoint = `${baseUrl}/rest/v1/${encodeURIComponent(t)}?select=*`;
-                    const res = await fetch(endpoint, {
-                        headers: getSupabaseHeaders()
-                    });
+                // 1. Intentar primero con el cliente oficial de Supabase JS (con orden descendente de creación)
+                const client = getSupabaseClient();
+                if (client) {
+                    try {
+                        const res = await client
+                            .from(table)
+                            .select('*')
+                            .order('created_at', { ascending: false });
 
-                    if (res.ok) {
-                        data = await res.json();
-                        usedTable = t;
-                        break;
-                    } else if (res.status === 401) {
-                        const errJson = await res.json().catch(() => ({}));
-                        throw new Error(`Error 401 (No Autorizado): La clave Anon es incorrecta o no tiene permisos (${errJson.message || 'Unauthorized'}). Revisa tu clave en el panel de Supabase.`);
-                    } else if (res.status === 404) {
-                        lastError = `No se encontró la tabla "${t}" en el esquema public (HTTP 404). Verifica que el nombre esté en minúsculas y en el esquema público de Supabase.`;
-                        continue;
-                    } else {
-                        const errJson = await res.json().catch(() => ({ message: res.statusText }));
-                        lastError = `Error HTTP ${res.status} en "${t}": ${errJson.message || errJson.hint || res.statusText}`;
+                        if (!res.error && Array.isArray(res.data) && res.data.length > 0) {
+                            data = res.data;
+                        } else if (res.error) {
+                            // Si falla por la columna created_at o parámetro, intentar select simple
+                            const resPlain = await client.from(table).select('*');
+                            if (!resPlain.error && Array.isArray(resPlain.data) && resPlain.data.length > 0) {
+                                data = resPlain.data;
+                            }
+                        }
+                    } catch (jsErr) {
+                        console.warn('[Supabase JS Client]', jsErr.message);
+                    }
+                }
+
+                // 2. Si no se cargó con el SDK JS, usar REST Fetch directo con anti-cache (ideal para móviles)
+                if (!data) {
+                    const candidateTables = [
+                        table,
+                        'nova_propiedades',
+                        'nova propiedades',
+                        'nova_propiedad',
+                        'propiedades'
+                    ];
+                    const uniqueTables = [...new Set(candidateTables)];
+
+                    for (const t of uniqueTables) {
+                        // Con ordenamiento por created_at
+                        const urlWithOrder = `${baseUrl}/rest/v1/${encodeURIComponent(t)}?select=*&order=created_at.desc.nullslast&_t=${Date.now()}`;
+                        let res = await fetch(urlWithOrder, { headers: getSupabaseHeaders() });
+
+                        if (!res.ok) {
+                            // Fallback sin order si created_at no existe
+                            const urlPlain = `${baseUrl}/rest/v1/${encodeURIComponent(t)}?select=*&_t=${Date.now()}`;
+                            res = await fetch(urlPlain, { headers: getSupabaseHeaders() });
+                        }
+
+                        if (res.ok) {
+                            data = await res.json();
+                            usedTable = t;
+                            break;
+                        }
                     }
                 }
 
                 if (!data) {
-                    throw new Error(lastError || `No se pudo conectar a la tabla "${table}". Verifica que la tabla exista en el esquema "public" de Supabase.`);
+                    throw new Error(`No se pudo obtener datos de la tabla "${table}". Verifica la conexión o permisos.`);
                 }
 
                 if (Array.isArray(data) && data.length > 0) {
@@ -1885,6 +1908,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                         .filter(Boolean);
 
                     if (normalized.length > 0) {
+                        // Sincronizar variable global si existe (compatibilidad con móviles)
+                        if (typeof propiedades !== 'undefined') {
+                            propiedades = normalized;
+                        }
+
                         // Guardar en almacenamiento local manteniendo respaldo
                         saveProperties(normalized);
 
@@ -1904,7 +1932,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                         if (showFeedback) {
                             showSupabaseMsg(`✅ ¡Conexión exitosa! Se leyeron ${normalized.length} terrenos desde la tabla "${usedTable}". Las fotos se cargan desde el bucket "${getSupabaseBucket()}".`, 'success');
                         }
-                        console.log(`[Supabase] ✅ ${normalized.length} propiedades leídas desde la tabla "${usedTable}".`);
+                        console.log(`[Supabase] ✅ ${normalized.length} propiedades leídas automáticamente desde la tabla "${usedTable}".`);
                         return true;
                     }
                 }
@@ -1919,7 +1947,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
 
             } catch (err) {
                 console.warn('[Supabase Sync]', err.message);
-                updateSupabaseStatusBadge('warning', 'Modo Local (Sin Supabase)');
+                updateSupabaseStatusBadge('warning', 'Modo Local');
 
                 if (showFeedback) {
                     showSupabaseMsg(`⚠️ Conexión: ${err.message}`, 'error');
@@ -1927,6 +1955,12 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                 return false;
             }
         }
+
+        // Aliases globales para total compatibilidad con móviles y scripts externos
+        window.cargarPropiedadesAutomaticamente = loadPropertiesFromSupabase;
+        window.renderizarPropiedades = renderCatalog;
+        window.renderCatalogo = renderCatalog;
+        window.initCatalogo = renderCatalog;
 
         // GUARDAR / ACTUALIZAR TERRENO EN LA TABLA NOVA PROPIEDADES EN SUPABASE (UPSERT)
         async function savePropertyToSupabase(prop) {
