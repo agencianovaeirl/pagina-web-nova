@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agencia NOVA | Catálogo de Propiedades & Terrenos</title>
     <link rel="icon" type="image/png" href="assets/logo-nova-sin-fondo.png">
-    
+
     <!-- Google Fonts: Plus Jakarta Sans, Space Grotesk, Playfair Display y Cinzel -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700;1,800;1,900&family=Cinzel:wght@700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700;1,800;1,900&family=Cinzel:wght@700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+        rel="stylesheet">
+
     <!-- Leaflet CSS & JS for Multi-Property Interactive Map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -52,46 +56,66 @@
         };
     </script>
     <style>
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0c1a12; }
-        ::-webkit-scrollbar-thumb { background: #264a34; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0c1a12;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #264a34;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4af37;
+        }
+
         .hero-bright-sharp {
             filter: brightness(1.5) contrast(1.5);
             transform: scale(1.02);
             transition: filter 0.5s ease;
         }
+
         /* Custom Leaflet Dark/Emerald Map Theme */
         .leaflet-popup-content-wrapper {
             background: #081810 !important;
             color: #e8f1eb !important;
             border: 1px solid #d4af37;
             border-radius: 16px !important;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.7) !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
             padding: 4px;
         }
+
         .leaflet-popup-tip {
             background: #081810 !important;
             border-bottom: 1px solid #d4af37;
         }
+
         .leaflet-container {
             font-family: 'Plus Jakarta Sans', sans-serif !important;
             background-color: #0b1a11 !important;
         }
     </style>
 </head>
-<body class="bg-[#12241a] font-body text-[#e8f1eb] antialiased selection:bg-[#d4af37] selection:text-[#183626] min-h-screen flex flex-col">
+
+<body
+    class="bg-[#12241a] font-body text-[#e8f1eb] antialiased selection:bg-[#d4af37] selection:text-[#183626] min-h-screen flex flex-col">
 
     <!-- CABECERA PRINCIPAL -->
-    <header class="fixed top-0 left-0 right-0 z-50 bg-[#07130b]/95 backdrop-blur-xl border-b border-[#d4af37]/25 shadow-2xl transition-all duration-300">
+    <header
+        class="fixed top-0 left-0 right-0 z-50 bg-[#07130b]/95 backdrop-blur-xl border-b border-[#d4af37]/25 shadow-2xl transition-all duration-300">
         <div class="max-w-[1360px] mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
-            
+
             <!-- Izquierda: Botón Volver a Agencia NOVA -->
             <div class="flex items-center gap-3 sm:gap-5">
-                <a href="index.html#servicios" 
-                   class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#142c1e] hover:bg-[#1e422e] border border-[#d4af37]/40 text-[#f2ca50] hover:text-white text-xs sm:text-sm font-bold transition-all group shadow-md"
-                   title="Regresar a la página principal">
-                    <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                <a href="index.html#servicios"
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#142c1e] hover:bg-[#1e422e] border border-[#d4af37]/40 text-[#f2ca50] hover:text-white text-xs sm:text-sm font-bold transition-all group shadow-md"
+                    title="Regresar a la página principal">
+                    <span
+                        class="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
                     <span>Volver a Agencia NOVA</span>
                 </a>
             </div>
@@ -110,17 +134,17 @@
 
             <!-- Derecha: Botón Administrar Propiedades (Con Clave) + WhatsApp Asesoría -->
             <div class="flex items-center gap-3">
-                <button onclick="openAdminPasswordModal()" 
-                        class="px-3.5 sm:px-4 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:shadow-emerald-500/30 transition-all flex items-center gap-2 border border-emerald-400/40"
-                        title="Administración y Carga de Nuevas Propiedades">
+                <button onclick="openAdminPasswordModal()"
+                    class="px-3.5 sm:px-4 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:shadow-emerald-500/30 transition-all flex items-center gap-2 border border-emerald-400/40"
+                    title="Administración y Carga de Nuevas Propiedades">
                     <span class="material-symbols-outlined text-[18px]">lock</span>
                     <span class="hidden sm:inline">Administrar Propiedades</span>
                     <span class="sm:hidden">Admin</span>
                 </button>
 
-                <a href="https://wa.me/51948301540?text=Hola%20Agencia%20NOVA,%20deseo%20asesor%C3%ADa%20sobre%20terrenos%20y%20propiedades" 
-                   target="_blank"
-                   class="px-4 sm:px-5 py-2.5 rounded-full bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] font-black text-xs sm:text-sm tracking-wide shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all flex items-center gap-2 group transform hover:scale-105 active:scale-95">
+                <a href="https://wa.me/51948301540?text=Hola%20Agencia%20NOVA,%20deseo%20asesor%C3%ADa%20sobre%20terrenos%20y%20propiedades"
+                    target="_blank"
+                    class="px-4 sm:px-5 py-2.5 rounded-full bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] font-black text-xs sm:text-sm tracking-wide shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all flex items-center gap-2 group transform hover:scale-105 active:scale-95">
                     <span class="material-symbols-outlined text-[18px]">chat</span>
                     <span class="hidden lg:inline">WhatsApp Asesoría</span>
                     <span class="lg:hidden">WhatsApp</span>
@@ -134,15 +158,20 @@
     <main class="flex-1 w-full pt-20">
 
         <!-- 1. HERO SECTION: TU REFUGIO (Brillo y Nitidez al 50%, Fuente Estilizada Playfair Display) -->
-        <section id="hero" class="relative w-full overflow-hidden flex items-center min-h-[520px] lg:min-h-[580px] pb-16 pt-10">
+        <section id="hero"
+            class="relative w-full overflow-hidden flex items-center min-h-[520px] lg:min-h-[580px] pb-16 pt-10">
             <!-- Imagen de Fondo con Brillo y Nitidez al 50% (+50% Brightness & +50% Contrast) -->
-            <div class="absolute inset-0 w-full h-full bg-cover bg-center hero-bright-sharp" 
-                 style="background-image: url('assets/cabana-bosque.jpg');">
+            <div class="absolute inset-0 w-full h-full bg-cover bg-center hero-bright-sharp"
+                style="background-image: url('assets/cabana-bosque.jpg');">
             </div>
-            
+
             <!-- Degradado equilibrado para mantener nitidez fotográfica y perfecta legibilidad -->
-            <div class="absolute inset-0 bg-gradient-to-r from-black/75 via-[#081810]/45 to-transparent pointer-events-none"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-[#12241a] via-transparent to-black/35 pointer-events-none"></div>
+            <div
+                class="absolute inset-0 bg-gradient-to-r from-black/75 via-[#081810]/45 to-transparent pointer-events-none">
+            </div>
+            <div
+                class="absolute inset-0 bg-gradient-to-t from-[#12241a] via-transparent to-black/35 pointer-events-none">
+            </div>
 
             <!-- Contenido Hero Exclusivo: Tipografía Estilizada de Alta Gama -->
             <div class="relative w-full max-w-[1360px] mx-auto px-4 sm:px-6 py-12 lg:py-16 z-10">
@@ -151,14 +180,18 @@
                     <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold text-white tracking-wide leading-[1.12] drop-shadow-[0_4px_25px_rgba(0,0,0,0.85)]"
                         style="font-family: 'Playfair Display', Georgia, serif;">
                         Tu Refugio<br>
-                        <span class="text-[#f2ca50] font-black italic tracking-wide drop-shadow-[0_2px_25px_rgba(242,202,80,0.6)]">
+                        <span
+                            class="text-[#f2ca50] font-black italic tracking-wide drop-shadow-[0_2px_25px_rgba(242,202,80,0.6)]">
                             tu HOGAR, tu VIDA
                         </span>
                     </h1>
 
                     <!-- Párrafo Descriptivo -->
-                    <p class="text-base sm:text-xl text-[#dae5dd] max-w-2xl leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)] font-medium mt-2">
-                        Un terreno para que puedas construir <strong class="font-extrabold text-white">TU CASA DE CAMPO</strong> con total seguridad jurídica: título de propiedad en SUNARP, saneamiento físico-legal garantizado y el respaldo de <strong class="text-[#f2ca50]">Agencia NOVA</strong>.
+                    <p
+                        class="text-base sm:text-xl text-[#dae5dd] max-w-2xl leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)] font-medium mt-2">
+                        Un terreno para que puedas construir <strong class="font-extrabold text-white">TU CASA DE
+                            CAMPO</strong> con total seguridad jurídica: título de propiedad en SUNARP, saneamiento
+                        físico-legal garantizado y el respaldo de <strong class="text-[#f2ca50]">Agencia NOVA</strong>.
                     </p>
                 </div>
             </div>
@@ -166,11 +199,16 @@
 
         <!-- 2. SECCIÓN MAPA INTERACTIVO (VISTA SATELITAL - TODAS LAS PROPIEDADES EN UN SOLO MAPA) -->
         <section id="mapa-propiedades" class="max-w-[1360px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
-            <div class="rounded-3xl bg-[#091810] border border-[#d4af37]/30 shadow-2xl p-6 sm:p-10 relative overflow-hidden">
-                
+            <div
+                class="rounded-3xl bg-[#091810] border border-[#d4af37]/30 shadow-2xl p-6 sm:p-10 relative overflow-hidden">
+
                 <!-- Ambient Glow -->
-                <div class="absolute -top-32 -right-32 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div
+                    class="absolute -top-32 -right-32 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none">
+                </div>
+                <div
+                    class="absolute -bottom-32 -left-32 w-80 h-80 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none">
+                </div>
 
                 <div class="relative z-10 flex flex-col gap-4">
 
@@ -180,21 +218,23 @@
                     </div>
 
                     <!-- Map Container: Unified Multi-Property Map with Embedded Leaflet -->
-                    <div class="relative w-full rounded-2xl overflow-hidden border border-[#d4af37]/30 shadow-2xl bg-black min-h-[460px] lg:min-h-[530px]">
-                        
+                    <div
+                        class="relative w-full rounded-2xl overflow-hidden border border-[#d4af37]/30 shadow-2xl bg-black min-h-[460px] lg:min-h-[530px]">
+
                         <!-- Leaflet Interactive Map Container (Showing ALL properties with pins simultaneously) -->
                         <div id="unified-leaflet-map" class="w-full h-[460px] lg:h-[530px] z-10"></div>
 
                         <!-- Badge Indicador: Vista Satelital HD Exclusiva -->
-                        <div class="absolute top-4 left-14 z-20 py-2 px-3.5 rounded-xl border border-[#d4af37]/40 shadow-2xl bg-[#081810]/90 backdrop-blur-md text-xs font-black text-[#f2ca50] flex items-center gap-1.5 select-none">
+                        <div
+                            class="absolute top-4 left-14 z-20 py-2 px-3.5 rounded-xl border border-[#d4af37]/40 shadow-2xl bg-[#081810]/90 backdrop-blur-md text-xs font-black text-[#f2ca50] flex items-center gap-1.5 select-none">
                             <span class="material-symbols-outlined text-[16px]">satellite_alt</span>
                             <span>Vista Satelital HD</span>
                         </div>
 
                         <!-- Botón ABRIR EN GOOGLE MAPS (Conservado dentro del mapa) -->
                         <a id="map-external-link" href="https://maps.google.com" target="_blank"
-                           class="absolute top-4 right-4 z-20 py-2.5 px-4 rounded-xl bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-2xl transition-all border border-[#f2ca50] hover:scale-105 active:scale-95"
-                           title="Abrir ubicación en la aplicación de Google Maps">
+                            class="absolute top-4 right-4 z-20 py-2.5 px-4 rounded-xl bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-2xl transition-all border border-[#f2ca50] hover:scale-105 active:scale-95"
+                            title="Abrir ubicación en la aplicación de Google Maps">
                             <span class="material-symbols-outlined text-[18px]">open_in_new</span>
                             <span>Abrir en Google Maps</span>
                         </a>
@@ -206,67 +246,121 @@
         </section>
 
         <!-- 3. SEARCH & FILTER CONSOLE (Ubicaciones y Tipos Corregidos con Colores Distintivos) -->
-        <section id="buscador-filtros" class="w-full bg-[#0d1c14] py-6 shadow-inner border-t border-b border-[#d4af37]/20 relative z-20">
+        <section id="buscador-filtros"
+            class="w-full bg-[#0d1c14] py-6 shadow-inner border-t border-b border-[#d4af37]/20 relative z-20">
             <div class="max-w-[1360px] mx-auto px-4 sm:px-6 flex flex-col gap-4">
-                
-                <div class="p-5 sm:p-6 rounded-2xl bg-[#08150e]/90 backdrop-blur-xl shadow-xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 items-center border border-[#d4af37]/25">
-                    
+
+                <div
+                    class="p-5 sm:p-6 rounded-2xl bg-[#08150e]/90 backdrop-blur-xl shadow-xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 items-center border border-[#d4af37]/25">
+
                     <!-- Location Selector con los colores #e6cff2, #d4edbc, #55ab8b -->
                     <div class="flex flex-col gap-1.5 lg:col-span-5">
-                        <label class="font-label text-xs text-[#f2ca50] uppercase tracking-wider font-bold flex items-center gap-1.5">
+                        <label
+                            class="font-label text-xs text-[#f2ca50] uppercase tracking-wider font-bold flex items-center gap-1.5">
                             <span class="material-symbols-outlined text-[16px]">location_on</span> Ubicación Estratégica
                         </label>
                         <div class="relative">
-                            <select id="filter-location" 
-                                    class="w-full bg-[#142c1e] text-white text-xs sm:text-sm px-4 py-2.5 rounded-xl appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#d4af37] border border-[#d4af37]/30">
-                                
+                            <select id="filter-location"
+                                class="w-full bg-[#142c1e] text-white text-xs sm:text-sm px-4 py-2.5 rounded-xl appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#d4af37] border border-[#d4af37]/30">
+
                                 <!-- Grupo 1: Color #e6cff2 (Lila suave) -->
-                                <optgroup label="Cusco & Distritos Metropolitano" style="background-color: #2b1736; color: #e6cff2; font-weight: 800;">
-                                    <option value="all" style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">Todas las Regiones (Perú)</option>
-                                    <option value="cusco" style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">Cusco</option>
-                                    <option value="wanchaq" style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">Wanchaq</option>
-                                    <option value="santiago" style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">Santiago</option>
-                                    <option value="san-sebastian" style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">San Sebastián</option>
-                                    <option value="san-jeronimo" style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">San Jerónimo</option>
-                                    <option value="poroy" style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">Poroy</option>
-                                    <option value="saylla" style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">Saylla</option>
-                                    <option value="ccorcca" style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">Ccorcca</option>
+                                <optgroup label="Cusco & Distritos Metropolitano"
+                                    style="background-color: #2b1736; color: #e6cff2; font-weight: 800;">
+                                    <option value="all"
+                                        style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">Todas las
+                                        Regiones (Perú)</option>
+                                    <option value="cusco"
+                                        style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">Cusco
+                                    </option>
+                                    <option value="wanchaq"
+                                        style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">Wanchaq
+                                    </option>
+                                    <option value="santiago"
+                                        style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">Santiago
+                                    </option>
+                                    <option value="san-sebastian"
+                                        style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">San
+                                        Sebastián</option>
+                                    <option value="san-jeronimo"
+                                        style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">San
+                                        Jerónimo</option>
+                                    <option value="poroy"
+                                        style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">Poroy
+                                    </option>
+                                    <option value="saylla"
+                                        style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">Saylla
+                                    </option>
+                                    <option value="ccorcca"
+                                        style="background-color: #e6cff2; color: #1f0f29; font-weight: 700;">Ccorcca
+                                    </option>
                                 </optgroup>
 
                                 <!-- Grupo 2: Color #d4edbc (Verde lima pastel) -->
-                                <optgroup label="Provincias de la Región Cusco" style="background-color: #172b15; color: #d4edbc; font-weight: 800;">
-                                    <option value="acomayo" style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Acomayo</option>
-                                    <option value="anta" style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Anta</option>
-                                    <option value="calca" style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Calca</option>
-                                    <option value="canas" style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Canas</option>
-                                    <option value="canchis" style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Canchis</option>
-                                    <option value="chumbivilcas" style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Chumbivilcas</option>
-                                    <option value="espinar" style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Espinar</option>
-                                    <option value="la-convencion" style="background-color: #d4edbc; color: #11240f; font-weight: 700;">La Convención</option>
-                                    <option value="paruro" style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Paruro</option>
-                                    <option value="paucartambo" style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Paucartambo</option>
-                                    <option value="quispicanchi" style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Quispicanchi</option>
-                                    <option value="urubamba" style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Urubamba (Valle Sagrado)</option>
+                                <optgroup label="Provincias de la Región Cusco"
+                                    style="background-color: #172b15; color: #d4edbc; font-weight: 800;">
+                                    <option value="acomayo"
+                                        style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Acomayo
+                                    </option>
+                                    <option value="anta"
+                                        style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Anta
+                                    </option>
+                                    <option value="calca"
+                                        style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Calca
+                                    </option>
+                                    <option value="canas"
+                                        style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Canas
+                                    </option>
+                                    <option value="canchis"
+                                        style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Canchis
+                                    </option>
+                                    <option value="chumbivilcas"
+                                        style="background-color: #d4edbc; color: #11240f; font-weight: 700;">
+                                        Chumbivilcas</option>
+                                    <option value="espinar"
+                                        style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Espinar
+                                    </option>
+                                    <option value="la-convencion"
+                                        style="background-color: #d4edbc; color: #11240f; font-weight: 700;">La
+                                        Convención</option>
+                                    <option value="paruro"
+                                        style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Paruro
+                                    </option>
+                                    <option value="paucartambo"
+                                        style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Paucartambo
+                                    </option>
+                                    <option value="quispicanchi"
+                                        style="background-color: #d4edbc; color: #11240f; font-weight: 700;">
+                                        Quispicanchi</option>
+                                    <option value="urubamba"
+                                        style="background-color: #d4edbc; color: #11240f; font-weight: 700;">Urubamba
+                                        (Valle Sagrado)</option>
                                 </optgroup>
 
                                 <!-- Grupo 3: Color #55ab8b (Verde turquesa/esmeralda) -->
-                                <optgroup label="Otras Regiones del Sur" style="background-color: #0b261e; color: #55ab8b; font-weight: 800;">
-                                    <option value="apurimac" style="background-color: #55ab8b; color: #031c14; font-weight: 700;">Apurímac</option>
-                                    <option value="madre-de-dios" style="background-color: #55ab8b; color: #031c14; font-weight: 700;">Madre de Dios</option>
+                                <optgroup label="Otras Regiones del Sur"
+                                    style="background-color: #0b261e; color: #55ab8b; font-weight: 800;">
+                                    <option value="apurimac"
+                                        style="background-color: #55ab8b; color: #031c14; font-weight: 700;">Apurímac
+                                    </option>
+                                    <option value="madre-de-dios"
+                                        style="background-color: #55ab8b; color: #031c14; font-weight: 700;">Madre de
+                                        Dios</option>
                                 </optgroup>
                             </select>
-                            <span class="material-symbols-outlined pointer-events-none absolute right-3 top-2.5 text-[#f2ca50] text-[18px]">expand_more</span>
+                            <span
+                                class="material-symbols-outlined pointer-events-none absolute right-3 top-2.5 text-[#f2ca50] text-[18px]">expand_more</span>
                         </div>
                     </div>
 
                     <!-- Property Type (Lista Actualizada) -->
                     <div class="flex flex-col gap-1.5 lg:col-span-4">
-                        <label class="font-label text-xs text-[#f2ca50] uppercase tracking-wider font-bold flex items-center gap-1.5">
+                        <label
+                            class="font-label text-xs text-[#f2ca50] uppercase tracking-wider font-bold flex items-center gap-1.5">
                             <span class="material-symbols-outlined text-[16px]">holiday_village</span> Tipo de Inmueble
                         </label>
                         <div class="relative">
-                            <select id="filter-type" 
-                                    class="w-full bg-[#142c1e] text-white text-xs sm:text-sm px-4 py-2.5 rounded-xl appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#d4af37] border border-[#d4af37]/30">
+                            <select id="filter-type"
+                                class="w-full bg-[#142c1e] text-white text-xs sm:text-sm px-4 py-2.5 rounded-xl appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#d4af37] border border-[#d4af37]/30">
                                 <option value="all">Todos los formatos</option>
                                 <option value="proyecto">Proyecto</option>
                                 <option value="terreno">Terreno</option>
@@ -276,30 +370,34 @@
                                 <option value="anticresis">Anticresis</option>
                                 <option value="local-comercial">Local Comercial</option>
                             </select>
-                            <span class="material-symbols-outlined pointer-events-none absolute right-3 top-2.5 text-[#f2ca50] text-[18px]">expand_more</span>
+                            <span
+                                class="material-symbols-outlined pointer-events-none absolute right-3 top-2.5 text-[#f2ca50] text-[18px]">expand_more</span>
                         </div>
                     </div>
 
                     <!-- Investment / Area Range -->
                     <div class="flex flex-col gap-1.5 lg:col-span-2">
-                        <label class="font-label text-xs text-[#f2ca50] uppercase tracking-wider font-bold flex items-center gap-1.5">
+                        <label
+                            class="font-label text-xs text-[#f2ca50] uppercase tracking-wider font-bold flex items-center gap-1.5">
                             <span class="material-symbols-outlined text-[16px]">square_foot</span> Metraje / Área
                         </label>
                         <div class="relative">
-                            <select id="filter-price" class="w-full bg-[#142c1e] text-white text-xs sm:text-sm px-4 py-2.5 rounded-xl appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#d4af37] border border-[#d4af37]/30">
+                            <select id="filter-price"
+                                class="w-full bg-[#142c1e] text-white text-xs sm:text-sm px-4 py-2.5 rounded-xl appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#d4af37] border border-[#d4af37]/30">
                                 <option value="all">Cualquier área</option>
                                 <option value="under-100k">Hasta 1,000 m²</option>
                                 <option value="100k-200k">1,000 m² - 2,500 m²</option>
                                 <option value="above-200k">Más de 2,500 m²</option>
                             </select>
-                            <span class="material-symbols-outlined pointer-events-none absolute right-3 top-2.5 text-[#f2ca50] text-[18px]">expand_more</span>
+                            <span
+                                class="material-symbols-outlined pointer-events-none absolute right-3 top-2.5 text-[#f2ca50] text-[18px]">expand_more</span>
                         </div>
                     </div>
 
                     <!-- Botón Restablecer Filtros (Botón Filtrar Borrado como se solicitó) -->
                     <div class="flex items-end justify-center lg:col-span-1 pt-1 md:pt-0">
-                        <button id="btn-reset-filters" title="Restablecer todos los filtros" 
-                                class="w-full py-2.5 px-3 bg-[#142c1e] hover:bg-[#1e422e] text-[#dae5dd] hover:text-[#f2ca50] rounded-xl border border-[#d4af37]/30 transition-all flex items-center justify-center gap-1 shadow">
+                        <button id="btn-reset-filters" title="Restablecer todos los filtros"
+                            class="w-full py-2.5 px-3 bg-[#142c1e] hover:bg-[#1e422e] text-[#dae5dd] hover:text-[#f2ca50] rounded-xl border border-[#d4af37]/30 transition-all flex items-center justify-center gap-1 shadow">
                             <span class="material-symbols-outlined text-[20px]">restart_alt</span>
                             <span class="text-xs font-bold lg:hidden">Restablecer</span>
                         </button>
@@ -313,19 +411,21 @@
         <!-- 3. PROPERTIES SHOWCASE PORTFOLIO (Grid Dinámico administrable) -->
         <section id="catalogo-propiedades" class="max-w-[1360px] mx-auto px-4 sm:px-6 py-10 sm:py-14">
             <div class="flex flex-col gap-6">
-                
+
                 <!-- Barra superior con contador y botón de administración directa -->
                 <div class="flex items-center justify-between flex-wrap gap-4 pb-2 border-b border-white/10">
                     <div class="flex items-center gap-3 flex-wrap">
                         <span id="prop-count" class="text-xs font-bold text-[#bec9c1] uppercase tracking-wider">
                             Cargando propiedades...
                         </span>
-                        <span id="supabase-live-badge" class="hidden text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 flex items-center gap-1.5 shadow">
+                        <span id="supabase-live-badge"
+                            class="hidden text-[10px] font-black px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 flex items-center gap-1.5 shadow">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                             <span>SUPABASE CONECTADO</span>
                         </span>
                     </div>
-                    <button onclick="openAdminPasswordModal()" class="text-xs font-bold text-[#f2ca50] hover:text-white inline-flex items-center gap-1.5 transition-colors">
+                    <button onclick="openAdminPasswordModal()"
+                        class="text-xs font-bold text-[#f2ca50] hover:text-white inline-flex items-center gap-1.5 transition-colors">
                         <span class="material-symbols-outlined text-[16px]">add_circle</span>
                         <span>Gestionar o Agregar Propiedad</span>
                     </button>
@@ -340,20 +440,23 @@
 
         <!-- 4. INTERACTIVE CONVERSION & CONCIERGE CTA SECTION -->
         <section id="contacto-concierge" class="max-w-[1360px] mx-auto px-4 sm:px-6 pt-2 pb-20">
-            <div class="rounded-3xl bg-[#0e2216] overflow-hidden shadow-2xl grid grid-cols-1 lg:grid-cols-12 border border-[#d4af37]/35">
-                
+            <div
+                class="rounded-3xl bg-[#0e2216] overflow-hidden shadow-2xl grid grid-cols-1 lg:grid-cols-12 border border-[#d4af37]/35">
+
                 <!-- Visual Left Panel -->
-                <div class="lg:col-span-5 relative p-8 sm:p-12 flex flex-col justify-between bg-[#081810] overflow-hidden">
+                <div
+                    class="lg:col-span-5 relative p-8 sm:p-12 flex flex-col justify-between bg-[#081810] overflow-hidden">
                     <div class="absolute inset-0 opacity-20 mix-blend-overlay">
-                        <div class="w-full h-full bg-cover bg-center" 
-                             style="background-image: url('assets/cabana-bosque.jpg');"></div>
+                        <div class="w-full h-full bg-cover bg-center"
+                            style="background-image: url('assets/cabana-bosque.jpg');"></div>
                     </div>
                     <div class="relative z-10 flex flex-col gap-4">
                         <h2 class="text-2xl sm:text-3xl font-black text-white font-heading leading-snug">
                             Agenda tu Visita Guiada o Sesión Virtual Privada
                         </h2>
                         <p class="text-xs sm:text-sm text-[#bec9c1] leading-relaxed">
-                            Coordinamos transporte privado para inspección in situ de los lotes, o reuniones 1 a 1 por Google Meet con nuestro abogado especialista en saneamiento inmobiliario.
+                            Coordinamos transporte privado para inspección in situ de los lotes, o reuniones 1 a 1 por
+                            Google Meet con nuestro abogado especialista en saneamiento inmobiliario.
                         </p>
                     </div>
 
@@ -368,29 +471,39 @@
 
                 <!-- Form Right Panel -->
                 <div class="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-center bg-[#f5fbf6] text-[#171d1a]">
-                    <form id="form-visita-bienes-raices" class="flex flex-col gap-4" onsubmit="event.preventDefault(); handleFormSubmit();">
+                    <form id="form-visita-bienes-raices" class="flex flex-col gap-4"
+                        onsubmit="event.preventDefault(); handleFormSubmit();">
                         <div class="flex flex-col gap-1">
-                            <h3 class="text-xl sm:text-2xl font-black text-[#122b1c] font-heading">Completa tus datos de contacto</h3>
-                            <p class="text-xs text-[#414b46]">Un director inmobiliario te responderá en menos de 15 minutos hábiles a tu WhatsApp.</p>
+                            <h3 class="text-xl sm:text-2xl font-black text-[#122b1c] font-heading">Completa tus datos de
+                                contacto</h3>
+                            <p class="text-xs text-[#414b46]">Un director inmobiliario te responderá en menos de 15
+                                minutos hábiles a tu WhatsApp.</p>
                         </div>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="flex flex-col gap-1">
-                                <label for="client-name" class="font-label text-xs uppercase tracking-wider text-[#122b1c] font-bold">Nombre y Apellidos *</label>
-                                <input id="client-name" type="text" required placeholder="Ej. Carlos Mendoza" 
-                                       class="w-full bg-white text-[#171d1a] px-4 py-2.5 rounded-xl text-xs sm:text-sm border border-[#bec9c1] focus:ring-2 focus:ring-[#d4af37] focus:outline-none">
+                                <label for="client-name"
+                                    class="font-label text-xs uppercase tracking-wider text-[#122b1c] font-bold">Nombre
+                                    y Apellidos *</label>
+                                <input id="client-name" type="text" required placeholder="Ej. Carlos Mendoza"
+                                    class="w-full bg-white text-[#171d1a] px-4 py-2.5 rounded-xl text-xs sm:text-sm border border-[#bec9c1] focus:ring-2 focus:ring-[#d4af37] focus:outline-none">
                             </div>
                             <div class="flex flex-col gap-1">
-                                <label for="client-phone" class="font-label text-xs uppercase tracking-wider text-[#122b1c] font-bold">Teléfono / WhatsApp *</label>
-                                <input id="client-phone" type="tel" required placeholder="+51 948 301 540" 
-                                       class="w-full bg-white text-[#171d1a] px-4 py-2.5 rounded-xl text-xs sm:text-sm border border-[#bec9c1] focus:ring-2 focus:ring-[#d4af37] focus:outline-none">
+                                <label for="client-phone"
+                                    class="font-label text-xs uppercase tracking-wider text-[#122b1c] font-bold">Teléfono
+                                    / WhatsApp *</label>
+                                <input id="client-phone" type="tel" required placeholder="+51 948 301 540"
+                                    class="w-full bg-white text-[#171d1a] px-4 py-2.5 rounded-xl text-xs sm:text-sm border border-[#bec9c1] focus:ring-2 focus:ring-[#d4af37] focus:outline-none">
                             </div>
                         </div>
 
                         <div class="flex flex-col gap-1">
-                            <label for="client-message" class="font-label text-xs uppercase tracking-wider text-[#122b1c] font-bold">Comentarios o Requerimientos Particulares</label>
-                            <textarea id="client-message" rows="2" placeholder="Indícanos fechas tentativas para tu visita o si buscas metrajes específicos..." 
-                                      class="w-full bg-white text-[#171d1a] px-4 py-2.5 rounded-xl text-xs sm:text-sm border border-[#bec9c1] focus:ring-2 focus:ring-[#d4af37] focus:outline-none"></textarea>
+                            <label for="client-message"
+                                class="font-label text-xs uppercase tracking-wider text-[#122b1c] font-bold">Comentarios
+                                o Requerimientos Particulares</label>
+                            <textarea id="client-message" rows="2"
+                                placeholder="Indícanos fechas tentativas para tu visita o si buscas metrajes específicos..."
+                                class="w-full bg-white text-[#171d1a] px-4 py-2.5 rounded-xl text-xs sm:text-sm border border-[#bec9c1] focus:ring-2 focus:ring-[#d4af37] focus:outline-none"></textarea>
                         </div>
 
                         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-1">
@@ -398,16 +511,19 @@
                                 <input type="checkbox" required checked class="rounded accent-[#d4af37]">
                                 <span>Acepto política de privacidad y contacto directo</span>
                             </label>
-                            <button type="submit" class="w-full sm:w-auto px-8 py-3 rounded-full bg-[#122b1c] hover:bg-[#1a3a27] text-[#f2ca50] font-black text-xs sm:text-sm uppercase tracking-wider transition-colors shadow-lg flex items-center justify-center gap-2">
+                            <button type="submit"
+                                class="w-full sm:w-auto px-8 py-3 rounded-full bg-[#122b1c] hover:bg-[#1a3a27] text-[#f2ca50] font-black text-xs sm:text-sm uppercase tracking-wider transition-colors shadow-lg flex items-center justify-center gap-2">
                                 <span>Confirmar Reserva</span>
                                 <span class="material-symbols-outlined text-[18px]">send</span>
                             </button>
                         </div>
 
                         <!-- Feedback placeholder -->
-                        <div id="form-feedback" class="hidden p-4 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs sm:text-sm font-semibold flex items-center gap-2">
+                        <div id="form-feedback"
+                            class="hidden p-4 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs sm:text-sm font-semibold flex items-center gap-2">
                             <span class="material-symbols-outlined text-[20px] text-emerald-600">check_circle</span>
-                            <span>¡Solicitud enviada y registrada con éxito! Te contactaremos al WhatsApp en breve.</span>
+                            <span>¡Solicitud enviada y registrada con éxito! Te contactaremos al WhatsApp en
+                                breve.</span>
                         </div>
                     </form>
                 </div>
@@ -419,7 +535,8 @@
 
     <!-- FOOTER INSTITUCIONAL -->
     <footer class="w-full bg-[#06120a] text-[#bec9c1] border-t border-[#d4af37]/25 py-10">
-        <div class="max-w-[1360px] mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-xs sm:text-sm">
+        <div
+            class="max-w-[1360px] mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-xs sm:text-sm">
             <div class="flex items-center gap-3">
                 <img src="assets/nova-verde-sin-fondo.png" alt="Agencia NOVA" class="h-9 w-auto object-contain">
                 <span>&copy; 2026 Agencia NOVA E.I.R.L. - Saneamiento Inmobiliario & Asesoría Legal Integral.</span>
@@ -433,16 +550,19 @@
     </footer>
 
     <!-- MODAL 1: DETALLES DE PROPIEDAD CON CARRUSEL DE 3 FOTOS -->
-    <div id="property-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
-        <div class="bg-[#122b1c] border border-[#d4af37]/40 rounded-3xl max-w-2xl w-full p-6 sm:p-8 flex flex-col gap-4 shadow-2xl relative text-[#e8f1eb] max-h-[92vh] overflow-y-auto">
+    <div id="property-modal"
+        class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
+        <div
+            class="bg-[#122b1c] border border-[#d4af37]/40 rounded-3xl max-w-2xl w-full p-6 sm:p-8 flex flex-col gap-4 shadow-2xl relative text-[#e8f1eb] max-h-[92vh] overflow-y-auto">
             <button onclick="closeModalDetails()" class="absolute top-4 right-4 text-[#bec9c1] hover:text-white p-1">
                 <span class="material-symbols-outlined text-[24px]">close</span>
             </button>
             <div class="flex flex-col gap-1">
-                <span id="modal-loc" class="font-label text-xs text-[#f2ca50] uppercase tracking-widest font-bold">Ubicación</span>
+                <span id="modal-loc"
+                    class="font-label text-xs text-[#f2ca50] uppercase tracking-widest font-bold">Ubicación</span>
                 <h3 id="modal-title" class="text-2xl font-black text-white font-heading">Título de Propiedad</h3>
             </div>
-            
+
             <div class="flex items-center gap-4 py-3 bg-[#081810] rounded-2xl px-5 border border-white/10">
                 <div class="flex flex-col">
                     <span class="text-[10px] text-[#bec9c1] uppercase font-bold">Precio</span>
@@ -468,35 +588,40 @@
             <!-- CARRUSEL CON LAS 3 FOTOS INGRESADAS -->
             <div class="mt-2 flex flex-col gap-2">
                 <span class="text-[11px] font-bold uppercase tracking-wider text-[#f2ca50] flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-[16px]">photo_library</span> Galería Fotográfica (3 Fotos)
+                    <span class="material-symbols-outlined text-[16px]">photo_library</span> Galería Fotográfica (3
+                    Fotos)
                 </span>
-                
-                <div id="modal-carousel-container" class="relative w-full rounded-2xl overflow-hidden bg-black/60 border border-white/15 shadow-xl group">
+
+                <div id="modal-carousel-container"
+                    class="relative w-full rounded-2xl overflow-hidden bg-black/60 border border-white/15 shadow-xl group">
                     <!-- Slide Image -->
-                    <div class="relative h-60 sm:h-72 w-full overflow-hidden flex items-center justify-center bg-[#07130b]">
-                        <img id="modal-carousel-img" src="" alt="Foto propiedad" 
-                             class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105">
-                        
+                    <div
+                        class="relative h-60 sm:h-72 w-full overflow-hidden flex items-center justify-center bg-[#07130b]">
+                        <img id="modal-carousel-img" src="" alt="Foto propiedad"
+                            class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105">
+
                         <!-- Prev button -->
-                        <button type="button" onclick="prevCarouselSlide()" 
-                                class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/65 hover:bg-[#d4af37] text-white hover:text-black flex items-center justify-center backdrop-blur-md transition-all shadow-xl border border-white/20 active:scale-90">
+                        <button type="button" onclick="prevCarouselSlide()"
+                            class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/65 hover:bg-[#d4af37] text-white hover:text-black flex items-center justify-center backdrop-blur-md transition-all shadow-xl border border-white/20 active:scale-90">
                             <span class="material-symbols-outlined text-[20px]">chevron_left</span>
                         </button>
-                        
+
                         <!-- Next button -->
-                        <button type="button" onclick="nextCarouselSlide()" 
-                                class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/65 hover:bg-[#d4af37] text-white hover:text-black flex items-center justify-center backdrop-blur-md transition-all shadow-xl border border-white/20 active:scale-90">
+                        <button type="button" onclick="nextCarouselSlide()"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/65 hover:bg-[#d4af37] text-white hover:text-black flex items-center justify-center backdrop-blur-md transition-all shadow-xl border border-white/20 active:scale-90">
                             <span class="material-symbols-outlined text-[20px]">chevron_right</span>
                         </button>
-                        
+
                         <!-- Slide Badge Counter -->
-                        <span id="modal-carousel-counter" class="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-black/80 backdrop-blur-md text-[#f2ca50] text-[11px] font-black border border-[#d4af37]/40 shadow-lg">
+                        <span id="modal-carousel-counter"
+                            class="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-black/80 backdrop-blur-md text-[#f2ca50] text-[11px] font-black border border-[#d4af37]/40 shadow-lg">
                             1 / 3
                         </span>
                     </div>
 
                     <!-- Carousel Dots Navigation -->
-                    <div id="modal-carousel-dots" class="flex items-center justify-center gap-2 py-2 bg-[#081810] border-t border-white/5">
+                    <div id="modal-carousel-dots"
+                        class="flex items-center justify-center gap-2 py-2 bg-[#081810] border-t border-white/5">
                         <!-- Populated dynamically -->
                     </div>
                 </div>
@@ -504,11 +629,12 @@
 
             <!-- Botones de Acción -->
             <div class="flex items-center gap-3 pt-2">
-                <a id="modal-wa-btn" href="#" target="_blank" 
-                   class="flex-1 py-3 px-5 rounded-full bg-[#d4af37] text-[#241a00] font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#e9c349] transition-colors shadow-lg">
+                <a id="modal-wa-btn" href="#" target="_blank"
+                    class="flex-1 py-3 px-5 rounded-full bg-[#d4af37] text-[#241a00] font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#e9c349] transition-colors shadow-lg">
                     <span class="material-symbols-outlined text-[18px]">chat</span> Coordinar Visita
                 </a>
-                <button onclick="closeModalDetails()" class="px-6 py-3 rounded-full bg-[#1b3d2b] hover:bg-[#25523a] text-white font-bold text-xs uppercase tracking-wider transition-colors">
+                <button onclick="closeModalDetails()"
+                    class="px-6 py-3 rounded-full bg-[#1b3d2b] hover:bg-[#25523a] text-white font-bold text-xs uppercase tracking-wider transition-colors">
                     Cerrar
                 </button>
             </div>
@@ -516,14 +642,18 @@
     </div>
 
     <!-- MODAL 2: PASSWORD PROMPT PARA ACCESO ADMINISTRATIVO -->
-    <div id="admin-password-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-[#0f2418] border border-[#d4af37]/50 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative text-white">
-            <button onclick="closeAdminPasswordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1">
+    <div id="admin-password-modal"
+        class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div
+            class="bg-[#0f2418] border border-[#d4af37]/50 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative text-white">
+            <button onclick="closeAdminPasswordModal()"
+                class="absolute top-4 right-4 text-slate-400 hover:text-white p-1">
                 <span class="material-symbols-outlined text-[24px]">close</span>
             </button>
-            
+
             <div class="flex items-center gap-3 mb-4">
-                <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-400/40">
+                <div
+                    class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-400/40">
                     <span class="material-symbols-outlined text-[28px]">lock</span>
                 </div>
                 <div>
@@ -533,32 +663,37 @@
             </div>
 
             <p class="text-xs text-slate-300 mb-5 leading-relaxed">
-                Esta sección está protegida para directores y administradores de Agencia NOVA. Por favor ingresa tu clave de seguridad:
+                Esta sección está protegida para directores y administradores de Agencia NOVA. Por favor ingresa tu
+                clave de seguridad:
             </p>
 
             <form onsubmit="event.preventDefault(); verifyAdminPassword();" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#d4af37] mb-1.5">Clave de Acceso</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#d4af37] mb-1.5">Clave de
+                        Acceso</label>
                     <div class="relative">
                         <input type="password" id="admin-password-input" required placeholder="Ingresa la clave..."
-                               class="w-full bg-[#081810] border border-white/20 focus:border-[#d4af37] focus:ring-2 focus:ring-[#d4af37] text-white px-4 py-3 rounded-xl text-sm outline-none">
-                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-3 text-slate-400 hover:text-white">
+                            class="w-full bg-[#081810] border border-white/20 focus:border-[#d4af37] focus:ring-2 focus:ring-[#d4af37] text-white px-4 py-3 rounded-xl text-sm outline-none">
+                        <button type="button" onclick="togglePasswordVisibility()"
+                            class="absolute right-3 top-3 text-slate-400 hover:text-white">
                             <span id="pwd-eye-icon" class="material-symbols-outlined text-[20px]">visibility</span>
                         </button>
                     </div>
-                    <p id="admin-password-error" class="hidden text-xs text-red-400 mt-2 font-bold flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[16px]">error</span> Clave incorrecta. Inténtalo nuevamente.
+                    <p id="admin-password-error"
+                        class="hidden text-xs text-red-400 mt-2 font-bold flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[16px]">error</span> Clave incorrecta. Inténtalo
+                        nuevamente.
                     </p>
                 </div>
 
                 <div class="flex items-center gap-3 pt-2">
-                    <button type="submit" 
-                            class="flex-1 py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2">
+                    <button type="submit"
+                        class="flex-1 py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-[18px]">verified_user</span>
                         <span>Ingresar al Panel</span>
                     </button>
-                    <button type="button" onclick="closeAdminPasswordModal()" 
-                            class="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors">
+                    <button type="button" onclick="closeAdminPasswordModal()"
+                        class="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors">
                         Cancelar
                     </button>
                 </div>
@@ -567,21 +702,27 @@
     </div>
 
     <!-- MODAL 3: PANEL DE ADMINISTRACIÓN DE PROPIEDADES (Sin botón restablecer catálogo) -->
-    <div id="admin-manager-modal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
-        <div class="bg-[#0b1c13] border border-[#d4af37]/40 rounded-3xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl relative text-white max-h-[92vh] flex flex-col">
-            
+    <div id="admin-manager-modal"
+        class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+        <div
+            class="bg-[#0b1c13] border border-[#d4af37]/40 rounded-3xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl relative text-white max-h-[92vh] flex flex-col">
+
             <!-- Header Modal -->
             <div class="flex items-center justify-between pb-4 border-b border-white/10 shrink-0">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-400/30">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-400/30">
                         <span class="material-symbols-outlined text-[24px]">real_estate_agent</span>
                     </div>
                     <div>
-                        <h3 class="text-xl sm:text-2xl font-black font-heading text-white">Panel de Gestión de Propiedades</h3>
-                        <p class="text-xs text-[#d4af37] font-semibold">Agrega, edita, actualiza o elimina lotes y fincas</p>
+                        <h3 class="text-xl sm:text-2xl font-black font-heading text-white">Panel de Gestión de
+                            Propiedades</h3>
+                        <p class="text-xs text-[#d4af37] font-semibold">Agrega, edita, actualiza o elimina lotes y
+                            fincas</p>
                     </div>
                 </div>
-                <button onclick="closeAdminManagerModal()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-white/10">
+                <button onclick="closeAdminManagerModal()"
+                    class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-white/10">
                     <span class="material-symbols-outlined text-[24px]">close</span>
                 </button>
             </div>
@@ -589,26 +730,27 @@
             <!-- Action Toolbar con Controles de Supabase -->
             <div class="py-4 flex flex-wrap items-center justify-between gap-3 shrink-0">
                 <div class="flex items-center gap-2 flex-wrap">
-                    <button onclick="openPropertyFormModal()" 
-                            class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all hover:scale-105 cursor-pointer">
+                    <button onclick="openPropertyFormModal()"
+                        class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all hover:scale-105 cursor-pointer">
                         <span class="material-symbols-outlined text-[18px]">add_circle</span>
                         <span>+ Agregar Propiedad</span>
                     </button>
-                    <button onclick="toggleSupabaseSettingsPanel()" 
-                            class="px-3.5 py-2.5 rounded-xl bg-[#142c1e] hover:bg-[#1a3827] text-[#f2ca50] border border-[#d4af37]/40 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow transition-all cursor-pointer"
-                            title="Ver y configurar conexión con Supabase (Tabla nova_propiedades y Bucket INMOBILIARIA)">
+                    <button onclick="toggleSupabaseSettingsPanel()"
+                        class="px-3.5 py-2.5 rounded-xl bg-[#142c1e] hover:bg-[#1a3827] text-[#f2ca50] border border-[#d4af37]/40 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow transition-all cursor-pointer"
+                        title="Ver y configurar conexión con Supabase (Tabla nova_propiedades y Bucket INMOBILIARIA)">
                         <span class="material-symbols-outlined text-[18px]">cloud_sync</span>
                         <span>Conexión Supabase</span>
                     </button>
-                    <button onclick="loadPropertiesFromSupabase(true)" 
-                            class="px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase flex items-center gap-1.5 transition-all cursor-pointer"
-                            title="Sincronizar y recargar terrenos desde la tabla nova_propiedades">
+                    <button onclick="loadPropertiesFromSupabase(true)"
+                        class="px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase flex items-center gap-1.5 transition-all cursor-pointer"
+                        title="Sincronizar y recargar terrenos desde la tabla nova_propiedades">
                         <span class="material-symbols-outlined text-[16px]">sync</span>
                         <span class="hidden sm:inline">Sincronizar</span>
                     </button>
                 </div>
                 <div class="flex items-center gap-2.5 text-xs text-slate-400">
-                    <span id="admin-supabase-status-badge" class="px-2.5 py-1 rounded-full text-[11px] font-bold border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 flex items-center gap-1.5">
+                    <span id="admin-supabase-status-badge"
+                        class="px-2.5 py-1 rounded-full text-[11px] font-bold border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 flex items-center gap-1.5">
                         <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                         <span id="admin-supabase-status-text">Supabase Conectado</span>
                     </span>
@@ -617,7 +759,8 @@
             </div>
 
             <!-- PANEL DESPLEGABLE DE CONFIGURACIÓN SUPABASE -->
-            <div id="supabase-config-panel" class="hidden p-4 rounded-2xl bg-[#07150d] border border-[#d4af37]/40 mb-3 space-y-3 shrink-0 shadow-inner">
+            <div id="supabase-config-panel"
+                class="hidden p-4 rounded-2xl bg-[#07150d] border border-[#d4af37]/40 mb-3 space-y-3 shrink-0 shadow-inner">
                 <div class="flex items-center justify-between pb-2 border-b border-white/10">
                     <div class="flex items-center gap-2 text-[#f2ca50] font-bold text-xs uppercase tracking-wider">
                         <span class="material-symbols-outlined text-[18px]">database</span>
@@ -627,68 +770,77 @@
                         <span class="material-symbols-outlined text-[18px]">close</span>
                     </button>
                 </div>
-                
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     <div>
                         <label class="block font-semibold text-slate-300 mb-1">URL del Proyecto Supabase</label>
-                        <input type="url" id="sb-cfg-url" placeholder="https://zrtfayhgoeoqwakbuakn.supabase.co" 
-                               class="w-full bg-[#0d2216] border border-white/20 rounded-xl px-3 py-2 text-white text-xs focus:border-[#d4af37] outline-none">
+                        <input type="url" id="sb-cfg-url" placeholder="https://zrtfayhgoeoqwakbuakn.supabase.co"
+                            class="w-full bg-[#0d2216] border border-white/20 rounded-xl px-3 py-2 text-white text-xs focus:border-[#d4af37] outline-none">
                     </div>
                     <div>
                         <label class="block font-semibold text-slate-300 mb-1">Clave Pública Anon (Anon Key)</label>
                         <div class="relative">
-                            <input type="password" id="sb-cfg-anon-key" placeholder="Pega tu clave anon de Supabase..." 
-                                   class="w-full bg-[#0d2216] border border-white/20 rounded-xl px-3 py-2 pr-9 text-white text-xs focus:border-[#d4af37] outline-none font-mono">
-                            <button type="button" onclick="toggleAnonKeyVisibility()" class="absolute right-2 top-2 text-slate-400 hover:text-white">
+                            <input type="password" id="sb-cfg-anon-key" placeholder="Pega tu clave anon de Supabase..."
+                                class="w-full bg-[#0d2216] border border-white/20 rounded-xl px-3 py-2 pr-9 text-white text-xs focus:border-[#d4af37] outline-none font-mono">
+                            <button type="button" onclick="toggleAnonKeyVisibility()"
+                                class="absolute right-2 top-2 text-slate-400 hover:text-white">
                                 <span id="anon-key-eye" class="material-symbols-outlined text-[16px]">visibility</span>
                             </button>
                         </div>
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-300 mb-1">Tabla de Terrenos (Esquema public)</label>
+                        <label class="block font-semibold text-slate-300 mb-1">Tabla de Terrenos (Esquema
+                            public)</label>
                         <input type="text" id="sb-cfg-table" placeholder="nova_propiedades" value="nova_propiedades"
-                               class="w-full bg-[#0d2216] border border-white/20 rounded-xl px-3 py-2 text-white text-xs focus:border-[#d4af37] outline-none font-mono">
-                        <span class="text-[10px] text-slate-400 mt-0.5 block">Esquema: <strong>public</strong> &bull; Tabla: <strong>nova_propiedades</strong></span>
+                            class="w-full bg-[#0d2216] border border-white/20 rounded-xl px-3 py-2 text-white text-xs focus:border-[#d4af37] outline-none font-mono">
+                        <span class="text-[10px] text-slate-400 mt-0.5 block">Esquema: <strong>public</strong> &bull;
+                            Tabla: <strong>nova_propiedades</strong></span>
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-300 mb-1">Bucket de Fotos en Supabase Storage</label>
+                        <label class="block font-semibold text-slate-300 mb-1">Bucket de Fotos en Supabase
+                            Storage</label>
                         <input type="text" id="sb-cfg-bucket" placeholder="INMOBILIARIA" value="INMOBILIARIA"
-                               class="w-full bg-[#0d2216] border border-white/20 rounded-xl px-3 py-2 text-white text-xs focus:border-[#d4af37] outline-none font-mono">
+                            class="w-full bg-[#0d2216] border border-white/20 rounded-xl px-3 py-2 text-white text-xs focus:border-[#d4af37] outline-none font-mono">
                     </div>
                 </div>
 
                 <!-- Botones de Acción Supabase -->
                 <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/10">
                     <div class="flex flex-wrap gap-2">
-                        <button type="button" onclick="saveSupabaseSettings(true)" 
-                                class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all shadow cursor-pointer">
+                        <button type="button" onclick="saveSupabaseSettings(true)"
+                            class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all shadow cursor-pointer">
                             <span class="material-symbols-outlined text-[16px]">save</span>
                             <span>Guardar Configuración</span>
                         </button>
-                        <button type="button" onclick="loadPropertiesFromSupabase(true)" 
-                                class="px-3.5 py-1.5 rounded-lg bg-[#142c1e] hover:bg-[#1a3827] text-[#f2ca50] border border-[#d4af37]/40 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer">
+                        <button type="button" onclick="loadPropertiesFromSupabase(true)"
+                            class="px-3.5 py-1.5 rounded-lg bg-[#142c1e] hover:bg-[#1a3827] text-[#f2ca50] border border-[#d4af37]/40 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer">
                             <span class="material-symbols-outlined text-[16px]">download</span>
                             <span>Cargar desde Supabase</span>
                         </button>
                         <button type="button" onclick="syncAllCatalogToSupabase()" id="btn-sync-to-supabase"
-                                class="px-3.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer">
+                            class="px-3.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer">
                             <span class="material-symbols-outlined text-[16px]">upload</span>
                             <span>Subir Catálogo Actual a Supabase</span>
                         </button>
                     </div>
-                    <button type="button" onclick="toggleSqlGuide()" class="text-xs text-[#f2ca50] hover:underline flex items-center gap-1 cursor-pointer">
+                    <button type="button" onclick="toggleSqlGuide()"
+                        class="text-xs text-[#f2ca50] hover:underline flex items-center gap-1 cursor-pointer">
                         <span class="material-symbols-outlined text-[14px]">code</span>
                         <span>Ver Código SQL de la Tabla</span>
                     </button>
                 </div>
 
                 <!-- SQL Guide Snippet (Desplegable) -->
-                <div id="sb-sql-guide" class="hidden p-3 rounded-xl bg-black/70 border border-white/10 text-[11px] font-mono text-slate-300 space-y-1.5">
+                <div id="sb-sql-guide"
+                    class="hidden p-3 rounded-xl bg-black/70 border border-white/10 text-[11px] font-mono text-slate-300 space-y-1.5">
                     <div class="flex items-center justify-between text-[#f2ca50] font-sans font-bold">
                         <span>Código SQL para crear la tabla nova_propiedades en Supabase:</span>
-                        <button type="button" onclick="copySupabaseSql()" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-white text-[10px] cursor-pointer">Copiar SQL</button>
+                        <button type="button" onclick="copySupabaseSql()"
+                            class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-white text-[10px] cursor-pointer">Copiar
+                            SQL</button>
                     </div>
-                    <pre id="sb-sql-code" class="overflow-x-auto text-emerald-300 p-2.5 bg-black/90 rounded border border-white/5 whitespace-pre leading-relaxed">CREATE TABLE IF NOT EXISTS nova_propiedades (
+                    <pre id="sb-sql-code"
+                        class="overflow-x-auto text-emerald-300 p-2.5 bg-black/90 rounded border border-white/5 whitespace-pre leading-relaxed">CREATE TABLE IF NOT EXISTS nova_propiedades (
     id TEXT PRIMARY KEY,
     title TEXT NOT NULL,
     location TEXT NOT NULL,
@@ -726,9 +878,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
             </div>
 
             <!-- Footer of Manager -->
-            <div class="pt-4 border-t border-white/10 flex items-center justify-between shrink-0 text-xs text-slate-400">
+            <div
+                class="pt-4 border-t border-white/10 flex items-center justify-between shrink-0 text-xs text-slate-400">
                 <span>Los cambios se guardan automáticamente y se actualizan en el catálogo y mapa interactivo.</span>
-                <button onclick="closeAdminManagerModal()" class="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors">
+                <button onclick="closeAdminManagerModal()"
+                    class="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition-colors">
                     Cerrar Panel
                 </button>
             </div>
@@ -736,9 +890,12 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
     </div>
 
     <!-- MODAL 4: FORMULARIO AGREGAR / EDITAR PROPIEDAD (3 Fotos, Característica 1 en Lista, Sin Descripción Breve) -->
-    <div id="property-form-modal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
-        <div class="bg-[#0c1e14] border border-[#d4af37]/50 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative text-white max-h-[92vh] overflow-y-auto">
-            <button onclick="closePropertyFormModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
+    <div id="property-form-modal"
+        class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
+        <div
+            class="bg-[#0c1e14] border border-[#d4af37]/50 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative text-white max-h-[92vh] overflow-y-auto">
+            <button onclick="closePropertyFormModal()"
+                class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
                 <span class="material-symbols-outlined text-[24px]">close</span>
             </button>
 
@@ -749,28 +906,33 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                 Completa los datos del inmueble para publicarlo en la web
             </p>
 
-            <form id="property-crud-form" onsubmit="event.preventDefault(); savePropertyForm();" class="space-y-4 text-xs">
+            <form id="property-crud-form" onsubmit="event.preventDefault(); savePropertyForm();"
+                class="space-y-4 text-xs">
                 <input type="hidden" id="crud-prop-id">
 
                 <!-- Título y Ubicación -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Título de Propiedad *</label>
+                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Título de Propiedad
+                            *</label>
                         <input type="text" id="crud-title" required placeholder="Ej. Finca Las Palmeras"
-                               class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
+                            class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
                     </div>
                     <div>
-                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Ubicación / Ciudad Visible *</label>
+                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Ubicación / Ciudad
+                            Visible *</label>
                         <input type="text" id="crud-location" required placeholder="Ej. Urubamba, Cusco"
-                               class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
+                            class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
                     </div>
                 </div>
 
                 <!-- Clave Ubicación & Tipo de Inmueble -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Filtro de Ubicación *</label>
-                        <select id="crud-location-key" class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
+                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Filtro de Ubicación
+                            *</label>
+                        <select id="crud-location-key"
+                            class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
                             <option value="cusco">Cusco (Centro / Metropolitano)</option>
                             <option value="wanchaq">Wanchaq</option>
                             <option value="santiago">Santiago</option>
@@ -801,8 +963,10 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                         </select>
                     </div>
                     <div>
-                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Tipo de Inmueble *</label>
-                        <select id="crud-type" class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
+                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Tipo de Inmueble
+                            *</label>
+                        <select id="crud-type"
+                            class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
                             <option value="terreno">Terreno</option>
                             <option value="proyecto">Proyecto</option>
                             <option value="casa">Casa</option>
@@ -817,27 +981,32 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                 <!-- Precio y Área -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Precio Texto (USD) *</label>
+                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Precio Texto (USD)
+                            *</label>
                         <input type="text" id="crud-price" required placeholder="Ej. $95,000 USD"
-                               class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
+                            class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
                     </div>
                     <div>
-                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Precio Numérico ($) *</label>
+                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Precio Numérico ($)
+                            *</label>
                         <input type="number" id="crud-price-num" required placeholder="Ej. 95000"
-                               class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
+                            class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
                     </div>
                     <div>
-                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Superficie / Área *</label>
+                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Superficie / Área
+                            *</label>
                         <input type="text" id="crud-area" required placeholder="Ej. 1,500 m²"
-                               class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
+                            class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
                     </div>
                 </div>
 
                 <!-- 3 SECCIONES PARA AGREGAR FOTOS (URL O BUCKET INMOBILIARIA) -->
                 <div class="p-3.5 rounded-2xl bg-[#081810] border border-white/10 space-y-3">
                     <div class="flex items-center justify-between flex-wrap gap-1">
-                        <span class="font-bold uppercase tracking-wider text-[#f2ca50] block text-[11px] flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[16px]">add_a_photo</span> Galería de Imágenes (Hasta 3 Fotos &bull; Bucket INMOBILIARIA)
+                        <span
+                            class="font-bold uppercase tracking-wider text-[#f2ca50] block text-[11px] flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">add_a_photo</span> Galería de Imágenes
+                            (Hasta 3 Fotos &bull; Bucket INMOBILIARIA)
                         </span>
                         <span class="text-[10px] text-slate-400">Pega URL o sube directo al Bucket</span>
                     </div>
@@ -845,83 +1014,101 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                     <div>
                         <label class="block font-semibold text-slate-300 mb-1">Foto 1 (Principal / Portada) *</label>
                         <div class="flex gap-2 items-center">
-                            <input type="text" id="crud-image" required placeholder="https://... o nombre_archivo.jpg en bucket INMOBILIARIA"
-                                   class="flex-1 bg-[#122b1c] border border-white/20 rounded-xl px-3.5 py-2 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] text-xs">
-                            <label class="cursor-pointer px-3 py-2 bg-[#d4af37]/20 hover:bg-[#d4af37] text-[#f2ca50] hover:text-[#241a00] rounded-xl text-[11px] font-bold flex items-center gap-1 border border-[#d4af37]/40 transition-all shrink-0">
+                            <input type="text" id="crud-image" required
+                                placeholder="https://... o nombre_archivo.jpg en bucket INMOBILIARIA"
+                                class="flex-1 bg-[#122b1c] border border-white/20 rounded-xl px-3.5 py-2 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] text-xs">
+                            <label
+                                class="cursor-pointer px-3 py-2 bg-[#d4af37]/20 hover:bg-[#d4af37] text-[#f2ca50] hover:text-[#241a00] rounded-xl text-[11px] font-bold flex items-center gap-1 border border-[#d4af37]/40 transition-all shrink-0">
                                 <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
                                 <span class="hidden sm:inline">Subir Foto</span>
-                                <input type="file" accept="image/*" class="hidden" onchange="uploadImageToSupabase(event, 'crud-image')">
+                                <input type="file" accept="image/*" class="hidden"
+                                    onchange="uploadImageToSupabase(event, 'crud-image')">
                             </label>
                         </div>
                     </div>
                     <div>
                         <label class="block font-semibold text-slate-300 mb-1">Foto 2 (Secundaria / Entorno)</label>
                         <div class="flex gap-2 items-center">
-                            <input type="text" id="crud-image2" placeholder="https://... o nombre_archivo.jpg en bucket INMOBILIARIA"
-                                   class="flex-1 bg-[#122b1c] border border-white/20 rounded-xl px-3.5 py-2 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] text-xs">
-                            <label class="cursor-pointer px-3 py-2 bg-[#d4af37]/20 hover:bg-[#d4af37] text-[#f2ca50] hover:text-[#241a00] rounded-xl text-[11px] font-bold flex items-center gap-1 border border-[#d4af37]/40 transition-all shrink-0">
+                            <input type="text" id="crud-image2"
+                                placeholder="https://... o nombre_archivo.jpg en bucket INMOBILIARIA"
+                                class="flex-1 bg-[#122b1c] border border-white/20 rounded-xl px-3.5 py-2 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] text-xs">
+                            <label
+                                class="cursor-pointer px-3 py-2 bg-[#d4af37]/20 hover:bg-[#d4af37] text-[#f2ca50] hover:text-[#241a00] rounded-xl text-[11px] font-bold flex items-center gap-1 border border-[#d4af37]/40 transition-all shrink-0">
                                 <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
                                 <span class="hidden sm:inline">Subir Foto</span>
-                                <input type="file" accept="image/*" class="hidden" onchange="uploadImageToSupabase(event, 'crud-image2')">
+                                <input type="file" accept="image/*" class="hidden"
+                                    onchange="uploadImageToSupabase(event, 'crud-image2')">
                             </label>
                         </div>
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-300 mb-1">Foto 3 (Detalle / Vista Panorámica)</label>
+                        <label class="block font-semibold text-slate-300 mb-1">Foto 3 (Detalle / Vista
+                            Panorámica)</label>
                         <div class="flex gap-2 items-center">
-                            <input type="text" id="crud-image3" placeholder="https://... o nombre_archivo.jpg en bucket INMOBILIARIA"
-                                   class="flex-1 bg-[#122b1c] border border-white/20 rounded-xl px-3.5 py-2 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] text-xs">
-                            <label class="cursor-pointer px-3 py-2 bg-[#d4af37]/20 hover:bg-[#d4af37] text-[#f2ca50] hover:text-[#241a00] rounded-xl text-[11px] font-bold flex items-center gap-1 border border-[#d4af37]/40 transition-all shrink-0">
+                            <input type="text" id="crud-image3"
+                                placeholder="https://... o nombre_archivo.jpg en bucket INMOBILIARIA"
+                                class="flex-1 bg-[#122b1c] border border-white/20 rounded-xl px-3.5 py-2 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] text-xs">
+                            <label
+                                class="cursor-pointer px-3 py-2 bg-[#d4af37]/20 hover:bg-[#d4af37] text-[#f2ca50] hover:text-[#241a00] rounded-xl text-[11px] font-bold flex items-center gap-1 border border-[#d4af37]/40 transition-all shrink-0">
                                 <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
                                 <span class="hidden sm:inline">Subir Foto</span>
-                                <input type="file" accept="image/*" class="hidden" onchange="uploadImageToSupabase(event, 'crud-image3')">
+                                <input type="file" accept="image/*" class="hidden"
+                                    onchange="uploadImageToSupabase(event, 'crud-image3')">
                             </label>
                         </div>
                     </div>
-                    <div id="image-upload-status" class="hidden p-2 rounded-lg bg-amber-400/20 text-amber-300 text-[11px] font-bold"></div>
+                    <div id="image-upload-status"
+                        class="hidden p-2 rounded-lg bg-amber-400/20 text-amber-300 text-[11px] font-bold"></div>
                 </div>
 
                 <!-- CARACTERISTICA 1 (En lista desplegable) y CARACTERISTICA 2 -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Característica 1 (Documento Legal) *</label>
-                        <select id="crud-feat1" class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
+                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Característica 1
+                            (Documento Legal) *</label>
+                        <select id="crud-feat1"
+                            class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
                             <option value="Título SUNARP">Título SUNARP</option>
                             <option value="Minuta o Testimonio">Minuta o Testimonio</option>
                             <option value="Certificado de Posesión">Certificado de Posesión</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Característica 2 (Servicios / Estado)</label>
+                        <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Característica 2
+                            (Servicios / Estado)</label>
                         <input type="text" id="crud-feat2" placeholder="Ej. Servicios Listos, Con Luz y Agua"
-                               class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
+                            class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
                     </div>
                 </div>
 
                 <!-- Coordenadas Google Maps -->
                 <div>
-                    <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Coordenadas GPS (Latitud, Longitud) *</label>
+                    <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Coordenadas GPS
+                        (Latitud, Longitud) *</label>
                     <input type="text" id="crud-coords" required placeholder="Ej. -13.3039,-72.1158"
-                           class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
-                    <span class="text-[10px] text-slate-400 mt-1 block">Ubica automáticamente el pin del inmueble en el mapa interactivo.</span>
+                        class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
+                    <span class="text-[10px] text-slate-400 mt-1 block">Ubica automáticamente el pin del inmueble en el
+                        mapa interactivo.</span>
                 </div>
 
                 <!-- Descripción Detallada (Descripción Breve fue borrada como se solicitó) -->
                 <div>
-                    <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Descripción de la Propiedad *</label>
-                    <textarea id="crud-detailed-desc" rows="3" required placeholder="Detalles de zonificación, estado legal, accesos, clima y servicios..."
-                              class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]"></textarea>
+                    <label class="block font-bold uppercase tracking-wider text-[#d4af37] mb-1">Descripción de la
+                        Propiedad *</label>
+                    <textarea id="crud-detailed-desc" rows="3" required
+                        placeholder="Detalles de zonificación, estado legal, accesos, clima y servicios..."
+                        class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]"></textarea>
                 </div>
 
                 <!-- Botones Formulario -->
                 <div class="flex items-center gap-3 pt-3">
-                    <button type="submit" 
-                            class="flex-1 py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2">
+                    <button type="submit"
+                        class="flex-1 py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-[18px]">save</span>
                         <span>Guardar Propiedad</span>
                     </button>
-                    <button type="button" onclick="closePropertyFormModal()" 
-                            class="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors">
+                    <button type="button" onclick="closePropertyFormModal()"
+                        class="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors">
                         Cancelar
                     </button>
                 </div>
@@ -931,16 +1118,17 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
 
     <!-- BOTÓN FLOTANTE PERSISTENTE DE WHATSAPP BUSINESS -->
     <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2">
-        <span class="bg-white text-slate-900 font-bold text-xs px-3.5 py-1.5 rounded-full shadow-2xl border border-slate-200 hidden sm:flex items-center gap-1.5 animate-bounce">
+        <span
+            class="bg-white text-slate-900 font-bold text-xs px-3.5 py-1.5 rounded-full shadow-2xl border border-slate-200 hidden sm:flex items-center gap-1.5 animate-bounce">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-            ¿BRO en qué opdemos ayudarte?
+            ¿BRO en qué podemos ayudarte?
         </span>
-        <a href="https://wa.me/51948301540?text=Hola%20Agencia%20NOVA,%20deseo%20asesor%C3%ADa%20inmediata%20sobre%20terrenos%20y%20propiedades" 
-           target="_blank" 
-           aria-label="Contactar al Concierge de WhatsApp Business" 
-           class="w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white flex items-center justify-center shadow-[0_4px_24px_rgba(37,211,102,0.5)] hover:scale-110 transition-all duration-300">
+        <a href="https://wa.me/51948301540?text=Hola%20Agencia%20NOVA,%20deseo%20asesor%C3%ADa%20inmediata%20sobre%20terrenos%20y%20propiedades"
+            target="_blank" aria-label="Contactar al Concierge de WhatsApp Business"
+            class="w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white flex items-center justify-center shadow-[0_4px_24px_rgba(37,211,102,0.5)] hover:scale-110 transition-all duration-300">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-8 h-8 fill-white">
-                <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.3a8.216 8.216 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24m-2.54 4.58v7.5h3.45c1.45 0 2.39-.75 2.39-1.95 0-.82-.53-1.42-1.32-1.63.63-.25 1.05-.82 1.05-1.55 0-1.12-.89-1.78-2.28-1.78zm1.53 1.34h1.72c.57 0 .93.31.93.75 0 .46-.36.77-.93.77h-1.72zm0 2.58h1.86c.63 0 1.01.32 1.01.8 0 .49-.38.82-1.01.82H11.03z"/>
+                <path
+                    d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.07l-.29-.17-3.12.82.83-3.04-.19-.3a8.216 8.216 0 0 1-1.26-4.47c0-4.54 3.7-8.24 8.24-8.24m-2.54 4.58v7.5h3.45c1.45 0 2.39-.75 2.39-1.95 0-.82-.53-1.42-1.32-1.63.63-.25 1.05-.82 1.05-1.55 0-1.12-.89-1.78-2.28-1.78zm1.53 1.34h1.72c.57 0 .93.31.93.75 0 .46-.36.77-.93.77h-1.72zm0 2.58h1.86c.63 0 1.01.32 1.01.8 0 .49-.38.82-1.01.82H11.03z" />
             </svg>
         </a>
     </div>
@@ -1087,7 +1275,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                     return defaultProperties;
                 }
                 return parsed;
-            } catch(e) {
+            } catch (e) {
                 return defaultProperties;
             }
         }
@@ -1101,7 +1289,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
             const props = getProperties();
             const grid = document.getElementById('properties-grid');
             const countLabel = document.getElementById('prop-count');
-            
+
             if (countLabel) {
                 countLabel.innerText = `${props.length} Propiedades Disponibles con Saneamiento Legal`;
             }
@@ -1187,7 +1375,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
             if (!mapContainer) return;
 
             const props = getProperties();
-            
+
             // Centro inicial en Cusco / Valle Sagrado
             const defaultCenter = [-13.3039, -72.1158];
 
@@ -1230,7 +1418,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                 }
 
                 const marker = L.marker(coords, { icon: customIcon });
-                
+
                 // Popup HTML interactivo para cada pin
                 const popupContent = `
                     <div style="width: 220px; font-family: 'Plus Jakarta Sans', sans-serif;">
@@ -1650,7 +1838,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                 // Matching inteligente por código o por texto
                 let matchLoc = (selectedLoc === 'all' || cardLoc === selectedLoc || cardLocText.includes(selectedLoc.replace('-', ' ')));
                 let matchType = (selectedType === 'all' || cardType === selectedType || cardType.includes(selectedType));
-                
+
                 let matchPrice = true;
                 if (selectedPrice === 'under-100k') matchPrice = cardPrice < 100000;
                 else if (selectedPrice === '100k-200k') matchPrice = (cardPrice >= 100000 && cardPrice <= 200000);
@@ -2298,9 +2486,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
 
             // 2. Coordinación por WhatsApp directo
             const text = `Hola Agencia NOVA, deseo agendar una visita o sesión de asesoría:%0A` +
-                         `*Nombre:* ${encodeURIComponent(name)}%0A` +
-                         `*Teléfono:* ${encodeURIComponent(phone)}%0A` +
-                         `*Mensaje:* ${encodeURIComponent(msg || 'Solicito coordinación.')}`;
+                `*Nombre:* ${encodeURIComponent(name)}%0A` +
+                `*Teléfono:* ${encodeURIComponent(phone)}%0A` +
+                `*Mensaje:* ${encodeURIComponent(msg || 'Solicito coordinación.')}`;
 
             window.open(`https://wa.me/51948301540?text=${text}`, '_blank');
 
@@ -2337,4 +2525,5 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
         }
     </script>
 </body>
+
 </html>

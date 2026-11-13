@@ -73,16 +73,38 @@
 
         /* Logotipo Dorado NOVA – Levitación Continua + Destello y Escala al Hover */
         @keyframes novaLogoFloat {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50%       { transform: translateY(-10px) rotate(0.4deg); }
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-10px) rotate(0.4deg);
+            }
         }
 
         /* Destello rápido que parpadea una sola vez cuando se activa el hover */
         @keyframes novaShimmer {
-            0%   { opacity: 1; filter: brightness(1) drop-shadow(0 0 0px rgba(255,220,80,0)); }
-            25%  { opacity: 1; filter: brightness(1.45) drop-shadow(0 0 22px rgba(255,210,50,0.7)); }
-            60%  { opacity: 1; filter: brightness(1.15) drop-shadow(0 0 10px rgba(255,200,30,0.35)); }
-            100% { opacity: 1; filter: brightness(1) drop-shadow(0 0 0px rgba(255,220,80,0)); }
+            0% {
+                opacity: 1;
+                filter: brightness(1) drop-shadow(0 0 0px rgba(255, 220, 80, 0));
+            }
+
+            25% {
+                opacity: 1;
+                filter: brightness(1.45) drop-shadow(0 0 22px rgba(255, 210, 50, 0.7));
+            }
+
+            60% {
+                opacity: 1;
+                filter: brightness(1.15) drop-shadow(0 0 10px rgba(255, 200, 30, 0.35));
+            }
+
+            100% {
+                opacity: 1;
+                filter: brightness(1) drop-shadow(0 0 0px rgba(255, 220, 80, 0));
+            }
         }
 
         .nova-logo-float-container {
@@ -135,8 +157,7 @@
                 <!-- Logotipo con levitación continua + destello y escala al hover -->
                 <div class="relative flex items-center justify-center select-none py-2">
                     <div class="nova-logo-float-container">
-                        <img id="novaLogo"
-                            src="assets/logo-nova-dorado.png"
+                        <img id="novaLogo" src="assets/logo-nova-dorado.png"
                             onerror="if(!this.dataset.t){this.dataset.t=1;this.src='logo-nova-dorado.png';}else if(this.dataset.t==1){this.dataset.t=2;this.src='assets/logo-nova-dorado-opt.png';}else{this.src='assets/logo-nova-publicidad.png';}"
                             alt="Agencia NOVA E.I.R.L. - Logo Oficial Dorado"
                             class="nova-logo-img w-full max-w-[270px] sm:max-w-[340px] md:max-w-[390px] lg:max-w-[430px] h-auto mx-auto object-contain">
@@ -158,8 +179,7 @@
                         <!-- Imagen de fondo con zoom interactivo -->
                         <div class="absolute inset-0 z-0">
                             <img src="https://ik.imagekit.io/AGENCIANOVA/INMOBILIARIA/z5.jpg"
-                                onerror="this.src='assets/inmobiliaria-z5.jpg'"
-                                alt="Propiedades Inmobiliarias"
+                                onerror="this.src='assets/inmobiliaria-z5.jpg'" alt="Propiedades Inmobiliarias"
                                 class="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out">
                             <!-- Overlay Verde Medio Oscuro -->
                             <div
@@ -186,11 +206,10 @@
                         <div class="relative z-10 my-auto py-2 flex justify-center">
                             <div
                                 class="w-[374px] h-[228px] max-w-full flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_25px_40px_rgba(0,0,0,0.5)] drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]">
-                                <img src="assets/logos INMOBILIARIA nuevo.png" 
-                                     onerror="if(!this.dataset.t){this.dataset.t=1;this.src='assets/logos-inmobiliaria-nuevo.png';}"
-                                     alt="Inversiones NOVA - Bienes Raíces y Terra NOVA" 
-                                     style="max-height: 224px;"
-                                     class="max-h-full max-w-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.5)] drop-shadow-[0_20px_35px_rgba(0,0,0,0.5)] drop-shadow-[0_0_20px_rgba(0,0,0,0.45)]">
+                                <img src="assets/logos INMOBILIARIA nuevo.png"
+                                    onerror="if(!this.dataset.t){this.dataset.t=1;this.src='assets/logos-inmobiliaria-nuevo.png';}"
+                                    alt="Inversiones NOVA - Bienes Raíces y Terra NOVA" style="max-height: 224px;"
+                                    class="max-h-full max-w-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.5)] drop-shadow-[0_20px_35px_rgba(0,0,0,0.5)] drop-shadow-[0_0_20px_rgba(0,0,0,0.45)]">
                             </div>
                         </div>
 
@@ -239,11 +258,10 @@
                         <div class="relative z-10 my-auto py-5 flex justify-center">
                             <div
                                 class="w-[242px] h-[121px] max-w-full flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_25px_40px_rgba(0,0,0,1)] drop-shadow-[0_10px_20px_rgba(0,0,0,1)]">
-                                <img src="assets/logo ASESORIA LEGAL INTEGRAL nuevo.png" 
-                                     onerror="if(!this.dataset.t){this.dataset.t=1;this.src='assets/logo-asesoria-legal-integral-nuevo.png';}"
-                                     alt="Tejada Consultores - Abogados e Ingenieros" 
-                                     style="max-height: 121px;"
-                                     class="max-h-full max-w-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,1)] drop-shadow-[0_20px_35px_rgba(0,0,0,1)] drop-shadow-[0_0_20px_rgba(0,0,0,0.9)]">
+                                <img src="assets/logo ASESORIA LEGAL INTEGRAL nuevo.png"
+                                    onerror="if(!this.dataset.t){this.dataset.t=1;this.src='assets/logo-asesoria-legal-integral-nuevo.png';}"
+                                    alt="Tejada Consultores - Abogados e Ingenieros" style="max-height: 121px;"
+                                    class="max-h-full max-w-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,1)] drop-shadow-[0_20px_35px_rgba(0,0,0,1)] drop-shadow-[0_0_20px_rgba(0,0,0,0.9)]">
                             </div>
                         </div>
 
@@ -291,11 +309,10 @@
                         <div class="relative z-10 my-auto py-5 flex justify-center">
                             <div
                                 class="w-[251px] h-[125px] max-w-full flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_25px_40px_rgba(0,0,0,1)] drop-shadow-[0_10px_20px_rgba(0,0,0,1)]">
-                                <img src="assets/logo PUBLICIDAD nuevo.png" 
-                                     onerror="if(!this.dataset.t){this.dataset.t=1;this.src='assets/logo-publicidad-nuevo.png';}"
-                                     alt="Agencia NOVA - Publicidad y Eventos" 
-                                     style="max-height: 125px;"
-                                     class="max-h-full max-w-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,1)] drop-shadow-[0_20px_35px_rgba(0,0,0,1)] drop-shadow-[0_0_20px_rgba(0,0,0,0.9)]">
+                                <img src="assets/logo PUBLICIDAD nuevo.png"
+                                    onerror="if(!this.dataset.t){this.dataset.t=1;this.src='assets/logo-publicidad-nuevo.png';}"
+                                    alt="Agencia NOVA - Publicidad y Eventos" style="max-height: 125px;"
+                                    class="max-h-full max-w-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,1)] drop-shadow-[0_20px_35px_rgba(0,0,0,1)] drop-shadow-[0_0_20px_rgba(0,0,0,0.9)]">
                             </div>
                         </div>
 
@@ -481,8 +498,12 @@
                             </span>
                             <!-- Flechas opcionales si se agregan más fotos a Son Tejada -->
                             <div id="son-tejada-arrows" class="hidden">
-                                <button type="button" onclick="prevSonTejadaSlide(event)" class="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/75 hover:bg-amber-400 hover:text-black text-white flex items-center justify-center text-xs shadow z-10"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
-                                <button type="button" onclick="nextSonTejadaSlide(event)" class="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/75 hover:bg-amber-400 hover:text-black text-white flex items-center justify-center text-xs shadow z-10"><i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+                                <button type="button" onclick="prevSonTejadaSlide(event)"
+                                    class="absolute left-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/75 hover:bg-amber-400 hover:text-black text-white flex items-center justify-center text-xs shadow z-10"><i
+                                        data-lucide="chevron-left" class="w-3.5 h-3.5"></i></button>
+                                <button type="button" onclick="nextSonTejadaSlide(event)"
+                                    class="absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/75 hover:bg-amber-400 hover:text-black text-white flex items-center justify-center text-xs shadow z-10"><i
+                                        data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
                             </div>
                         </div>
 
@@ -513,7 +534,8 @@
                             </div>
 
                             <!-- Bottom Action Link & Botón Adjuntar Fotos -->
-                            <div class="mt-4 pt-2.5 border-t border-white/5 flex flex-wrap items-center justify-between gap-2.5">
+                            <div
+                                class="mt-4 pt-2.5 border-t border-white/5 flex flex-wrap items-center justify-between gap-2.5">
                                 <a href="https://wa.me/51935082171?text=Hola,%20solicito%20informaci%C3%B3n%20para%20contrataciones%20y%20fechas%20disponibles%20de%20Son%20Tejada%20Orquesta"
                                     target="_blank"
                                     class="text-amber-400 hover:text-amber-300 font-bold text-xs sm:text-sm inline-flex items-center gap-1.5 transition-all group-hover:translate-x-1 underline sm:no-underline hover:underline">
@@ -522,11 +544,13 @@
                                 </a>
 
                                 <!-- Botón Adjuntar Fotos Son Tejada -->
-                                <label class="px-2.5 py-1 rounded-lg bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-500/40 hover:border-amber-300 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 shadow transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                                <label
+                                    class="px-2.5 py-1 rounded-lg bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-500/40 hover:border-amber-300 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 shadow transition-all hover:scale-105 active:scale-95 cursor-pointer"
                                     title="Adjuntar nuevas fotos de Son Tejada Orquesta">
                                     <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                                     <span>ADJUNTAR FOTOS</span>
-                                    <input type="file" id="son-tejada-upload-input" multiple accept="image/*" class="hidden" onchange="handleSonTejadaPhotoUpload(event)">
+                                    <input type="file" id="son-tejada-upload-input" multiple accept="image/*"
+                                        class="hidden" onchange="handleSonTejadaPhotoUpload(event)">
                                 </label>
                             </div>
                         </div>
@@ -573,7 +597,8 @@
                             <i data-lucide="phone" class="w-6 h-6"></i>
                         </div>
                         <div>
-                            <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Agencia Inmobiliaria y Asesoría Legal</p>
+                            <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Agencia Inmobiliaria y
+                                Asesoría Legal</p>
                             <p class="text-xl sm:text-2xl font-black font-heading text-white tracking-wider mt-0.5">948
                                 301 540</p>
                         </div>
@@ -594,7 +619,8 @@
                             <i data-lucide="phone-forwarded" class="w-6 h-6"></i>
                         </div>
                         <div>
-                            <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Publicidad & Eventos</p>
+                            <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Publicidad & Eventos
+                            </p>
                             <p class="text-xl sm:text-2xl font-black font-heading text-white tracking-wider mt-0.5">935
                                 082 171</p>
                         </div>
@@ -647,7 +673,7 @@
         <span
             class="bg-white text-slate-900 font-bold text-xs px-3.5 py-1.5 rounded-full shadow-2xl border border-slate-200 hidden sm:flex items-center gap-1.5 animate-bounce">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-            ¿BRO en qué opdemos ayudarte?
+            ¿BRO en qué podemos ayudarte?
         </span>
         <a href="https://wa.me/51948301540?text=Hola%20Agencia%20NOVA,%20deseo%20m%C3%A1s%20informaci%C3%B3n"
             target="_blank" aria-label="Contactar por WhatsApp Business"
@@ -961,17 +987,22 @@
     <!-- MODAL 5: CLAVE ADMINISTRATIVA MALUMA IMITADOR (PIN: NOVA2026) -->
     <div id="modal-maluma-auth"
         class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/90 backdrop-blur-md transition-all">
-        <div class="bg-[#181824] border border-amber-400/50 rounded-2xl max-w-sm w-full p-6 shadow-2xl relative text-white">
+        <div
+            class="bg-[#181824] border border-amber-400/50 rounded-2xl max-w-sm w-full p-6 shadow-2xl relative text-white">
             <div class="text-center mb-5">
-                <div class="w-12 h-12 mx-auto rounded-full bg-amber-400/10 border border-amber-400/40 flex items-center justify-center mb-3">
+                <div
+                    class="w-12 h-12 mx-auto rounded-full bg-amber-400/10 border border-amber-400/40 flex items-center justify-center mb-3">
                     <i data-lucide="lock" class="w-6 h-6 text-amber-300"></i>
                 </div>
-                <h3 class="text-lg font-black font-heading tracking-wide uppercase text-white">Acceso Administrativo</h3>
+                <h3 class="text-lg font-black font-heading tracking-wide uppercase text-white">Acceso Administrativo
+                </h3>
                 <p class="text-xs text-slate-300 mt-1">Gestión de Fotos &bull; Maluma Imitador</p>
             </div>
             <form onsubmit="event.preventDefault(); verifyMalumaAdminPin();" class="space-y-4">
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 text-center">Ingrese la Clave</label>
+                    <label
+                        class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 text-center">Ingrese
+                        la Clave</label>
                     <input type="password" id="maluma-admin-pin" placeholder="••••••••" autocomplete="current-password"
                         class="w-full py-2.5 px-4 rounded-xl bg-black/70 border border-white/20 text-center text-white font-mono text-lg tracking-widest focus:outline-none focus:border-amber-400 transition-colors">
                     <p id="maluma-auth-error" class="hidden text-rose-400 text-xs font-bold text-center mt-2"></p>
@@ -993,18 +1024,21 @@
     <!-- MODAL 6: PANEL DE GESTIÓN DE FOTOS MALUMA (ADJUNTAR Y ELIMINAR) -->
     <div id="modal-maluma-manager"
         class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-5 bg-black/90 backdrop-blur-md transition-all">
-        <div class="bg-[#181824] border border-rose-500/40 rounded-3xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[94vh] flex flex-col text-white overflow-hidden">
+        <div
+            class="bg-[#181824] border border-rose-500/40 rounded-3xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[94vh] flex flex-col text-white overflow-hidden">
             <!-- Header -->
             <div class="flex items-center justify-between pb-4 border-b border-white/10 flex-shrink-0">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-300">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-300">
                         <i data-lucide="camera" class="w-5 h-5"></i>
                     </div>
                     <div>
                         <h3 class="text-lg sm:text-xl font-black font-heading text-white tracking-wide">
                             ADMINISTRAR FOTOS &bull; MALUMA IMITADOR
                         </h3>
-                        <p class="text-xs text-slate-400">Adjunta fotos nuevas o elimina imágenes de la galería en tiempo real</p>
+                        <p class="text-xs text-slate-400">Adjunta fotos nuevas o elimina imágenes de la galería en
+                            tiempo real</p>
                     </div>
                 </div>
                 <button type="button" onclick="closeModal('modal-maluma-manager')"
@@ -1014,20 +1048,23 @@
             </div>
 
             <!-- Toolbar de Subida (Archivos locales y Dirección URL) -->
-            <div class="py-3.5 border-b border-white/10 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 flex-shrink-0 bg-white/[0.02] px-3.5 rounded-2xl my-3">
+            <div
+                class="py-3.5 border-b border-white/10 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 flex-shrink-0 bg-white/[0.02] px-3.5 rounded-2xl my-3">
                 <div class="flex flex-wrap items-center gap-2">
-                    <label class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-emerald-950/60 transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
+                    <label
+                        class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-emerald-950/60 transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
                         <i data-lucide="upload" class="w-4 h-4"></i>
                         <span>Subir Archivo</span>
-                        <input type="file" id="maluma-manager-file-input" multiple accept="image/*" class="hidden" onchange="handleMalumaManagerUpload(event)">
+                        <input type="file" id="maluma-manager-file-input" multiple accept="image/*" class="hidden"
+                            onchange="handleMalumaManagerUpload(event)">
                     </label>
                 </div>
 
                 <!-- Formulario Adicionar Foto por URL -->
                 <div class="flex flex-1 flex-col sm:flex-row items-center gap-2 max-w-xl">
-                    <input type="url" id="maluma-url-input" placeholder="Pegar dirección URL de la imagen (https://...)" 
+                    <input type="url" id="maluma-url-input" placeholder="Pegar dirección URL de la imagen (https://...)"
                         class="w-full sm:flex-1 px-3 py-2 rounded-xl bg-black/60 border border-white/20 text-white text-xs placeholder-slate-400 focus:outline-none focus:border-amber-400 transition-colors">
-                    <input type="text" id="maluma-url-title" placeholder="Título / Gira (opcional)" 
+                    <input type="text" id="maluma-url-title" placeholder="Título / Gira (opcional)"
                         class="w-full sm:w-44 px-3 py-2 rounded-xl bg-black/60 border border-white/20 text-white text-xs placeholder-slate-400 focus:outline-none focus:border-amber-400 transition-colors">
                     <button type="button" onclick="addMalumaPhotoByUrl()"
                         class="w-full sm:w-auto px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
@@ -1037,7 +1074,8 @@
                 </div>
 
                 <div class="flex items-center justify-end">
-                    <span id="maluma-manager-count-badge" class="px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs font-black whitespace-nowrap">
+                    <span id="maluma-manager-count-badge"
+                        class="px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs font-black whitespace-nowrap">
                         0 fotos
                     </span>
                 </div>
@@ -1166,14 +1204,14 @@
             }
         ];
 
-        let malumaGallery = (function() {
+        let malumaGallery = (function () {
             try {
                 const saved = localStorage.getItem('maluma_gallery_v2');
                 if (saved) {
                     const parsed = JSON.parse(saved);
                     if (Array.isArray(parsed) && parsed.length > 0) return parsed;
                 }
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
             }
             return [...MALUMA_DEFAULT_GALLERY];
@@ -1337,7 +1375,7 @@
         function saveMalumaGallery() {
             try {
                 localStorage.setItem('maluma_gallery_v2', JSON.stringify(malumaGallery));
-            } catch(e) {
+            } catch (e) {
                 console.warn("Storage quota or error:", e);
             }
         }
@@ -1440,7 +1478,7 @@
 
             Array.from(files).forEach((file) => {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     newItems.push({
                         dateTitle: `Foto: ${file.name.replace(/\.[^/.]+$/, "")}`,
                         pill: pillStr,
@@ -1553,7 +1591,7 @@
 
             Array.from(files).forEach((file) => {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     newPhotos.unshift(e.target.result);
                     loaded++;
                     if (loaded === files.length) {
