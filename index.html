@@ -429,9 +429,9 @@
                                 </p>
                             </div>
 
-                            <!-- Bottom Action Links & Botón Adjuntar Fotos -->
+                            <!-- Bottom Action Links: WhatsApp & Más Fotos y Videos -->
                             <div
-                                class="mt-4 pt-2.5 border-t border-white/5 flex flex-wrap items-center justify-between gap-2.5">
+                                class="mt-4 pt-2.5 border-t border-white/5 flex flex-wrap items-center justify-between gap-3">
                                 <a id="maluma-card-wa-link"
                                     href="https://wa.me/51935082171?text=Hola,%20deseo%20comprar%20entradas%20VIP%20e%20informaci%C3%B3n%20para%20el%20show%20de%20Maluma%20Imitador%20Oficial%20(28%20Diciembre%202026)"
                                     target="_blank"
@@ -439,34 +439,35 @@
                                     <span>Comprar Entradas / VIP</span>
                                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                                 </a>
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <!-- Botón Gestionar Fotos Maluma (Adjuntar y Eliminar con Clave NOVA2026) -->
-                                    <button type="button" onclick="openMalumaAdminAuth()"
-                                        class="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/50 hover:border-amber-300 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 shadow transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                                        title="Administrar fotos: Adjuntar y Eliminar (Clave requerida)">
-                                        <i data-lucide="camera" class="w-3.5 h-3.5"></i>
-                                        <span>ADJUNTAR Y ELIMINAR FOTOS</span>
-                                    </button>
 
-                                    <a href="https://www.tiktok.com/@maluma_imitador_oficial" target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="px-2.5 py-1 rounded-lg bg-black/70 hover:bg-black/95 text-pink-400 hover:text-pink-300 border border-pink-500/40 hover:border-pink-400 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 shadow transition-all hover:scale-105 active:scale-95"
-                                        title="Ver fotos y videos oficiales de Maluma Imitador en TikTok">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
-                                            viewBox="0 0 24 24" fill="currentColor">
-                                            <path
-                                                d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.86.12V9.4a6.33 6.33 0 0 0-.86-.06A6.34 6.34 0 0 0 3.1 15.68a6.34 6.34 0 0 0 10.79 4.49 6.27 6.27 0 0 0 1.9-4.5V8.55a8.28 8.28 0 0 0 5.2 1.83V6.93a4.84 4.84 0 0 1-1.4-.24z" />
-                                        </svg>
-                                        <span>FOTOS Y VIDEOS</span>
-                                    </a>
-                                    <button type="button" onclick="openMalumaSlider(currentMalumaIdx)"
-                                        class="text-xs text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 cursor-pointer">
-                                        <i data-lucide="images" class="w-3.5 h-3.5"></i>
-                                        <span>Gira 2026</span>
-                                    </button>
-                                </div>
+                                <!-- Botón MÁS FOTOS Y VIDEOS (Agrandado e interactivo con TikTok oficial) -->
+                                <a href="https://www.tiktok.com/@agencia_cusco?is_from_webapp=1&sender_device=pc" target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="group/tiktok px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-[#010101] hover:bg-[#121217] text-white border-2 border-pink-500/70 hover:border-cyan-400 text-xs sm:text-sm font-black uppercase tracking-wider flex items-center gap-2.5 shadow-lg shadow-pink-950/50 hover:shadow-[0_0_22px_rgba(254,44,85,0.45)] hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-300 cursor-pointer"
+                                    title="Ver videos y fotos oficiales en TikTok (@agencia_cusco)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
+                                        class="text-[#fe2c55] group-hover/tiktok:text-[#25f4ee] transition-colors flex-shrink-0">
+                                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.86.12V9.4a6.33 6.33 0 0 0-.86-.06A6.34 6.34 0 0 0 3.1 15.68a6.34 6.34 0 0 0 10.79 4.49 6.27 6.27 0 0 0 1.9-4.5V8.55a8.28 8.28 0 0 0 5.2 1.83V6.93a4.84 4.84 0 0 1-1.4-.24z" />
+                                    </svg>
+                                    <span class="tracking-wide">MÁS FOTOS Y VIDEOS</span>
+                                    <i data-lucide="play" class="w-3.5 h-3.5 fill-cyan-400 text-cyan-400 group-hover/tiktok:scale-125 transition-transform flex-shrink-0"></i>
+                                </a>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- PARTE INFERIOR: GESTIÓN DE FOTOS MALUMA -->
+                    <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                        <span class="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5">
+                            <i data-lucide="shield" class="w-3.5 h-3.5 text-amber-400/80"></i>
+                            Administración de Galería
+                        </span>
+                        <button type="button" onclick="openMalumaAdminAuth()"
+                            class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/50 hover:border-amber-300 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 shadow transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                            title="Administrar fotos: Adjuntar y Eliminar (Clave requerida)">
+                            <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+                            <span>ADJUNTAR Y ELIMINAR FOTOS</span>
+                        </button>
                     </div>
                 </div>
 
@@ -533,9 +534,9 @@
                                 </p>
                             </div>
 
-                            <!-- Bottom Action Link & Botón Adjuntar Fotos -->
+                            <!-- Bottom Action Links: WhatsApp & Más Fotos y Videos -->
                             <div
-                                class="mt-4 pt-2.5 border-t border-white/5 flex flex-wrap items-center justify-between gap-2.5">
+                                class="mt-4 pt-2.5 border-t border-white/5 flex flex-wrap items-center justify-between gap-3">
                                 <a href="https://wa.me/51935082171?text=Hola,%20solicito%20informaci%C3%B3n%20para%20contrataciones%20y%20fechas%20disponibles%20de%20Son%20Tejada%20Orquesta"
                                     target="_blank"
                                     class="text-amber-400 hover:text-amber-300 font-bold text-xs sm:text-sm inline-flex items-center gap-1.5 transition-all group-hover:translate-x-1 underline sm:no-underline hover:underline">
@@ -543,17 +544,34 @@
                                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                                 </a>
 
-                                <!-- Botón Adjuntar Fotos Son Tejada -->
-                                <label
-                                    class="px-2.5 py-1 rounded-lg bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-500/40 hover:border-amber-300 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 shadow transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                                    title="Adjuntar nuevas fotos de Son Tejada Orquesta">
-                                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                                    <span>ADJUNTAR FOTOS</span>
-                                    <input type="file" id="son-tejada-upload-input" multiple accept="image/*"
-                                        class="hidden" onchange="handleSonTejadaPhotoUpload(event)">
-                                </label>
+                                <!-- Botón MÁS FOTOS Y VIDEOS (Nuevo botón en Son Tejada, agrandado e interactivo con TikTok oficial) -->
+                                <a href="https://www.tiktok.com/@agencia_cusco?is_from_webapp=1&sender_device=pc" target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="group/tiktok px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-[#010101] hover:bg-[#121217] text-white border-2 border-pink-500/70 hover:border-cyan-400 text-xs sm:text-sm font-black uppercase tracking-wider flex items-center gap-2.5 shadow-lg shadow-pink-950/50 hover:shadow-[0_0_22px_rgba(254,44,85,0.45)] hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-300 cursor-pointer"
+                                    title="Ver videos y fotos oficiales en TikTok (@agencia_cusco)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
+                                        class="text-[#fe2c55] group-hover/tiktok:text-[#25f4ee] transition-colors flex-shrink-0">
+                                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.86.12V9.4a6.33 6.33 0 0 0-.86-.06A6.34 6.34 0 0 0 3.1 15.68a6.34 6.34 0 0 0 10.79 4.49 6.27 6.27 0 0 0 1.9-4.5V8.55a8.28 8.28 0 0 0 5.2 1.83V6.93a4.84 4.84 0 0 1-1.4-.24z" />
+                                    </svg>
+                                    <span class="tracking-wide">MÁS FOTOS Y VIDEOS</span>
+                                    <i data-lucide="play" class="w-3.5 h-3.5 fill-cyan-400 text-cyan-400 group-hover/tiktok:scale-125 transition-transform flex-shrink-0"></i>
+                                </a>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- PARTE INFERIOR: GESTIÓN DE FOTOS SON TEJADA -->
+                    <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                        <span class="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5">
+                            <i data-lucide="shield" class="w-3.5 h-3.5 text-amber-400/80"></i>
+                            Administración de Galería
+                        </span>
+                        <button type="button" onclick="openSonTejadaAdminAuth()"
+                            class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/50 hover:border-amber-300 text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 shadow transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                            title="Administrar fotos: Adjuntar y Eliminar (Clave requerida)">
+                            <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+                            <span>ADJUNTAR Y ELIMINAR FOTOS</span>
+                        </button>
                     </div>
                 </div>
 
@@ -1098,6 +1116,118 @@
         </div>
     </div>
 
+    <!-- MODAL 7: ACCESO ADMINISTRATIVO SON TEJADA (CLAVE: NOVA2026) -->
+    <div id="modal-son-tejada-auth"
+        class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div
+            class="bg-[#181824] border border-amber-400/50 rounded-2xl max-w-sm w-full p-6 shadow-2xl relative text-white">
+            <div class="text-center mb-5">
+                <div
+                    class="w-12 h-12 mx-auto rounded-full bg-amber-400/10 border border-amber-400/40 flex items-center justify-center mb-3">
+                    <i data-lucide="lock" class="w-6 h-6 text-amber-300"></i>
+                </div>
+                <h3 class="text-lg font-black font-heading tracking-wide uppercase text-white">Acceso Administrativo</h3>
+                <p class="text-xs text-slate-300 mt-1">Gestión de Fotos &bull; Son Tejada Orquesta</p>
+            </div>
+            <form onsubmit="event.preventDefault(); verifySonTejadaAdminPin();" class="space-y-4">
+                <div>
+                    <label
+                        class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 text-center">Ingrese
+                        la Clave</label>
+                    <input type="password" id="son-tejada-admin-pin" placeholder="••••••••" autocomplete="current-password"
+                        class="w-full py-2.5 px-4 rounded-xl bg-black/70 border border-white/20 text-center text-white font-mono text-lg tracking-widest focus:outline-none focus:border-amber-400 transition-colors">
+                    <p id="son-tejada-auth-error" class="hidden text-rose-400 text-xs font-bold text-center mt-2"></p>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modal-son-tejada-auth')"
+                        class="flex-1 py-2.5 px-4 bg-white/10 hover:bg-white/20 text-slate-300 rounded-xl text-xs font-bold transition-colors cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                        class="flex-1 py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-colors shadow-lg shadow-amber-500/30 cursor-pointer">
+                        Ingresar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 8: PANEL DE GESTIÓN DE FOTOS SON TEJADA (ADJUNTAR Y ELIMINAR) -->
+    <div id="modal-son-tejada-manager"
+        class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-5 bg-black/90 backdrop-blur-md transition-all">
+        <div
+            class="bg-[#181824] border border-amber-400/40 rounded-3xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl relative max-h-[94vh] flex flex-col text-white overflow-hidden">
+            <!-- Header -->
+            <div class="flex items-center justify-between pb-4 border-b border-white/10 flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300">
+                        <i data-lucide="camera" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-black font-heading text-white tracking-wide">
+                            ADMINISTRAR FOTOS &bull; SON TEJADA ORQUESTA
+                        </h3>
+                        <p class="text-xs text-slate-400">Adjunta fotos nuevas o elimina imágenes de la orquesta en tiempo real</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeModal('modal-son-tejada-manager')"
+                    class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Toolbar de Subida (Archivos locales y Dirección URL) -->
+            <div
+                class="py-3.5 border-b border-white/10 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 flex-shrink-0 bg-white/[0.02] px-3.5 rounded-2xl my-3">
+                <div class="flex flex-wrap items-center gap-2">
+                    <label
+                        class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-emerald-950/60 transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
+                        <i data-lucide="upload" class="w-4 h-4"></i>
+                        <span>Subir Archivo</span>
+                        <input type="file" id="son-tejada-manager-file-input" multiple accept="image/*" class="hidden"
+                            onchange="handleSonTejadaManagerUpload(event)">
+                    </label>
+                </div>
+
+                <!-- Formulario Adicionar Foto por URL -->
+                <div class="flex flex-1 flex-col sm:flex-row items-center gap-2 max-w-xl">
+                    <input type="url" id="son-tejada-url-input" placeholder="Pegar dirección URL de la imagen (https://...)"
+                        class="w-full sm:flex-1 px-3 py-2 rounded-xl bg-black/60 border border-white/20 text-white text-xs placeholder-slate-400 focus:outline-none focus:border-amber-400 transition-colors">
+                    <input type="text" id="son-tejada-url-title" placeholder="Título / Show (opcional)"
+                        class="w-full sm:w-44 px-3 py-2 rounded-xl bg-black/60 border border-white/20 text-white text-xs placeholder-slate-400 focus:outline-none focus:border-amber-400 transition-colors">
+                    <button type="button" onclick="addSonTejadaPhotoByUrl()"
+                        class="w-full sm:w-auto px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow transition-all hover:scale-105 active:scale-95 cursor-pointer whitespace-nowrap">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>Agregar URL</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-end">
+                    <span id="son-tejada-manager-count-badge"
+                        class="px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs font-black whitespace-nowrap">
+                        0 fotos
+                    </span>
+                </div>
+            </div>
+
+            <!-- Grid de Fotos con Botón Eliminar -->
+            <div class="flex-1 overflow-y-auto pr-1 my-1">
+                <div id="son-tejada-manager-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    <!-- Se llena dinámicamente con renderSonTejadaManagerGrid() -->
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="pt-3 border-t border-white/10 flex justify-end gap-2 flex-shrink-0">
+                <button type="button" onclick="closeModal('modal-son-tejada-manager')"
+                    class="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-colors cursor-pointer">
+                    Listo / Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Script logic -->
     <script>
         // Initialize Lucide Icons
@@ -1136,7 +1266,7 @@
 
         // Close modal when clicking outside of modal card
         window.addEventListener('click', (e) => {
-            ['modal-inmobiliaria', 'modal-legal', 'modal-publicidad', 'modal-maluma', 'modal-maluma-auth', 'modal-maluma-manager'].forEach(id => {
+            ['modal-inmobiliaria', 'modal-legal', 'modal-publicidad', 'modal-maluma', 'modal-maluma-auth', 'modal-maluma-manager', 'modal-son-tejada-auth', 'modal-son-tejada-manager'].forEach(id => {
                 const modal = document.getElementById(id);
                 if (modal && e.target === modal) {
                     closeModal(id);
@@ -1550,18 +1680,56 @@
             alert('¡Foto agregada por URL exitosamente!');
         }
 
-        // Galería y Slider de Son Tejada
-        let sonTejadaPhotos = ['assets/son-tejada-mic.jpg', 'assets/son-tejada-envivo.jpg'];
+        // =========================================================================
+        // ADMINISTRADOR DE FOTOS SON TEJADA ORQUESTA (PIN: NOVA2026)
+        // =========================================================================
+        const DEFAULT_SON_TEJADA_GALLERY = [
+            {
+                dateTitle: "Son Tejada en Concierto",
+                city: "Presentación en Vivo",
+                src: "assets/son-tejada-mic.jpg"
+            },
+            {
+                dateTitle: "Orquesta en Escenario",
+                city: "Show Bailable",
+                src: "assets/son-tejada-envivo.jpg"
+            }
+        ];
+
+        let sonTejadaGallery = (function () {
+            try {
+                const saved = localStorage.getItem('son_tejada_gallery_v2');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                }
+            } catch (e) {
+                console.warn("Error leyendo galería local de Son Tejada:", e);
+            }
+            return DEFAULT_SON_TEJADA_GALLERY;
+        })();
+
         let currentSonTejadaIdx = 0;
+        let isSonTejadaAdminAuthenticated = false;
+
+        function saveSonTejadaGallery() {
+            try {
+                localStorage.setItem('son_tejada_gallery_v2', JSON.stringify(sonTejadaGallery));
+            } catch (e) {
+                console.warn("Storage quota or error:", e);
+            }
+        }
 
         function updateSonTejadaSlide() {
             const imgEl = document.getElementById('son-tejada-img');
-            if (imgEl && sonTejadaPhotos.length > 0) {
-                imgEl.src = sonTejadaPhotos[currentSonTejadaIdx];
+            if (imgEl && sonTejadaGallery.length > 0) {
+                if (currentSonTejadaIdx >= sonTejadaGallery.length) currentSonTejadaIdx = 0;
+                const item = sonTejadaGallery[currentSonTejadaIdx];
+                imgEl.src = (typeof item === 'string') ? item : item.src;
             }
             const arrows = document.getElementById('son-tejada-arrows');
             if (arrows) {
-                if (sonTejadaPhotos.length > 1) {
+                if (sonTejadaGallery.length > 1) {
                     arrows.classList.remove('hidden');
                 } else {
                     arrows.classList.add('hidden');
@@ -1572,37 +1740,175 @@
 
         function prevSonTejadaSlide(e) {
             if (e) e.stopPropagation();
-            currentSonTejadaIdx = (currentSonTejadaIdx - 1 + sonTejadaPhotos.length) % sonTejadaPhotos.length;
+            if (sonTejadaGallery.length === 0) return;
+            currentSonTejadaIdx = (currentSonTejadaIdx - 1 + sonTejadaGallery.length) % sonTejadaGallery.length;
             updateSonTejadaSlide();
         }
 
         function nextSonTejadaSlide(e) {
             if (e) e.stopPropagation();
-            currentSonTejadaIdx = (currentSonTejadaIdx + 1) % sonTejadaPhotos.length;
+            if (sonTejadaGallery.length === 0) return;
+            currentSonTejadaIdx = (currentSonTejadaIdx + 1) % sonTejadaGallery.length;
             updateSonTejadaSlide();
         }
 
-        function handleSonTejadaPhotoUpload(event) {
+        function openSonTejadaAdminAuth() {
+            if (isSonTejadaAdminAuthenticated || isMalumaAdminAuthenticated) {
+                isSonTejadaAdminAuthenticated = true;
+                openSonTejadaManagerModal();
+                return;
+            }
+            const pinInput = document.getElementById('son-tejada-admin-pin');
+            const errorMsg = document.getElementById('son-tejada-auth-error');
+            if (pinInput) pinInput.value = '';
+            if (errorMsg) errorMsg.classList.add('hidden');
+            openModal('modal-son-tejada-auth');
+            setTimeout(() => { if (pinInput) pinInput.focus(); }, 150);
+        }
+
+        function verifySonTejadaAdminPin() {
+            const pinInput = document.getElementById('son-tejada-admin-pin');
+            const errorMsg = document.getElementById('son-tejada-auth-error');
+            if (!pinInput) return;
+            if (pinInput.value.trim() === MALUMA_ADMIN_KEY) {
+                isSonTejadaAdminAuthenticated = true;
+                closeModal('modal-son-tejada-auth');
+                openSonTejadaManagerModal();
+            } else {
+                if (errorMsg) {
+                    errorMsg.innerText = 'Clave incorrecta. Intente nuevamente.';
+                    errorMsg.classList.remove('hidden');
+                }
+                pinInput.focus();
+                pinInput.select();
+            }
+        }
+
+        function openSonTejadaManagerModal() {
+            renderSonTejadaManagerGrid();
+            openModal('modal-son-tejada-manager');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function renderSonTejadaManagerGrid() {
+            const grid = document.getElementById('son-tejada-manager-grid');
+            const badge = document.getElementById('son-tejada-manager-count-badge');
+            if (badge) badge.innerText = `${sonTejadaGallery.length} ${sonTejadaGallery.length === 1 ? 'foto' : 'fotos'} en galería`;
+            if (!grid) return;
+
+            grid.innerHTML = '';
+            if (sonTejadaGallery.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-400">
+                        <i data-lucide="image-off" class="w-10 h-10 mx-auto mb-2 text-slate-500"></i>
+                        <p class="font-bold">No hay fotos en la galería de Son Tejada.</p>
+                        <p class="text-xs text-slate-500">Haga clic en "Subir Archivo" o "Agregar URL" para agregar imágenes.</p>
+                    </div>
+                `;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+                return;
+            }
+
+            sonTejadaGallery.forEach((item, idx) => {
+                const src = (typeof item === 'string') ? item : item.src;
+                const title = (typeof item === 'string') ? `Foto #${idx + 1}` : (item.dateTitle || `Foto #${idx + 1}`);
+                const card = document.createElement('div');
+                card.className = 'relative group bg-white/5 border border-white/10 hover:border-amber-400/50 rounded-2xl p-2.5 flex flex-col justify-between transition-all';
+                card.innerHTML = `
+                    <div class="relative w-full h-36 rounded-xl overflow-hidden bg-black mb-2 shadow">
+                        <img src="${src}" alt="${title}" class="w-full h-full object-cover">
+                        <span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-full bg-black/80 backdrop-blur-md text-[10px] font-bold text-white">
+                            #${idx + 1}
+                        </span>
+                    </div>
+                    <div class="mb-2">
+                        <h4 class="text-xs font-bold text-white truncate" title="${title}">${title}</h4>
+                        <p class="text-[10px] text-slate-400 truncate">Son Tejada Orquesta</p>
+                    </div>
+                    <button type="button" onclick="deleteSonTejadaPhoto(${idx})"
+                        class="w-full py-1.5 px-2 rounded-xl bg-red-600/20 hover:bg-red-600 text-red-300 hover:text-white border border-red-500/40 hover:border-red-500 text-[11px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow active:scale-95">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        <span>Eliminar</span>
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function handleSonTejadaManagerUpload(event) {
             const files = event.target.files;
             if (!files || files.length === 0) return;
 
             let loaded = 0;
-            const newPhotos = [];
+            const newItems = [];
 
             Array.from(files).forEach((file) => {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    newPhotos.unshift(e.target.result);
+                    newItems.push({
+                        dateTitle: `Foto: ${file.name.replace(/\.[^/.]+$/, "")}`,
+                        city: "Son Tejada Orquesta",
+                        src: e.target.result
+                    });
+
                     loaded++;
                     if (loaded === files.length) {
-                        newPhotos.forEach(p => sonTejadaPhotos.unshift(p));
+                        newItems.forEach(item => sonTejadaGallery.unshift(item));
                         currentSonTejadaIdx = 0;
+                        saveSonTejadaGallery();
                         updateSonTejadaSlide();
+                        renderSonTejadaManagerGrid();
+                        if (typeof lucide !== 'undefined') lucide.createIcons();
                         alert(`¡Se adjuntaron ${loaded} foto(s) a Son Tejada Orquesta con éxito!`);
                     }
                 };
                 reader.readAsDataURL(file);
             });
+            event.target.value = '';
+        }
+
+        function deleteSonTejadaPhoto(idx) {
+            if (idx < 0 || idx >= sonTejadaGallery.length) return;
+            const item = sonTejadaGallery[idx];
+            const title = (typeof item === 'string') ? `Foto #${idx + 1}` : item.dateTitle;
+            if (confirm(`¿Desea eliminar la foto "${title}" de Son Tejada Orquesta?`)) {
+                sonTejadaGallery.splice(idx, 1);
+                if (currentSonTejadaIdx >= sonTejadaGallery.length) {
+                    currentSonTejadaIdx = Math.max(0, sonTejadaGallery.length - 1);
+                }
+                saveSonTejadaGallery();
+                updateSonTejadaSlide();
+                renderSonTejadaManagerGrid();
+            }
+        }
+
+        function addSonTejadaPhotoByUrl() {
+            const urlInput = document.getElementById('son-tejada-url-input');
+            const titleInput = document.getElementById('son-tejada-url-title');
+            if (!urlInput) return;
+            const url = urlInput.value.trim();
+            if (!url) {
+                alert('Por favor ingrese una dirección URL válida.');
+                urlInput.focus();
+                return;
+            }
+            const title = (titleInput && titleInput.value.trim()) ? titleInput.value.trim() : 'Son Tejada Orquesta';
+
+            sonTejadaGallery.unshift({
+                dateTitle: title,
+                city: "Son Tejada Orquesta",
+                src: url
+            });
+            currentSonTejadaIdx = 0;
+            saveSonTejadaGallery();
+            updateSonTejadaSlide();
+            renderSonTejadaManagerGrid();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            urlInput.value = '';
+            if (titleInput) titleInput.value = '';
+            alert('¡Foto agregada a Son Tejada por URL exitosamente!');
         }
 
         // Auto-slider suave para la miniatura de la tarjeta (se pausa al pasar el ratón)
@@ -1620,8 +1926,9 @@
             if (malumaAutoSlideInterval) clearInterval(malumaAutoSlideInterval);
         }
 
-        // Inicializar miniatura de tarjeta y arrancar ciclo suave
+        // Inicializar miniaturas de tarjetas y arrancar ciclos suaves
         updateMalumaCardSlide();
+        updateSonTejadaSlide();
         startMalumaAutoSlide();
 
         // Contact form submit logic -> directly to WhatsApp
