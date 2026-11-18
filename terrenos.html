@@ -122,7 +122,7 @@
 
             <!-- Centro: Accesos Rápidos Activos -->
             <nav class="hidden md:flex items-center gap-6 text-xs sm:text-sm font-bold text-[#dae5dd]">
-                <a href="#mapa-propiedades" class="hover:text-[#f2ca50] transition-colors flex items-center gap-1.5">
+                <a href="mapaterrenos.html" class="hover:text-[#f2ca50] transition-colors flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-[18px]">map</span>
                     <span>Mapa de Ubicaciones</span>
                 </a>
@@ -193,59 +193,23 @@
                             CAMPO</strong> con total seguridad jurídica: título de propiedad en SUNARP, saneamiento
                         físico-legal garantizado y el respaldo de <strong class="text-[#f2ca50]">Agencia NOVA</strong>.
                     </p>
-                </div>
-            </div>
-        </section>
 
-        <!-- 2. SECCIÓN MAPA INTERACTIVO (VISTA SATELITAL - TODAS LAS PROPIEDADES EN UN SOLO MAPA) -->
-        <section id="mapa-propiedades" class="max-w-[1360px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
-            <div
-                class="rounded-3xl bg-[#091810] border border-[#d4af37]/30 shadow-2xl p-6 sm:p-10 relative overflow-hidden">
-
-                <!-- Ambient Glow -->
-                <div
-                    class="absolute -top-32 -right-32 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none">
-                </div>
-                <div
-                    class="absolute -bottom-32 -left-32 w-80 h-80 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none">
-                </div>
-
-                <div class="relative z-10 flex flex-col gap-4">
-
-                    <!-- Menú Superior del Mapa (Conservado como se solicitó) -->
-                    <div id="map-property-selector" class="flex flex-wrap gap-2 pt-1">
-                        <!-- Populated dynamically with 'Ver Todos' + each property pill button -->
-                    </div>
-
-                    <!-- Map Container: Unified Multi-Property Map with Embedded Leaflet -->
-                    <div
-                        class="relative w-full rounded-2xl overflow-hidden border border-[#d4af37]/30 shadow-2xl bg-black min-h-[460px] lg:min-h-[530px]">
-
-                        <!-- Leaflet Interactive Map Container (Showing ALL properties with pins simultaneously) -->
-                        <div id="unified-leaflet-map" class="w-full h-[460px] lg:h-[530px] z-10"></div>
-
-                        <!-- Badge Indicador: Vista Satelital HD Exclusiva -->
-                        <div
-                            class="absolute top-4 left-14 z-20 py-2 px-3.5 rounded-xl border border-[#d4af37]/40 shadow-2xl bg-[#081810]/90 backdrop-blur-md text-xs font-black text-[#f2ca50] flex items-center gap-1.5 select-none">
-                            <span class="material-symbols-outlined text-[16px]">satellite_alt</span>
-                            <span>Vista Satelital HD</span>
-                        </div>
-
-                        <!-- Botón ABRIR EN GOOGLE MAPS (Conservado dentro del mapa) -->
-                        <a id="map-external-link" href="https://maps.google.com" target="_blank"
-                            class="absolute top-4 right-4 z-20 py-2.5 px-4 rounded-xl bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] font-black text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-2xl transition-all border border-[#f2ca50] hover:scale-105 active:scale-95"
-                            title="Abrir ubicación en la aplicación de Google Maps">
-                            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
-                            <span>Abrir en Google Maps</span>
+                    <!-- BOTÓN INTERACTIVO: VER EN EL MAPA -->
+                    <div class="pt-4 flex items-center gap-3">
+                        <a href="mapaterrenos.html"
+                            class="group relative inline-flex items-center gap-3 px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-gradient-to-r from-[#d4af37] via-[#f2ca50] to-[#b89124] text-[#1a1500] font-heading font-black text-sm sm:text-base uppercase tracking-wider shadow-[0_10px_35px_rgba(212,175,55,0.45)] hover:shadow-[0_12px_45px_rgba(242,202,80,0.65)] hover:scale-105 active:scale-95 transition-all duration-300 border-2 border-white/40 cursor-pointer overflow-hidden">
+                            <span
+                                class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></span>
+                            <span class="material-symbols-outlined text-[22px] sm:text-[26px] group-hover:rotate-12 transition-transform">map</span>
+                            <span>VER EN EL MAPA</span>
+                            <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
                         </a>
-
                     </div>
-
                 </div>
             </div>
         </section>
 
-        <!-- 3. SEARCH & FILTER CONSOLE (Ubicaciones y Tipos Corregidos con Colores Distintivos) -->
+        <!-- 2. SEARCH & FILTER CONSOLE (Ubicaciones y Tipos Corregidos con Colores Distintivos) -->
         <section id="buscador-filtros"
             class="w-full bg-[#0d1c14] py-6 shadow-inner border-t border-b border-[#d4af37]/20 relative z-20">
             <div class="max-w-[1360px] mx-auto px-4 sm:px-6 flex flex-col gap-4">
@@ -633,8 +597,12 @@
                     class="flex-1 py-3 px-5 rounded-full bg-[#d4af37] text-[#241a00] font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-[#e9c349] transition-colors shadow-lg">
                     <span class="material-symbols-outlined text-[18px]">chat</span> Coordinar Visita
                 </a>
+                <a id="modal-map-btn" href="mapaterrenos.html"
+                    class="hidden py-3 px-4 rounded-full bg-gradient-to-r from-orange-500 to-amber-600 hover:brightness-110 text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg transition-all shrink-0">
+                    <span class="material-symbols-outlined text-[18px]">map</span> Ver en Mapa 3D
+                </a>
                 <button onclick="closeModalDetails()"
-                    class="px-6 py-3 rounded-full bg-[#1b3d2b] hover:bg-[#25523a] text-white font-bold text-xs uppercase tracking-wider transition-colors">
+                    class="px-5 sm:px-6 py-3 rounded-full bg-[#1b3d2b] hover:bg-[#25523a] text-white font-bold text-xs uppercase tracking-wider transition-colors shrink-0">
                     Cerrar
                 </button>
             </div>
@@ -734,12 +702,6 @@
                         class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all hover:scale-105 cursor-pointer">
                         <span class="material-symbols-outlined text-[18px]">add_circle</span>
                         <span>+ Agregar Propiedad</span>
-                    </button>
-                    <button onclick="toggleSupabaseSettingsPanel()"
-                        class="px-3.5 py-2.5 rounded-xl bg-[#142c1e] hover:bg-[#1a3827] text-[#f2ca50] border border-[#d4af37]/40 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow transition-all cursor-pointer"
-                        title="Ver y configurar conexión con Supabase (Tabla nova_propiedades y Bucket INMOBILIARIA)">
-                        <span class="material-symbols-outlined text-[18px]">cloud_sync</span>
-                        <span>Conexión Supabase</span>
                     </button>
                     <button onclick="loadPropertiesFromSupabase(true)"
                         class="px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase flex items-center gap-1.5 transition-all cursor-pointer"
@@ -1087,8 +1049,84 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                         (Latitud, Longitud) *</label>
                     <input type="text" id="crud-coords" required placeholder="Ej. -13.3039,-72.1158"
                         class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]">
-                    <span class="text-[10px] text-slate-400 mt-1 block">Ubica automáticamente el pin del inmueble en el
-                        mapa interactivo.</span>
+                    <span class="text-[10px] text-slate-400 mt-1 block">Ubica automáticamente el pin o ancla del predio en el mapa interactivo y en mapaterrenos.html.</span>
+                </div>
+
+                <!-- CONFIGURACIÓN DE LOTIZACIÓN Y PLANO 3D (mapaterrenoscontrol / mapaterrenos.html) -->
+                <div class="p-4 rounded-2xl bg-[#091b12] border border-[#d4af37]/40 space-y-3">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <label class="flex items-center gap-2.5 cursor-pointer">
+                            <input type="checkbox" id="crud-has-lot-plan" onchange="toggleLotPlanFields()"
+                                class="w-4 h-4 rounded text-[#d4af37] focus:ring-[#d4af37] bg-[#081810] border-white/30 cursor-pointer">
+                            <span class="font-bold uppercase tracking-wider text-[#f2ca50] text-xs">
+                                ¿Tiene Plano de Lotización / Vista 3D Satelital?
+                            </span>
+                        </label>
+                        <a href="mapaterrenos.html" target="_blank"
+                            class="text-[11px] font-bold text-[#f2ca50] hover:text-white flex items-center gap-1 transition-colors">
+                            <span class="material-symbols-outlined text-[15px]">map</span>
+                            <span>Abrir mapaterrenos.html</span>
+                        </a>
+                    </div>
+
+                    <div id="lot-plan-fields-container" class="hidden space-y-3 pt-2 border-t border-white/10">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-semibold text-slate-300 text-xs mb-1">Nombre del Proyecto de Lotización</label>
+                                <input type="text" id="crud-lot-project-name" placeholder="Ej. Proyecto Guadalupe – Laguna Huaypo"
+                                    class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2 text-white text-xs focus:border-[#d4af37]">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-300 text-xs mb-1">Área Matriz Adyacente</label>
+                                <input type="text" id="crud-lot-matriz-area" placeholder="Ej. 836 m²"
+                                    class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2 text-white text-xs focus:border-[#d4af37]">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-semibold text-slate-300 text-xs mb-1">Vía de Acceso Principal / Carretera</label>
+                                <input type="text" id="crud-lot-road-name" placeholder="Ej. Carretera CU-1185 (Frente al predio)"
+                                    class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2 text-white text-xs focus:border-[#d4af37]">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-300 text-xs mb-1">Cantidad de Lotes</label>
+                                <input type="number" id="crud-lot-count" min="1" max="100" placeholder="Ej. 7"
+                                    class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2 text-white text-xs focus:border-[#d4af37]">
+                            </div>
+                        </div>
+
+                        <!-- Botón e Input de Imagen para la Lotización -->
+                        <div>
+                            <label class="block font-semibold text-slate-300 text-xs mb-1">Imagen del Plano de Lotización (Subida a Supabase)</label>
+                            <div class="flex gap-2 items-center">
+                                <input type="text" id="crud-lot-plan-image"
+                                    placeholder="https://... o plano_guadalupe.jpg en bucket INMOBILIARIA"
+                                    class="flex-1 bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2 text-white text-xs focus:border-[#d4af37]">
+                                <label
+                                    class="cursor-pointer px-3.5 py-2 bg-gradient-to-r from-[#d4af37] to-[#b89124] hover:brightness-110 text-[#1a1500] rounded-xl text-xs font-black flex items-center gap-1.5 shadow transition-all shrink-0">
+                                    <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
+                                    <span>Subir Imagen de Plano</span>
+                                    <input type="file" accept="image/*" class="hidden"
+                                        onchange="uploadImageToSupabase(event, 'crud-lot-plan-image')">
+                                </label>
+                            </div>
+                            <span class="text-[10px] text-slate-400 mt-1 block">
+                                Se almacena automáticamente en el bucket <strong class="text-white">INMOBILIARIA</strong> de Supabase Storage.
+                            </span>
+                        </div>
+
+                        <!-- Datos Estructurados de Lotes -->
+                        <div>
+                            <label class="block font-semibold text-slate-300 text-xs mb-1">Datos y Estados de Lotes (JSON o Configuración)</label>
+                            <textarea id="crud-lots-data" rows="2"
+                                placeholder='Ej. [{"id":"L1","name":"Lote 1","area":120,"price":23500,"status":"disponible"}, {"id":"L2","name":"Lote 2","area":120,"price":23500,"status":"disponible"}]'
+                                class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2 text-white font-mono text-[11px] focus:border-[#d4af37]"></textarea>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">
+                                Utiliza las coordenadas GPS ingresadas arriba como centro del plano georreferenciado en mapaterrenos.html.
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Descripción Detallada (Descripción Breve fue borrada como se solicitó) -->
@@ -1140,6 +1178,42 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
 
         // Catálogo predeterminado inicial con 3 fotos por propiedad
         const defaultProperties = [
+            {
+                id: "prop-guadalupe",
+                title: "Proyecto Guadalupe – Laguna Huaypo",
+                location: "Chinchero, Cusco (Frente Carretera CU-1185)",
+                locationKey: "cusco",
+                price: "Desde S/ 23,500",
+                priceNum: 23500,
+                area: "7 Lotes (120m² a 156m²) + Matriz 836 m²",
+                type: "proyecto",
+                image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDdDT0QMY4vpXbSYOWbArFtFiD-TXQtsSF47gNncpJhy8LkA9Te88TFl8WqSeQnG1rS2DejCVzXAJURrz3JAuAwCU-w2DL3iNc_xkoodTV6sqd3tD0wJDLlyphfQ30PG3hWB6Z0E4JORti1kFjj74rGAy_MfUS4k4CkyO4sOpsrpn0djRv_RBcHsReuXdJPEXjkfTStf0zXVfmVlhv4BaKnxm3WxkgOG4wQW6LWMIY",
+                image2: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1000&q=80",
+                image3: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1000&q=80",
+                feat1Icon: "verified",
+                feat1Text: "Título SUNARP",
+                feat2Icon: "near_me",
+                feat2Text: "Frente Vía Asfaltada",
+                detailedDesc: "Proyecto de lotización exclusivo con 7 lotes frente a la Carretera CU-1185, vista panorámica directa a la Laguna de Huaypo y área matriz adyacente de 836 m². Acceso vehicular directo, saneamiento legal integral garantizado por Agencia NOVA.",
+                coords: "-13.421719,-72.089713",
+                mapZoom: 18,
+                hasLotPlan: true,
+                has_lot_plan: true,
+                lotProjectName: "Proyecto Guadalupe – Laguna Huaypo",
+                lotMatrizArea: "836 m²",
+                lotRoadName: "Carretera CU-1185 (Frente al predio)",
+                lotCount: 7,
+                lotPlanImage: "",
+                lotsData: [
+                    { id: "L1", name: "Lote 1", area: 120, price: 23500, status: "disponible", dimensions: "8.00 m × 15.00 m" },
+                    { id: "L2", name: "Lote 2", area: 120, price: 23500, status: "disponible", dimensions: "8.00 m × 15.00 m" },
+                    { id: "L3", name: "Lote 3", area: 120, price: 23500, status: "reservado", dimensions: "8.00 m × 15.00 m" },
+                    { id: "L4", name: "Lote 4", area: 120, price: 23500, status: "disponible", dimensions: "8.00 m × 15.00 m" },
+                    { id: "L5", name: "Lote 5", area: 120, price: 23500, status: "vendido", dimensions: "8.00 m × 15.00 m" },
+                    { id: "L6", name: "Lote 6", area: 120, price: 23500, status: "disponible", dimensions: "8.00 m × 15.00 m" },
+                    { id: "L7", name: "Lote 7", area: 156, price: 28080, status: "disponible", dimensions: "10.40 m × 15.00 m" }
+                ]
+            },
             {
                 id: "prop-1",
                 title: "Refugio Bosque Los Pinos",
@@ -1346,11 +1420,18 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                         <div class="flex items-center gap-2 pt-1">
                             <a href="https://wa.me/51948301540?text=Hola%20Agencia%20NOVA,%20deseo%20informaci%C3%B3n%20de%20la%20propiedad:%20${encodeURIComponent(prop.title)}%20(${encodeURIComponent(prop.location)})" 
                                target="_blank"
-                               class="flex-1 py-2.5 px-4 rounded-xl bg-[#d4af37] text-[#241a00] font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 hover:bg-[#e9c349] transition-colors shadow">
+                               class="flex-1 py-2.5 px-3 sm:px-4 rounded-xl bg-[#d4af37] text-[#241a00] font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 hover:bg-[#e9c349] transition-colors shadow">
                                 <span class="material-symbols-outlined text-[16px]">chat</span> WhatsApp
                             </a>
+                            ${(prop.hasLotPlan || prop.has_lot_plan) ? `
+                            <a href="mapaterrenos.html" 
+                               class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:brightness-110 text-white font-extrabold text-xs flex items-center gap-1 shadow-md transition-all shrink-0"
+                               title="Ver plano interactivo 3D de lotización">
+                                <span class="material-symbols-outlined text-[16px]">map</span>
+                                <span>3D</span>
+                            </a>` : ''}
                             <button onclick="showPropModalById('${prop.id}')" 
-                                    class="px-4 py-2.5 rounded-xl text-white hover:text-[#f2ca50] transition-colors text-xs font-bold border border-[#d4af37]/30 bg-[#142c1e]">
+                                    class="px-3.5 sm:px-4 py-2.5 rounded-xl text-white hover:text-[#f2ca50] transition-colors text-xs font-bold border border-[#d4af37]/30 bg-[#142c1e] shrink-0">
                                 Detalles
                             </button>
                         </div>
@@ -1588,6 +1669,16 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
             document.getElementById('modal-desc').innerText = prop.detailedDesc || 'Sin descripción detallada.';
             document.getElementById('modal-wa-btn').href = `https://wa.me/51948301540?text=Hola%20Agencia%20NOVA,%20solicito%20detalles%20de%20la%20propiedad:%20${encodeURIComponent(prop.title)}%20(${encodeURIComponent(prop.location)})`;
 
+            // Botón hacia Mapa 3D si tiene plano
+            const mapBtn = document.getElementById('modal-map-btn');
+            if (mapBtn) {
+                if (prop.hasLotPlan || prop.has_lot_plan) {
+                    mapBtn.classList.remove('hidden');
+                } else {
+                    mapBtn.classList.add('hidden');
+                }
+            }
+
             // Configurar fotos en carrusel (3 fotos ingresadas)
             carouselImages = [];
             if (prop.image) carouselImages.push(prop.image);
@@ -1702,7 +1793,20 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
             });
         }
 
-        // MODAL FORMULARIO DE CREACIÓN / EDICIÓN (3 Fotos, Característica 1 en select, sin descripción breve)
+        // CONTROL DE VISIBILIDAD DE CAMPOS DE LOTIZACIÓN Y PLANO 3D
+        function toggleLotPlanFields() {
+            const chk = document.getElementById('crud-has-lot-plan');
+            const container = document.getElementById('lot-plan-fields-container');
+            if (container && chk) {
+                if (chk.checked) {
+                    container.classList.remove('hidden');
+                } else {
+                    container.classList.add('hidden');
+                }
+            }
+        }
+
+        // MODAL FORMULARIO DE CREACIÓN / EDICIÓN (3 Fotos, Característica 1 en select, sin descripción breve, Campos Lotización y Plano 3D)
         function openPropertyFormModal(propData = null) {
             const form = document.getElementById('property-crud-form');
             form.reset();
@@ -1724,11 +1828,35 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                 document.getElementById('crud-feat2').value = propData.feat2Text || '';
                 document.getElementById('crud-coords').value = propData.coords || '-13.3039,-72.1158';
                 document.getElementById('crud-detailed-desc').value = propData.detailedDesc || '';
+
+                // Campos de Lotización y Plano Satelital 3D (mapaterrenoscontrol / mapaterrenos.html)
+                const hasPlan = Boolean(propData.hasLotPlan || propData.has_lot_plan);
+                document.getElementById('crud-has-lot-plan').checked = hasPlan;
+                document.getElementById('crud-lot-project-name').value = propData.lotProjectName || propData.lot_project_name || '';
+                document.getElementById('crud-lot-matriz-area').value = propData.lotMatrizArea || propData.lot_matriz_area || '';
+                document.getElementById('crud-lot-road-name').value = propData.lotRoadName || propData.lot_road_name || '';
+                document.getElementById('crud-lot-count').value = propData.lotCount || propData.lot_count || '';
+                document.getElementById('crud-lot-plan-image').value = propData.lotPlanImage || propData.lot_plan_image || '';
+
+                let rawLots = propData.lotsData || propData.lots_data || '';
+                if (typeof rawLots === 'object' && rawLots !== null) {
+                    try { rawLots = JSON.stringify(rawLots, null, 2); } catch (e) { }
+                }
+                document.getElementById('crud-lots-data').value = rawLots || '';
+                toggleLotPlanFields();
             } else {
                 document.getElementById('prop-form-title').innerText = 'Agregar Nueva Propiedad';
                 document.getElementById('crud-prop-id').value = '';
                 document.getElementById('crud-coords').value = '-13.3039,-72.1158';
                 document.getElementById('crud-feat1').value = 'Título SUNARP';
+                document.getElementById('crud-has-lot-plan').checked = false;
+                document.getElementById('crud-lot-project-name').value = '';
+                document.getElementById('crud-lot-matriz-area').value = '';
+                document.getElementById('crud-lot-road-name').value = '';
+                document.getElementById('crud-lot-count').value = '';
+                document.getElementById('crud-lot-plan-image').value = '';
+                document.getElementById('crud-lots-data').value = '';
+                toggleLotPlanFields();
             }
 
             document.getElementById('property-form-modal').classList.remove('hidden');
@@ -1777,6 +1905,24 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
             const coords = document.getElementById('crud-coords').value.trim() || '-13.3039,-72.1158';
             const detailedDesc = document.getElementById('crud-detailed-desc').value.trim();
 
+            // Extracción de datos de lotización
+            const hasLotPlan = document.getElementById('crud-has-lot-plan').checked;
+            const lotProjectName = document.getElementById('crud-lot-project-name').value.trim();
+            const lotMatrizArea = document.getElementById('crud-lot-matriz-area').value.trim();
+            const lotRoadName = document.getElementById('crud-lot-road-name').value.trim();
+            const lotCount = parseInt(document.getElementById('crud-lot-count').value, 10) || 0;
+            const lotPlanImageRaw = document.getElementById('crud-lot-plan-image').value.trim();
+            const lotPlanImage = resolveSupabaseImageUrl(lotPlanImageRaw, '');
+            const lotsDataRaw = document.getElementById('crud-lots-data').value.trim();
+            let lotsData = null;
+            if (lotsDataRaw) {
+                try {
+                    lotsData = JSON.parse(lotsDataRaw);
+                } catch (e) {
+                    lotsData = lotsDataRaw;
+                }
+            }
+
             const image = resolveSupabaseImageUrl(imageRaw);
             const image2 = resolveSupabaseImageUrl(image2Raw);
             const image3 = resolveSupabaseImageUrl(image3Raw);
@@ -1790,7 +1936,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                     props[index] = {
                         ...props[index],
                         title, location, locationKey, type, price, priceNum, area,
-                        image, image2, image3, feat1Text, feat2Text, coords, detailedDesc
+                        image, image2, image3, feat1Text, feat2Text, coords, detailedDesc,
+                        hasLotPlan, has_lot_plan: hasLotPlan,
+                        lotProjectName, lot_project_name: lotProjectName,
+                        lotMatrizArea, lot_matriz_area: lotMatrizArea,
+                        lotRoadName, lot_road_name: lotRoadName,
+                        lotCount, lot_count: lotCount,
+                        lotPlanImage, lot_plan_image: lotPlanImage,
+                        lotsData, lots_data: lotsData
                     };
                     savedProp = props[index];
                 }
@@ -1799,7 +1952,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                     id: 'prop-' + Date.now(),
                     title, location, locationKey, type, price, priceNum, area,
                     image, image2, image3, feat1Icon: 'verified', feat1Text,
-                    feat2Icon: 'bolt', feat2Text, coords, detailedDesc, mapZoom: 13
+                    feat2Icon: 'bolt', feat2Text, coords, detailedDesc, mapZoom: 13,
+                    hasLotPlan, has_lot_plan: hasLotPlan,
+                    lotProjectName, lot_project_name: lotProjectName,
+                    lotMatrizArea, lot_matriz_area: lotMatrizArea,
+                    lotRoadName, lot_road_name: lotRoadName,
+                    lotCount, lot_count: lotCount,
+                    lotPlanImage, lot_plan_image: lotPlanImage,
+                    lotsData, lots_data: lotsData
                 };
                 props.unshift(newProp);
                 savedProp = newProp;
@@ -1998,6 +2158,15 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
 
             const mapZoom = parseInt(row.map_zoom || row.mapZoom || 13, 10);
 
+            // Características de Plano y Lotización 3D
+            const hasLotPlan = Boolean(row.has_lot_plan || row.hasLotPlan);
+            const lotProjectName = String(row.lot_project_name || row.lotProjectName || '');
+            const lotMatrizArea = String(row.lot_matriz_area || row.lotMatrizArea || '');
+            const lotRoadName = String(row.lot_road_name || row.lotRoadName || '');
+            const lotPlanImage = resolveSupabaseImageUrl(row.lot_plan_image || row.lotPlanImage || '', '');
+            const lotCount = parseInt(row.lot_count || row.lotCount || 0, 10);
+            const lotsData = row.lots_data || row.lotsData || null;
+
             return {
                 id,
                 title,
@@ -2016,7 +2185,21 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                 feat2Text,
                 detailedDesc,
                 coords,
-                mapZoom
+                mapZoom,
+                hasLotPlan,
+                has_lot_plan: hasLotPlan,
+                lotProjectName,
+                lot_project_name: lotProjectName,
+                lotMatrizArea,
+                lot_matriz_area: lotMatrizArea,
+                lotRoadName,
+                lot_road_name: lotRoadName,
+                lotPlanImage,
+                lot_plan_image: lotPlanImage,
+                lotCount,
+                lot_count: lotCount,
+                lotsData,
+                lots_data: lotsData
             };
         }
 
@@ -2175,16 +2358,54 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                     feat2_text: prop.feat2Text || 'Servicios Listos',
                     detailed_desc: prop.detailedDesc || '',
                     coords: prop.coords || '-13.3039,-72.1158',
-                    map_zoom: prop.mapZoom || 13
+                    map_zoom: prop.mapZoom || 13,
+                    has_lot_plan: Boolean(prop.hasLotPlan || prop.has_lot_plan),
+                    lot_project_name: prop.lotProjectName || prop.lot_project_name || null,
+                    lot_matriz_area: prop.lotMatrizArea || prop.lot_matriz_area || null,
+                    lot_road_name: prop.lotRoadName || prop.lot_road_name || null,
+                    lot_plan_image: prop.lotPlanImage || prop.lot_plan_image || null,
+                    lot_count: prop.lotCount || prop.lot_count || null,
+                    lots_data: prop.lotsData || prop.lots_data || null
                 };
 
-                const res = await fetch(endpoint, {
+                let res = await fetch(endpoint, {
                     method: 'POST',
                     headers: getSupabaseHeaders({
                         'Prefer': 'resolution=merge-duplicates'
                     }),
                     body: JSON.stringify(payload)
                 });
+
+                // Si la tabla no tiene las columnas adicionales de lotización, fallback a payload base
+                if (!res.ok && res.status === 400) {
+                    const fallbackPayload = {
+                        id: prop.id,
+                        title: prop.title,
+                        location: prop.location,
+                        location_key: prop.locationKey || 'cusco',
+                        type: prop.type || 'terreno',
+                        price: prop.price,
+                        price_num: prop.priceNum || 0,
+                        area: prop.area,
+                        image: prop.image,
+                        image2: prop.image2 || null,
+                        image3: prop.image3 || null,
+                        feat1_icon: prop.feat1Icon || 'verified',
+                        feat1_text: prop.feat1Text || 'Título SUNARP',
+                        feat2_icon: prop.feat2Icon || 'bolt',
+                        feat2_text: prop.feat2Text || 'Servicios Listos',
+                        detailed_desc: prop.detailedDesc || '',
+                        coords: prop.coords || '-13.3039,-72.1158',
+                        map_zoom: prop.mapZoom || 13
+                    };
+                    res = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: getSupabaseHeaders({
+                            'Prefer': 'resolution=merge-duplicates'
+                        }),
+                        body: JSON.stringify(fallbackPayload)
+                    });
+                }
 
                 if (res.ok) {
                     console.log(`[Supabase] ✅ Propiedad ${prop.id} guardada en tabla ${table}.`);

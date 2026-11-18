@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Proyecto Guadalupe – Laguna Huaypo | Agencia Nova E.I.R.L.</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+  <script>
+    // Evita que MapLibre GL intente leer window.parent.location.href dentro de iframes/blobs
+    if (window.maplibregl) {
+      const workerCode = `importScripts('https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl-csp-worker.js');`;
+      const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
+      window.maplibregl.workerUrl = URL.createObjectURL(workerBlob);
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #0b1120; color: #f8fafc; }
+    #map { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+    .glass-panel {
+      background: rgba(11, 17, 32, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(249, 115, 22, 0.45);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .custom-scroll::-webkit-scrollbar { width: 5px; }
+    .custom-scroll::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.4); }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(249, 115, 22, 0.5); border-radius: 999px; }
+
+    .lot-label-badge {
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1.15;
+      white-space: nowrap;
+      color: #ffffff;
+      border: 1.5px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.65);
+      cursor: pointer;
+      user-select: none;
+      transition: filter 0.15s ease;
+    }
+    .lot-label-badge:hover { filter: brightness(1.15); }
+
+    .poi-badge {
+      background: rgba(11, 17, 32, 0.9);
+      border: 1px solid rgba(251, 191, 36, 0.65);
+      color: #fef3c7;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      pointer-events: none;
+    }
+
+    .vertex-handle {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 3px solid #f97316;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+      cursor: grab;
+    }
+    .vertex-handle:active { cursor: grabbing; transform: scale(1.2); }
+
+    .plan-anchor-handle {
+      background: #f97316;
+      color: #ffffff;
+      border: 2px solid #ffffff;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+      cursor: move;
+      white-space: nowrap;
+    }
+
+    .maplibregl-ctrl-bottom-right { bottom: 64px !important; right: 10px !important; }
+    @media (min-width: 640px) {
+      .maplibregl-ctrl-bottom-right { bottom: 20px !important; right: 14px !important; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Contenedor Principal del Mapa Satelital 3D -->
+  <div id="map"></div>
+
+  <!-- Barra Superior: Identidad + Filtros + Controles -->
+  <header class="fixed top-2.5 left-2.5 right-2.5 z-30 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 pointer-events-none">
+    <div class="glass-panel rounded-2xl px-3 py-2 flex items-center justify-between gap-2.5 pointer-events-auto">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <!-- Botón Volver a Terrenos.html -->
+        <a href="terrenos.html" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-[#d4af37] text-amber-300 hover:text-black border border-amber-500/40 text-[11px] sm:text-xs font-bold flex items-center gap-1 shrink-0 transition shadow" title="Volver al Catálogo de Terrenos">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          <span class="hidden sm:inline">Terrenos</span>
+        </a>
+
+        <button id="btn-toggle-sidebar" class="lg:hidden p-2 rounded-xl bg-slate-800/90 text-orange-400 border border-orange-500/30 hover:bg-slate-700 shrink-0" title="Ver lista de lotes">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg shadow-orange-500/30 shrink-0">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+        </div>
+        <div class="min-w-0">
+          <div class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-orange-400 truncate">Agencia Nova E.I.R.L. • Chinchero</div>
+          <h1 id="top-project-title" class="text-xs sm:text-base font-extrabold text-white leading-tight truncate">Proyecto Guadalupe – Laguna Huaypo</h1>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1.5 shrink-0">
+        <!-- Botón Abrir en Google Maps -->
+        <a id="map-external-link" href="https://maps.google.com/?q=-13.421719,-72.089713" target="_blank"
+          class="bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700 px-2.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1 transition"
+          title="Abrir ubicación actual en Google Maps">
+          <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          <span class="hidden sm:inline">Google Maps</span>
+        </a>
+
+        <button id="btn-toggle-editor-mobile" class="lg:hidden bg-slate-800/90 hover:bg-orange-500/20 text-orange-300 border border-orange-500/40 px-2.5 py-1.5 rounded-xl text-[11px] font-bold flex items-center gap-1 shrink-0 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          <span class="editor-btn-text">Editor</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="glass-panel rounded-2xl p-1 flex items-center gap-1 overflow-x-auto no-scrollbar pointer-events-auto">
+      <!-- Selector desplegable de Propiedades del Catálogo -->
+      <div class="flex items-center gap-1 shrink-0 pr-1.5 border-r border-slate-700/80 mr-0.5">
+        <select id="catalog-property-picker" class="bg-slate-900 text-amber-300 text-[11px] sm:text-xs font-bold rounded-xl border border-amber-500/40 px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-amber-400">
+          <option value="guadalupe" selected>📍 Proyecto Guadalupe (3D)</option>
+        </select>
+      </div>
+
+      <button data-filter="todos" class="filter-btn active bg-orange-500 text-white shadow-md shadow-orange-500/25 px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap transition">
+        Todos <span id="count-todos" class="ml-0.5 opacity-90">7</span>
+      </button>
+      <button data-filter="disponible" class="filter-btn bg-slate-800/90 text-slate-100 hover:bg-slate-700 px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 whitespace-nowrap transition">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Disponibles <span id="count-disponible">5</span>
+      </button>
+      <button data-filter="reservado" class="filter-btn bg-slate-800/90 text-slate-100 hover:bg-slate-700 px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 whitespace-nowrap transition">
+        <span class="w-2 h-2 rounded-full bg-amber-400"></span> Reservados <span id="count-reservado">1</span>
+      </button>
+      <button data-filter="vendido" class="filter-btn bg-slate-800/90 text-slate-100 hover:bg-slate-700 px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 whitespace-nowrap transition">
+        <span class="w-2 h-2 rounded-full bg-rose-500"></span> Vendidos <span id="count-vendido">1</span>
+      </button>
+
+      <div class="hidden lg:block h-5 w-px bg-slate-700 mx-0.5"></div>
+
+      <button id="btn-toggle-editor" class="hidden lg:flex bg-slate-800/90 hover:bg-orange-500/20 text-orange-300 border border-orange-500/40 px-3 py-1.5 rounded-xl text-xs font-bold items-center gap-1.5 whitespace-nowrap transition">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        <span class="editor-btn-text">Modo Editor</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Panel Lateral Izquierdo: Plano de Distribución y Lista de Lotes -->
+  <aside id="sidebar-panel" class="fixed top-28 lg:top-20 bottom-16 lg:bottom-20 left-2.5 right-2.5 sm:right-auto sm:w-72 z-30 glass-panel rounded-2xl flex flex-col overflow-hidden transition-transform duration-300 -translate-x-[115%] lg:translate-x-0">
+    <div class="p-3.5 border-b border-slate-700/80 flex items-center justify-between">
+      <div>
+        <h2 class="text-sm font-extrabold text-white">Plano de Distribución</h2>
+        <p class="text-[11px] text-slate-300">7 Lotes • Frente a Carretera CU-1185</p>
+      </div>
+      <button id="btn-close-sidebar" class="lg:hidden p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div id="lots-list-container" class="flex-1 overflow-y-auto custom-scroll p-2.5 space-y-2"></div>
+
+    <div class="p-3 bg-slate-900/95 border-t border-slate-700/80 space-y-1.5 text-xs">
+      <div class="flex items-center justify-between">
+        <span class="text-slate-300 font-medium">Área Matriz Adyacente</span>
+        <span class="font-extrabold text-amber-400">836 m²</span>
+      </div>
+      <div class="flex items-center justify-between text-[11px] text-slate-400">
+        <span>Coordenadas GPS</span>
+        <span id="sidebar-coords-label">-13.42172, -72.08971</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Tarjeta Flotante Derecha / Bottom-Sheet en Móvil: Ficha Técnica del Lote -->
+  <section id="lot-detail-card" class="hidden fixed bottom-16 left-2.5 right-2.5 sm:left-auto sm:bottom-auto sm:top-20 sm:right-3 z-30 sm:w-96 max-h-[68vh] sm:max-h-[82vh] overflow-y-auto custom-scroll glass-card rounded-2xl p-3.5 sm:p-4 space-y-3">
+    <div class="flex items-start justify-between gap-2">
+      <div>
+        <div class="flex items-center gap-2">
+          <span id="detail-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Disponible</span>
+          <span class="text-[11px] text-slate-400 font-semibold">Sector Guadalupe</span>
+        </div>
+        <h3 id="detail-title" class="text-base sm:text-lg font-extrabold text-white mt-1">Lote 1</h3>
+      </div>
+      <button id="btn-close-detail" class="p-1.5 rounded-xl bg-slate-800/90 text-slate-300 hover:text-white border border-slate-700">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2">
+      <div class="bg-slate-800/80 border border-slate-700/80 rounded-xl p-2.5">
+        <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Área Total</div>
+        <div id="detail-area" class="text-sm sm:text-base font-extrabold text-white mt-0.5">120 m²</div>
+        <div id="detail-dimensions" class="text-[11px] text-slate-400">8.00 m × 15.00 m</div>
+      </div>
+      <div class="bg-slate-800/80 border border-slate-700/80 rounded-xl p-2.5">
+        <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Precio Contado</div>
+        <div id="detail-price-pen" class="text-sm sm:text-base font-extrabold text-orange-400 mt-0.5">S/ 23,500</div>
+        <div id="detail-price-usd" class="text-[11px] text-slate-400">Ref. $ 6,267 USD</div>
+      </div>
+    </div>
+
+    <div class="bg-slate-800/60 border border-slate-700/70 rounded-xl p-2.5 text-[11px] sm:text-xs text-slate-200 space-y-1">
+      <div class="flex items-center gap-2">
+        <span class="text-orange-400 font-bold">✓</span> Acceso directo por Carretera CU-1185
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-orange-400 font-bold">✓</span> Vista panorámica hacia Laguna de Huaypo
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-orange-400 font-bold">✓</span> Documentación en regla • Agencia Nova E.I.R.L.
+      </div>
+    </div>
+
+    <a id="detail-whatsapp-btn" href="https://wa.me/51948301540" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 transition">
+      <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"/></svg>
+      <span>Consultar Lote por WhatsApp</span>
+    </a>
+  </section>
+
+  <!-- Panel Unificado de Edición (Lotes + Plano Activo en un solo bloque compacto) -->
+  <section id="unified-editor-panel" class="hidden fixed bottom-16 left-2.5 right-2.5 sm:left-auto sm:bottom-20 sm:right-3 z-40 sm:w-88 max-h-[62vh] sm:max-h-[76vh] overflow-y-auto custom-scroll glass-card rounded-2xl p-3 sm:p-3.5 space-y-2.5">
+    <div class="flex items-center justify-between gap-2 border-b border-slate-700/80 pb-2">
+      <div class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+        <h3 class="text-[11px] sm:text-xs font-extrabold uppercase tracking-wider text-orange-400">Editor Unificado</h3>
+      </div>
+      <div class="flex items-center gap-1 bg-slate-900/90 p-0.5 rounded-xl border border-slate-700">
+        <button id="tab-edit-lotes" class="px-2.5 py-1 rounded-lg bg-orange-500 text-white text-[11px] font-bold transition">Lotes</button>
+        <button id="tab-edit-plano" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition">Plano</button>
+      </div>
+    </div>
+
+    <!-- Pestaña 1: Edición de Lotes -->
+    <div id="editor-view-lotes" class="space-y-2">
+      <div>
+        <label class="block text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Lote Seleccionado</label>
+        <select id="editor-lot-selector" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white font-bold">
+          <option value="L1">Lote 1 (120 m²)</option>
+          <option value="L2">Lote 2 (120 m²)</option>
+          <option value="L3">Lote 3 (120 m²)</option>
+          <option value="L4">Lote 4 (120 m²)</option>
+          <option value="L5">Lote 5 (120 m²)</option>
+          <option value="L6">Lote 6 (120 m²)</option>
+          <option value="L7">Lote 7 (156 m²)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Estado del Lote</label>
+        <div class="grid grid-cols-3 gap-1.5">
+          <button data-set-status="disponible" class="status-edit-btn py-1.5 rounded-xl text-[11px] font-bold bg-emerald-600/25 border border-emerald-500/50 text-emerald-200 hover:bg-emerald-600/50">Disponible</button>
+          <button data-set-status="reservado" class="status-edit-btn py-1.5 rounded-xl text-[11px] font-bold bg-amber-600/25 border border-amber-500/50 text-amber-200 hover:bg-amber-600/50">Reservado</button>
+          <button data-set-status="vendido" class="status-edit-btn py-1.5 rounded-xl text-[11px] font-bold bg-rose-600/25 border border-rose-500/50 text-rose-200 hover:bg-rose-600/50">Vendido</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-[10px] text-slate-400 font-semibold mb-1">Área (m²)</label>
+          <input id="edit-lot-area" type="number" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white font-bold" />
+        </div>
+        <div>
+          <label class="block text-[10px] text-slate-400 font-semibold mb-1">Precio Contado (S/)</label>
+          <input id="edit-lot-price" type="number" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white font-bold" />
+        </div>
+      </div>
+
+      <p class="text-[10px] text-slate-400 leading-snug">
+        Arrastra los vértices blancos en el mapa para ajustar las esquinas del lote seleccionado.
+      </p>
+    </div>
+
+    <!-- Pestaña 2: Edición de Posición y Rotación del Plano Completo -->
+    <div id="editor-view-plano" class="hidden space-y-2">
+      <p class="text-[11px] text-slate-300 leading-snug">
+        Arrastra el ancla naranja <strong>«Mover Plano»</strong> en el mapa o usa los controles de precisión:
+      </p>
+
+      <div class="bg-slate-900/90 border border-slate-700/80 rounded-xl p-2 space-y-2">
+        <div class="flex items-center justify-between text-[11px]">
+          <span class="text-slate-300 font-semibold">Paso de movimiento:</span>
+          <select id="nudge-step-select" class="bg-slate-800 border border-slate-600 rounded-lg px-2 py-0.5 text-white font-bold text-[11px]">
+            <option value="1">1 metro</option>
+            <option value="5" selected>5 metros</option>
+            <option value="20">20 metros</option>
+            <option value="100">100 metros</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-3 gap-1.5 max-w-[165px] mx-auto">
+          <div></div>
+          <button id="btn-nudge-n" class="py-1.5 rounded-lg bg-slate-800 hover:bg-orange-500 text-white font-bold text-xs">↑ N</button>
+          <div></div>
+          <button id="btn-nudge-w" class="py-1.5 rounded-lg bg-slate-800 hover:bg-orange-500 text-white font-bold text-xs">← O</button>
+          <button id="btn-rotate-plan" class="py-1.5 rounded-lg bg-slate-700 hover:bg-amber-500 text-amber-300 hover:text-white font-bold text-[10px]" title="Rotar plano +5°">↻ +5°</button>
+          <button id="btn-nudge-e" class="py-1.5 rounded-lg bg-slate-800 hover:bg-orange-500 text-white font-bold text-xs">E →</button>
+          <div></div>
+          <button id="btn-nudge-s" class="py-1.5 rounded-lg bg-slate-800 hover:bg-orange-500 text-white font-bold text-xs">↓ S</button>
+          <div></div>
+        </div>
+      </div>
+
+      <div class="space-y-1">
+        <label class="block text-[10px] uppercase tracking-wider text-slate-400 font-bold">Mover a Coordenada GPS (Lat, Lng)</label>
+        <div class="flex gap-1.5">
+          <input id="input-teleport-coords" type="text" placeholder="-13.421719, -72.089713" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white" />
+          <button id="btn-teleport-coords" class="px-3 py-1.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-white text-xs font-bold transition">Ir</button>
+        </div>
+      </div>
+
+      <!-- Botón para Guardar y Persistir en Supabase / LocalStorage -->
+      <div class="pt-2 border-t border-slate-700/80 flex items-center gap-2">
+        <button id="btn-save-editor-changes" class="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow transition cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+          <span>Guardar Cambios</span>
+        </button>
+        <button id="btn-reset-editor-geometry" class="py-2 px-2.5 rounded-xl bg-slate-800 hover:bg-rose-900 text-slate-300 hover:text-white text-[11px] font-bold border border-slate-700 transition cursor-pointer" title="Restaurar coordenadas y plano original">
+          Reset
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Barra Inferior de Navegación Rápida -->
+  <footer class="fixed bottom-2.5 left-2.5 right-2.5 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-30 glass-panel rounded-2xl p-1 flex items-center justify-between sm:justify-center gap-1">
+    <button id="btn-fly-project" class="flex-1 sm:flex-initial justify-center px-2.5 sm:px-3.5 py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-white text-[11px] sm:text-xs font-extrabold flex items-center gap-1 shadow-md shadow-orange-500/25 transition">
+      <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <span>Ver Lotes</span>
+    </button>
+
+    <button id="btn-fly-laguna" class="flex-1 sm:flex-initial justify-center px-2.5 sm:px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-sky-300 text-[11px] sm:text-xs font-bold flex items-center gap-1 transition">
+      <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+      <span>Laguna Huaypo</span>
+    </button>
+
+    <button id="btn-toggle-roads" class="flex-1 sm:flex-initial justify-center px-2.5 sm:px-3.5 py-2 rounded-xl bg-amber-500/20 border border-amber-400/50 text-amber-300 text-[11px] sm:text-xs font-bold flex items-center gap-1 transition">
+      <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+      <span>Carreteras</span>
+    </button>
+
+    <button id="btn-toggle-view" class="flex-1 sm:flex-initial justify-center px-2.5 sm:px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-[11px] sm:text-xs font-bold flex items-center gap-1 transition">
+      <svg class="w-3.5 h-3.5 text-orange-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"/></svg>
+      <span id="view-mode-label">Vista 2D Cenital</span>
+    </button>
+  </footer>
+
+  <!-- Modal de Contraseña para Modo Editor (NOVA2026) -->
+  <div id="password-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-card rounded-2xl w-full max-w-sm p-5 space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-orange-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-extrabold text-white">Acceso Administrador</h3>
+            <p class="text-[11px] text-slate-400">Agencia Nova E.I.R.L.</p>
+          </div>
+        </div>
+        <button id="btn-close-pwd-modal" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="block text-xs font-semibold text-slate-300">Ingrese la clave de edición:</label>
+        <input id="input-editor-password" type="password" placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 rounded-xl px-3.5 py-2.5 text-sm text-white font-bold tracking-widest outline-none" />
+        <p id="pwd-error-msg" class="hidden text-[11px] font-semibold text-rose-400">Clave incorrecta. Intente nuevamente.</p>
+      </div>
+
+      <div class="flex gap-2">
+        <button id="btn-cancel-pwd" class="flex-1 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition">Cancelar</button>
+        <button id="btn-confirm-pwd" class="flex-1 py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-white text-xs font-extrabold transition">Ingresar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Banner de Notificación Toast -->
+  <div id="toast-banner" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-opacity duration-300">
+    <div class="glass-panel px-4 py-2 rounded-full text-xs font-bold text-white flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-orange-400"></span>
+      <span id="toast-message">Listo</span>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. CONSTANTES GEOGRÁFICAS Y DATOS INICIALES DEL PROYECTO GUADALUPE
+    // =========================================================================
+    const PROJECT_CENTER = [-72.089713, -13.421719]; // [Lng, Lat] exactos
+    const LAGUNA_CENTER = [-72.0835, -13.3955];
+    const EDITOR_SECRET_KEY = 'NOVA2026';
+    const TIPO_CAMBIO_USD = 3.75;
+
+    // Factores de conversión aproximados metros -> grados en latitud -13.42°
+    const M_TO_LAT = 1 / 110574;
+    const M_TO_LNG = 1 / (111320 * Math.cos((-13.421719 * Math.PI) / 180));
+
+    let currentProjectCenter = [...PROJECT_CENTER];
+    let currentFilter = 'todos';
+    let selectedLotId = null;
+    let isEditorMode = false;
+    let is3DView = true;
+    let showRoads = true;
+
+    let lotMarkerRefs = [];
+    let poiMarkerRefs = [];
+    let vertexMarkers = [];
+    let planAnchorMarker = null;
+
+    // Genera las coordenadas de los 7 lotes + Área Matriz orientados paralelo a Carretera CU-1185
+    function createInitialGeometry() {
+      const originLng = PROJECT_CENTER[0] - 0.00028;
+      const originLat = PROJECT_CENTER[1] - 0.00018;
+      const angleRad = (38 * Math.PI) / 180; // Orientación paralela a la vía
+      const cosA = Math.cos(angleRad);
+      const sinA = Math.sin(angleRad);
+
+      const toGeo = (xMeters, yMeters) => {
+        const rx = xMeters * cosA - yMeters * sinA;
+        const ry = xMeters * sinA + yMeters * cosA;
+        return [originLng + rx * M_TO_LNG, originLat + ry * M_TO_LAT];
+      };
+
+      const widths = [8, 8, 8, 8, 8, 8, 10.4]; // 6 lotes de 8x15m (120m²) + 1 lote de 10.4x15m (156m²)
+      const depth = 15;
+      let cursorX = 0;
+
+      const generatedLots = widths.map((w, idx) => {
+        const num = idx + 1;
+        const area = idx === 6 ? 156 : 120;
+        const price = idx === 6 ? 28080 : 23500;
+        const status = num === 3 ? 'reservado' : num === 5 ? 'vendido' : 'disponible';
+
+        const p1 = toGeo(cursorX, 0);
+        const p2 = toGeo(cursorX + w, 0);
+        const p3 = toGeo(cursorX + w, depth);
+        const p4 = toGeo(cursorX, depth);
+        cursorX += w;
+
+        return {
+          id: `L${num}`,
+          name: `Lote ${num}`,
+          area,
+          price,
+          dimensions: `${w.toFixed(2)} m × ${depth.toFixed(2)} m`,
+          status,
+          coordinates: [p1, p2, p3, p4]
+        };
+      });
+
+      const generatedMatriz = [
+        toGeo(0, depth),
+        toGeo(cursorX, depth),
+        toGeo(cursorX, depth + 14.3),
+        toGeo(0, depth + 14.3)
+      ];
+
+      return { generatedLots, generatedMatriz };
+    }
+
+    const initialGeom = createInitialGeometry();
+    let lotsData = initialGeom.generatedLots;
+    let matrizCoords = initialGeom.generatedMatriz;
+
+    // Cargar geometría guardada previamente en LocalStorage si existe
+    const savedGeomStr = localStorage.getItem('nova_guadalupe_lots_geom');
+    if (savedGeomStr) {
+      try {
+        const savedGeom = JSON.parse(savedGeomStr);
+        if (savedGeom.lotsData && Array.isArray(savedGeom.lotsData) && savedGeom.lotsData.length > 0) {
+          lotsData = savedGeom.lotsData;
+        }
+        if (savedGeom.matrizCoords && Array.isArray(savedGeom.matrizCoords)) {
+          matrizCoords = savedGeom.matrizCoords;
+        }
+        if (savedGeom.currentProjectCenter && Array.isArray(savedGeom.currentProjectCenter)) {
+          currentProjectCenter = savedGeom.currentProjectCenter;
+        }
+      } catch (e) {
+        console.warn('Error leyendo geometría guardada:', e);
+      }
+    }
+
+    function updateGoogleMapsLink(lngLat) {
+      const coords = lngLat || currentProjectCenter;
+      const el = document.getElementById('map-external-link');
+      if (el && coords) {
+        el.href = `https://maps.google.com/?q=${coords[1].toFixed(6)},${coords[0].toFixed(6)}`;
+      }
+    }
+
+    // =========================================================================
+    // 2. INICIALIZACIÓN DEL MAPA SATELITAL 3D (ESTILO GOOGLE EARTH CON CARRETERAS)
+    // =========================================================================
+    const map = new maplibregl.Map({
+      container: 'map',
+      center: [-72.09005, -13.42188],
+      zoom: 18.2,
+      pitch: 56,
+      bearing: 24,
+      maxZoom: 22,
+      style: {
+        version: 8,
+        sources: {
+          'google-satellite': {
+            type: 'raster',
+            tiles: [
+              'https://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+              'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+              'https://mt2.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+              'https://mt3.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+            ],
+            tileSize: 256,
+            maxzoom: 21,
+            attribution: '© Google Earth Satélite HD'
+          },
+          'esri-fallback': {
+            type: 'raster',
+            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+            tileSize: 256,
+            maxzoom: 17
+          }
+        },
+        layers: [
+          { id: 'esri-base-layer', type: 'raster', source: 'esri-fallback' },
+          {
+            id: 'google-sat-layer',
+            type: 'raster',
+            source: 'google-satellite',
+            paint: {
+              'raster-resampling': 'linear',
+              'raster-contrast': 0.06,
+              'raster-saturation': 0.08
+            }
+          }
+        ]
+      }
+    });
+
+    map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right');
+
+    // =========================================================================
+    // 3. CAPAS GEOJSON: CARRETERAS CONTINUAS, ÁREA MATRIZ Y LOS 7 LOTES
+    // =========================================================================
+    function buildRoadsGeoJSON() {
+      return {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: { name: 'Carretera CU-1185 (Principal)' },
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                [-72.09135, -13.42015],
+                [-72.09102, -13.42078],
+                [-72.09076, -13.42126],
+                [-72.09064, -13.42152],
+                [-72.09052, -13.42171],
+                [-72.09032, -13.42183],
+                [-72.08998, -13.42196],
+                [-72.08955, -13.42212],
+                [-72.08905, -13.42231],
+                [-72.08852, -13.42252],
+                [-72.08795, -13.42274],
+                [-72.08725, -13.42302],
+                [-72.08635, -13.42338],
+                [-72.08520, -13.42384]
+              ]
+            }
+          },
+          {
+            type: 'Feature',
+            properties: { name: 'Ruta hacia Laguna de Huaypo' },
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                [-72.09135, -13.42015],
+                [-72.09172, -13.41935],
+                [-72.09188, -13.41840],
+                [-72.09175, -13.41720],
+                [-72.09135, -13.41560],
+                [-72.09065, -13.41340],
+                [-72.08960, -13.41050],
+                [-72.08810, -13.40680],
+                [-72.08640, -13.40260]
+              ]
+            }
+          },
+          {
+            type: 'Feature',
+            properties: { name: 'Acceso Directo a Lotes' },
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                [-72.08995, -13.42197],
+                [-72.08972, -13.42182],
+                [-72.08918, -13.42140]
+              ]
+            }
+          }
+        ]
+      };
+    }
+
+    function buildMatrizGeoJSON() {
+      return {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: { name: 'Área Matriz Adyacente (836 m²)' },
+            geometry: {
+              type: 'Polygon',
+              coordinates: [[...matrizCoords, matrizCoords[0]]]
+            }
+          }
+        ]
+      };
+    }
+
+    function buildLotsGeoJSON() {
+      return {
+        type: 'FeatureCollection',
+        features: lotsData.map(lot => {
+          const isVisible = currentFilter === 'todos' || lot.status === currentFilter;
+          const isSelected = lot.id === selectedLotId;
+          let fillColor = '#10b981'; // Disponible
+          if (lot.status === 'reservado') fillColor = '#f59e0b';
+          if (lot.status === 'vendido') fillColor = '#ef4444';
+
+          return {
+            type: 'Feature',
+            properties: {
+              id: lot.id,
+              name: lot.name,
+              area: lot.area,
+              price: lot.price,
+              status: lot.status,
+              fillColor,
+              fillOpacity: !isVisible ? 0.12 : isSelected ? 0.68 : 0.46,
+              strokeColor: isSelected ? '#ffffff' : '#fbbf24',
+              strokeWidth: isSelected ? 3 : 2
+            },
+            geometry: {
+              type: 'Polygon',
+              coordinates: [[...lot.coordinates, lot.coordinates[0]]]
+            }
+          };
+        })
+      };
+    }
+
+    function getPolygonCentroid(coords) {
+      let lngSum = 0;
+      let latSum = 0;
+      coords.forEach(pt => {
+        lngSum += pt[0];
+        latSum += pt[1];
+      });
+      return [lngSum / coords.length, latSum / coords.length];
+    }
+
+    map.on('load', () => {
+      // Líneas de carreteras principales (trazo continuo dorado/naranja con contorno negro nítido)
+      map.addSource('roads-source', { type: 'geojson', data: buildRoadsGeoJSON() });
+      map.addLayer({
+        id: 'roads-casing',
+        type: 'line',
+        source: 'roads-source',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': '#111827',
+          'line-width': [
+            'interpolate', ['linear'], ['zoom'],
+            14, 4,
+            18, 7.5,
+            20, 10
+          ],
+          'line-opacity': 0.96
+        }
+      });
+      map.addLayer({
+        id: 'roads-line',
+        type: 'line',
+        source: 'roads-source',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': '#f59e0b',
+          'line-width': [
+            'interpolate', ['linear'], ['zoom'],
+            14, 2.2,
+            18, 4.4,
+            20, 6.2
+          ]
+        }
+      });
+      map.addLayer({
+        id: 'roads-line',
+        type: 'line',
+        source: 'roads-source',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': '#f59e0b',
+          'line-width': 3.5
+        }
+      });
+
+      // Área Matriz Adyacente (836 m²)
+      map.addSource('matriz-source', { type: 'geojson', data: buildMatrizGeoJSON() });
+      map.addLayer({
+        id: 'matriz-fill',
+        type: 'fill',
+        source: 'matriz-source',
+        paint: {
+          'fill-color': '#f59e0b',
+          'fill-opacity': 0.16
+        }
+      });
+      map.addLayer({
+        id: 'matriz-outline',
+        type: 'line',
+        source: 'matriz-source',
+        paint: {
+          'line-color': '#fcd34d',
+          'line-width': 1.8,
+          'line-dasharray': [3, 2]
+        }
+      });
+
+      // Polígonos planos de los 7 lotes (sin distorsión al hacer zoom)
+      map.addSource('lots-source', { type: 'geojson', data: buildLotsGeoJSON() });
+      map.addLayer({
+        id: 'lots-fill',
+        type: 'fill',
+        source: 'lots-source',
+        paint: {
+          'fill-color': ['get', 'fillColor'],
+          'fill-opacity': ['get', 'fillOpacity']
+        }
+      });
+      map.addLayer({
+        id: 'lots-outline',
+        type: 'line',
+        source: 'lots-source',
+        paint: {
+          'line-color': ['get', 'strokeColor'],
+          'line-width': ['get', 'strokeWidth']
+        }
+      });
+
+      map.on('click', 'lots-fill', (e) => {
+        if (e.features && e.features.length > 0) {
+          const lotId = e.features[0].properties.id;
+          selectLot(lotId, false);
+        }
+      });
+
+      map.on('mouseenter', 'lots-fill', () => { map.getCanvas().style.cursor = 'pointer'; });
+      map.on('mouseleave', 'lots-fill', () => { map.getCanvas().style.cursor = ''; });
+
+      map.on('zoom', updateLotMarkersScale);
+
+      refreshMapAndUI();
+    });
+
+    // =========================================================================
+    // 4. ETIQUETAS COMPACTAS PROPORCIONALES AL ZOOM Y PUNTOS DE INTERÉS
+    // =========================================================================
+    function updateLotMarkersScale() {
+      const z = map.getZoom();
+      // Mantiene las etiquetas discretas y proporcionales sin agrandarse excesivamente al acercar
+      const scale = Math.max(0.72, Math.min(1.02, 0.72 + (z - 16) * 0.065));
+      lotMarkerRefs.forEach(item => {
+        if (item.innerEl) {
+          item.innerEl.style.transform = `scale(${scale.toFixed(3)})`;
+        }
+      });
+    }
+
+    function renderLotMarkers() {
+      lotMarkerRefs.forEach(item => item.marker.remove());
+      lotMarkerRefs = [];
+
+      lotsData.forEach(lot => {
+        const isVisible = currentFilter === 'todos' || lot.status === currentFilter;
+        const center = getPolygonCentroid(lot.coordinates);
+
+        const wrapper = document.createElement('div');
+        const badge = document.createElement('div');
+        badge.className = 'lot-label-badge';
+
+        let bg = 'rgba(16, 185, 129, 0.92)';
+        if (lot.status === 'reservado') bg = 'rgba(217, 119, 6, 0.94)';
+        if (lot.status === 'vendido') bg = 'rgba(225, 29, 72, 0.94)';
+
+        badge.style.background = bg;
+        badge.style.opacity = isVisible ? '1' : '0.28';
+        badge.textContent = `${lot.id} • ${lot.area}m²`;
+
+        badge.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectLot(lot.id, false);
+        });
+
+        wrapper.appendChild(badge);
+        const marker = new maplibregl.Marker({ element: wrapper, anchor: 'center' })
+          .setLngLat(center)
+          .addTo(map);
+
+        lotMarkerRefs.push({ marker, innerEl: badge });
+      });
+
+      updateLotMarkersScale();
+    }
+
+    function renderPOIMarkers() {
+      poiMarkerRefs.forEach(m => m.remove());
+      poiMarkerRefs = [];
+
+      const matrizCenter = getPolygonCentroid(matrizCoords);
+      const matrizEl = document.createElement('div');
+      matrizEl.className = 'poi-badge';
+      matrizEl.textContent = 'Área Matriz • 836 m²';
+      poiMarkerRefs.push(new maplibregl.Marker({ element: matrizEl }).setLngLat(matrizCenter).addTo(map));
+
+      const roadEl = document.createElement('div');
+      roadEl.className = 'poi-badge';
+      roadEl.textContent = 'Carretera CU-1185';
+      poiMarkerRefs.push(
+        new maplibregl.Marker({ element: roadEl })
+          .setLngLat([currentProjectCenter[0] - 0.00018, currentProjectCenter[1] - 0.00038])
+          .addTo(map)
+      );
+
+      const lagunaEl = document.createElement('div');
+      lagunaEl.className = 'poi-badge';
+      lagunaEl.style.borderColor = 'rgba(56, 189, 248, 0.75)';
+      lagunaEl.style.color = '#e0f2fe';
+      lagunaEl.textContent = 'Laguna de Huaypo';
+      poiMarkerRefs.push(new maplibregl.Marker({ element: lagunaEl }).setLngLat(LAGUNA_CENTER).addTo(map));
+    }
+
+    // =========================================================================
+    // 5. RENDERIZADO DE LISTA LATERAL, FICHA TÉCNICA Y ESTADÍSTICAS
+    // =========================================================================
+    function renderSidebarList() {
+      const container = document.getElementById('lots-list-container');
+      const dispCount = lotsData.filter(l => l.status === 'disponible').length;
+      const resCount = lotsData.filter(l => l.status === 'reservado').length;
+      const venCount = lotsData.filter(l => l.status === 'vendido').length;
+
+      document.getElementById('count-todos').textContent = lotsData.length;
+      document.getElementById('count-disponible').textContent = dispCount;
+      document.getElementById('count-reservado').textContent = resCount;
+      document.getElementById('count-vendido').textContent = venCount;
+      document.getElementById('sidebar-coords-label').textContent = `${currentProjectCenter[1].toFixed(5)}, ${currentProjectCenter[0].toFixed(5)}`;
+
+      const filtered = currentFilter === 'todos'
+        ? lotsData
+        : lotsData.filter(l => l.status === currentFilter);
+
+      container.innerHTML = filtered.map(lot => {
+        const isSelected = lot.id === selectedLotId;
+        let dotColor = 'bg-emerald-400';
+        let badgeStyle = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+        if (lot.status === 'reservado') {
+          dotColor = 'bg-amber-400';
+          badgeStyle = 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+        } else if (lot.status === 'vendido') {
+          dotColor = 'bg-rose-500';
+          badgeStyle = 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+        }
+
+        return `
+          <button onclick="selectLot('${lot.id}', true)" class="w-full text-left p-2.5 rounded-xl border transition flex items-center justify-between gap-2 ${
+            isSelected
+              ? 'bg-orange-500/20 border-orange-400 shadow-md shadow-orange-500/15'
+              : 'bg-slate-800/80 border-slate-700/80 hover:bg-slate-700/80'
+          }">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 flex flex-col items-center justify-center relative">
+                <span class="text-[11px] font-extrabold text-white">${lot.id}</span>
+                <span class="w-1.5 h-1.5 rounded-full ${dotColor} mt-0.5"></span>
+              </div>
+              <div>
+                <div class="text-xs font-extrabold text-white">${lot.name} <span class="text-slate-400 font-medium">• ${lot.area} m²</span></div>
+                <div class="text-xs font-bold text-orange-400">S/ ${lot.price.toLocaleString('es-PE')}</div>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase border ${badgeStyle}">${lot.status}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function updateDetailCard() {
+      const card = document.getElementById('lot-detail-card');
+      const lot = lotsData.find(l => l.id === selectedLotId);
+      if (!lot || (isEditorMode && window.innerWidth < 640)) {
+        card.classList.add('hidden');
+        return;
+      }
+
+      card.classList.remove('hidden');
+      document.getElementById('detail-title').textContent = `${lot.name} – Proyecto Guadalupe`;
+      document.getElementById('detail-area').textContent = `${lot.area} m²`;
+      document.getElementById('detail-dimensions').textContent = lot.dimensions;
+      document.getElementById('detail-price-pen').textContent = `S/ ${lot.price.toLocaleString('es-PE')}`;
+      document.getElementById('detail-price-usd').textContent = `Ref. $ ${Math.round(lot.price / TIPO_CAMBIO_USD).toLocaleString('en-US')} USD`;
+
+      const badge = document.getElementById('detail-badge');
+      badge.textContent = lot.status;
+      badge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ' + (
+        lot.status === 'disponible'
+          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+          : lot.status === 'reservado'
+            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+            : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+      );
+
+      const waMsg = encodeURIComponent(
+        `Hola Agencia Nova E.I.R.L., me interesa el ${lot.name} (${lot.area} m² - S/ ${lot.price.toLocaleString('es-PE')}) del Proyecto Guadalupe en Laguna de Huaypo. ¿Podrían brindarme más información?`
+      );
+      document.getElementById('detail-whatsapp-btn').href = `https://wa.me/51948301540?text=${waMsg}`;
+    }
+
+    function syncUnifiedEditorFields() {
+      const targetId = selectedLotId || 'L1';
+      const lot = lotsData.find(l => l.id === targetId) || lotsData[0];
+      if (!lot) return;
+
+      const selector = document.getElementById('editor-lot-selector');
+      selector.innerHTML = lotsData
+        .map(l => `<option value="${l.id}" ${l.id === lot.id ? 'selected' : ''}>${l.name} (${l.area} m² – ${l.status.toUpperCase()})</option>`)
+        .join('');
+
+      document.getElementById('edit-lot-area').value = lot.area;
+      document.getElementById('edit-lot-price').value = lot.price;
+
+      document.querySelectorAll('.status-edit-btn').forEach(btn => {
+        const active = btn.dataset.setStatus === lot.status;
+        btn.style.boxShadow = active ? '0 0 0 2px #ffffff' : 'none';
+      });
+    }
+
+    function selectLot(lotId, flyToIt = false) {
+      selectedLotId = lotId;
+      const lot = lotsData.find(l => l.id === lotId);
+      if (lot && flyToIt) {
+        const center = getPolygonCentroid(lot.coordinates);
+        map.flyTo({
+          center,
+          zoom: Math.max(map.getZoom(), 18.8),
+          pitch: is3DView ? 52 : 0,
+          duration: 900
+        });
+        if (window.innerWidth < 1024) {
+          document.getElementById('sidebar-panel').classList.add('-translate-x-[115%]');
+        }
+      }
+      refreshMapAndUI();
+    }
+
+    function refreshMapAndUI() {
+      if (map.getSource('lots-source')) {
+        map.getSource('lots-source').setData(buildLotsGeoJSON());
+      }
+      if (map.getSource('matriz-source')) {
+        map.getSource('matriz-source').setData(buildMatrizGeoJSON());
+      }
+      renderLotMarkers();
+      renderPOIMarkers();
+      renderSidebarList();
+      updateDetailCard();
+      if (isEditorMode) {
+        syncUnifiedEditorFields();
+        renderEditorHandles();
+      }
+    }
+
+    // =========================================================================
+    // 6. CONTROLES DE NAVEGACIÓN INFERIOR (LOTES, LAGUNA, VÍAS, 2D/3D)
+    // =========================================================================
+    document.getElementById('btn-fly-project').addEventListener('click', () => {
+      map.flyTo({
+        center: [currentProjectCenter[0] - 0.00032, currentProjectCenter[1] - 0.00016],
+        zoom: 18.2,
+        pitch: is3DView ? 56 : 0,
+        bearing: 24,
+        duration: 1100
+      });
+    });
+
+    document.getElementById('btn-fly-laguna').addEventListener('click', () => {
+      map.flyTo({
+        center: LAGUNA_CENTER,
+        zoom: 15.2,
+        pitch: 58,
+        bearing: 12,
+        duration: 1400
+      });
+      showToast('Vista panorámica: Laguna de Huaypo');
+    });
+
+    document.getElementById('btn-toggle-roads').addEventListener('click', () => {
+      showRoads = !showRoads;
+      const vis = showRoads ? 'visible' : 'none';
+      if (map.getLayer('roads-casing')) map.setLayoutProperty('roads-casing', 'visibility', vis);
+      if (map.getLayer('roads-line')) map.setLayoutProperty('roads-line', 'visibility', vis);
+      const btn = document.getElementById('btn-toggle-roads');
+      btn.style.opacity = showRoads ? '1' : '0.5';
+      showToast(showRoads ? 'Líneas de carreteras activadas' : 'Líneas de carreteras ocultas');
+    });
+
+    document.getElementById('btn-toggle-view').addEventListener('click', () => {
+      is3DView = !is3DView;
+      const label = document.getElementById('view-mode-label');
+      if (is3DView) {
+        map.easeTo({ pitch: 56, bearing: 24, duration: 800 });
+        label.textContent = 'Vista 2D Cenital';
+        showToast('Vista 3D inclinada');
+      } else {
+        map.easeTo({ pitch: 0, bearing: 0, duration: 800 });
+        label.textContent = 'Vista 3D';
+        showToast('Vista 2D cenital');
+      }
+    });
+
+    // =========================================================================
+    // 7. MODO EDITOR UNIFICADO PROTEGIDO CON CLAVE ("NOVA2026")
+    // =========================================================================
+    function handleToggleEditorClick() {
+      if (isEditorMode) {
+        disableEditorMode();
+        return;
+      }
+      document.getElementById('pwd-error-msg').classList.add('hidden');
+      document.getElementById('input-editor-password').value = '';
+      document.getElementById('password-modal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('input-editor-password').focus(), 80);
+    }
+
+    document.getElementById('btn-toggle-editor').addEventListener('click', handleToggleEditorClick);
+    document.getElementById('btn-toggle-editor-mobile').addEventListener('click', handleToggleEditorClick);
+
+    function verifyEditorPassword() {
+      const val = document.getElementById('input-editor-password').value.trim();
+      if (val === EDITOR_SECRET_KEY) {
+        document.getElementById('password-modal').classList.add('hidden');
+        enableEditorMode();
+      } else {
+        document.getElementById('pwd-error-msg').classList.remove('hidden');
+      }
+    }
+
+    document.getElementById('btn-confirm-pwd').addEventListener('click', verifyEditorPassword);
+    document.getElementById('input-editor-password').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') verifyEditorPassword();
+    });
+    document.getElementById('btn-close-pwd-modal').addEventListener('click', () => {
+      document.getElementById('password-modal').classList.add('hidden');
+    });
+    document.getElementById('btn-cancel-pwd').addEventListener('click', () => {
+      document.getElementById('password-modal').classList.add('hidden');
+    });
+
+    function enableEditorMode() {
+      isEditorMode = true;
+      if (!selectedLotId) selectedLotId = 'L1';
+      document.querySelectorAll('.editor-btn-text').forEach(el => { el.textContent = 'Salir'; });
+      document.getElementById('btn-toggle-editor').classList.add('bg-orange-500', 'text-white');
+      document.getElementById('btn-toggle-editor-mobile').classList.add('bg-orange-500', 'text-white');
+      document.getElementById('unified-editor-panel').classList.remove('hidden');
+      document.getElementById('input-teleport-coords').value = `${currentProjectCenter[1].toFixed(6)}, ${currentProjectCenter[0].toFixed(6)}`;
+      refreshMapAndUI();
+      showToast('Editor Unificado activado (NOVA2026)');
+    }
+
+    function disableEditorMode() {
+      isEditorMode = false;
+      document.getElementById('btn-toggle-editor').querySelector('.editor-btn-text').textContent = 'Modo Editor';
+      document.getElementById('btn-toggle-editor-mobile').querySelector('.editor-btn-text').textContent = 'Editor';
+      document.getElementById('btn-toggle-editor').classList.remove('bg-orange-500', 'text-white');
+      document.getElementById('btn-toggle-editor-mobile').classList.remove('bg-orange-500', 'text-white');
+      document.getElementById('unified-editor-panel').classList.add('hidden');
+      clearEditorHandles();
+      updateDetailCard();
+      showToast('Modo Editor cerrado');
+    }
+
+    document.getElementById('tab-edit-lotes').addEventListener('click', () => {
+      document.getElementById('editor-view-lotes').classList.remove('hidden');
+      document.getElementById('editor-view-plano').classList.add('hidden');
+      document.getElementById('tab-edit-lotes').classList.add('bg-orange-500', 'text-white');
+      document.getElementById('tab-edit-lotes').classList.remove('text-slate-300');
+      document.getElementById('tab-edit-plano').classList.remove('bg-orange-500', 'text-white');
+      document.getElementById('tab-edit-plano').classList.add('text-slate-300');
+    });
+
+    document.getElementById('tab-edit-plano').addEventListener('click', () => {
+      document.getElementById('editor-view-plano').classList.remove('hidden');
+      document.getElementById('editor-view-lotes').classList.add('hidden');
+      document.getElementById('tab-edit-plano').classList.add('bg-orange-500', 'text-white');
+      document.getElementById('tab-edit-plano').classList.remove('text-slate-300');
+      document.getElementById('tab-edit-lotes').classList.remove('bg-orange-500', 'text-white');
+      document.getElementById('tab-edit-lotes').classList.add('text-slate-300');
+    });
+
+    document.getElementById('editor-lot-selector').addEventListener('change', (e) => {
+      selectLot(e.target.value, true);
+    });
+
+    // Herramientas de movimiento, rotación y teletransporte del plano completo
+    function shiftEntirePlan(dLng, dLat) {
+      currentProjectCenter = [currentProjectCenter[0] + dLng, currentProjectCenter[1] + dLat];
+      lotsData.forEach(lot => {
+        lot.coordinates = lot.coordinates.map(pt => [pt[0] + dLng, pt[1] + dLat]);
+      });
+      matrizCoords = matrizCoords.map(pt => [pt[0] + dLng, pt[1] + dLat]);
+      document.getElementById('input-teleport-coords').value = `${currentProjectCenter[1].toFixed(6)}, ${currentProjectCenter[0].toFixed(6)}`;
+      updateGoogleMapsLink(currentProjectCenter);
+      refreshMapAndUI();
+    }
+
+    function rotateEntirePlan(angleDeg) {
+      const rad = (angleDeg * Math.PI) / 180;
+      const cosA = Math.cos(rad);
+      const sinA = Math.sin(rad);
+      const [cx, cy] = currentProjectCenter;
+
+      const rotatePt = ([lng, lat]) => {
+        const dx = (lng - cx) / M_TO_LNG;
+        const dy = (lat - cy) / M_TO_LAT;
+        const rx = dx * cosA - dy * sinA;
+        const ry = dx * sinA + dy * cosA;
+        return [cx + rx * M_TO_LNG, cy + ry * M_TO_LAT];
+      };
+
+      lotsData.forEach(lot => {
+        lot.coordinates = lot.coordinates.map(rotatePt);
+      });
+      matrizCoords = matrizCoords.map(rotatePt);
+      refreshMapAndUI();
+    }
+
+    function clearEditorHandles() {
+      vertexMarkers.forEach(m => m.remove());
+      vertexMarkers = [];
+      if (planAnchorMarker) {
+        planAnchorMarker.remove();
+        planAnchorMarker = null;
+      }
+    }
+
+    function renderEditorHandles() {
+      clearEditorHandles();
+      if (!isEditorMode) return;
+
+      // Ancla central arrastrable para mover todo el plano
+      const anchorEl = document.createElement('div');
+      anchorEl.className = 'plan-anchor-handle';
+      anchorEl.textContent = '✥ Mover Plano';
+
+      let lastAnchorLngLat = [...currentProjectCenter];
+      planAnchorMarker = new maplibregl.Marker({ element: anchorEl, draggable: true })
+        .setLngLat(currentProjectCenter)
+        .addTo(map);
+
+      planAnchorMarker.on('dragstart', () => {
+        const pos = planAnchorMarker.getLngLat();
+        lastAnchorLngLat = [pos.lng, pos.lat];
+      });
+
+      planAnchorMarker.on('drag', () => {
+        const pos = planAnchorMarker.getLngLat();
+        const dLng = pos.lng - lastAnchorLngLat[0];
+        const dLat = pos.lat - lastAnchorLngLat[1];
+        lastAnchorLngLat = [pos.lng, pos.lat];
+        currentProjectCenter = [currentProjectCenter[0] + dLng, currentProjectCenter[1] + dLat];
+        lotsData.forEach(lot => {
+          lot.coordinates = lot.coordinates.map(pt => [pt[0] + dLng, pt[1] + dLat]);
+        });
+        matrizCoords = matrizCoords.map(pt => [pt[0] + dLng, pt[1] + dLat]);
+        if (map.getSource('lots-source')) map.getSource('lots-source').setData(buildLotsGeoJSON());
+        if (map.getSource('matriz-source')) map.getSource('matriz-source').setData(buildMatrizGeoJSON());
+        renderLotMarkers();
+        renderPOIMarkers();
+      });
+
+      planAnchorMarker.on('dragend', () => {
+        document.getElementById('input-teleport-coords').value = `${currentProjectCenter[1].toFixed(6)}, ${currentProjectCenter[0].toFixed(6)}`;
+        updateGoogleMapsLink(currentProjectCenter);
+        refreshMapAndUI();
+      });
+
+      // Vértices arrastrables del lote seleccionado
+      const targetLot = lotsData.find(l => l.id === selectedLotId);
+      if (!targetLot) return;
+
+      targetLot.coordinates.forEach((coord, idx) => {
+        const vEl = document.createElement('div');
+        vEl.className = 'vertex-handle';
+        const vMarker = new maplibregl.Marker({ element: vEl, draggable: true })
+          .setLngLat(coord)
+          .addTo(map);
+
+        vMarker.on('drag', () => {
+          const pos = vMarker.getLngLat();
+          targetLot.coordinates[idx] = [pos.lng, pos.lat];
+          if (map.getSource('lots-source')) map.getSource('lots-source').setData(buildLotsGeoJSON());
+          renderLotMarkers();
+        });
+
+        vMarker.on('dragend', () => {
+          refreshMapAndUI();
+        });
+
+        vertexMarkers.push(vMarker);
+      });
+    }
+
+    document.getElementById('btn-nudge-n').addEventListener('click', () => {
+      const m = parseFloat(document.getElementById('nudge-step-select').value) || 5;
+      shiftEntirePlan(0, m * M_TO_LAT);
+    });
+    document.getElementById('btn-nudge-s').addEventListener('click', () => {
+      const m = parseFloat(document.getElementById('nudge-step-select').value) || 5;
+      shiftEntirePlan(0, -m * M_TO_LAT);
+    });
+    document.getElementById('btn-nudge-e').addEventListener('click', () => {
+      const m = parseFloat(document.getElementById('nudge-step-select').value) || 5;
+      shiftEntirePlan(m * M_TO_LNG, 0);
+    });
+    document.getElementById('btn-nudge-w').addEventListener('click', () => {
+      const m = parseFloat(document.getElementById('nudge-step-select').value) || 5;
+      shiftEntirePlan(-m * M_TO_LNG, 0);
+    });
+    document.getElementById('btn-rotate-plan').addEventListener('click', () => {
+      rotateEntirePlan(5);
+      showToast('Plano rotado +5°');
+    });
+
+    document.getElementById('btn-teleport-coords').addEventListener('click', () => {
+      const raw = document.getElementById('input-teleport-coords').value.trim();
+      const parts = raw.split(',').map(s => parseFloat(s.trim()));
+      if (parts.length !== 2 || Number.isNaN(parts[0]) || Number.isNaN(parts[1])) {
+        showToast('Formato inválido. Use: Latitud, Longitud');
+        return;
+      }
+      const [newLat, newLng] = parts;
+      const dLng = newLng - currentProjectCenter[0];
+      const dLat = newLat - currentProjectCenter[1];
+      shiftEntirePlan(dLng, dLat);
+      map.flyTo({ center: [newLng, newLat], zoom: 18.6, duration: 1000 });
+      showToast('Plano movido a las nuevas coordenadas');
+    });
+
+    // Edición de estado, área y precio desde el Editor Unificado
+    document.querySelectorAll('.status-edit-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = selectedLotId || document.getElementById('editor-lot-selector').value || 'L1';
+        const lot = lotsData.find(l => l.id === targetId);
+        if (!lot) return;
+        selectedLotId = lot.id;
+        lot.status = btn.dataset.setStatus;
+        refreshMapAndUI();
+        showToast(`${lot.name} actualizado a ${lot.status.toUpperCase()}`);
+      });
+    });
+
+    document.getElementById('edit-lot-area').addEventListener('input', (e) => {
+      const targetId = selectedLotId || document.getElementById('editor-lot-selector').value || 'L1';
+      const lot = lotsData.find(l => l.id === targetId);
+      const val = parseFloat(e.target.value);
+      if (!lot || Number.isNaN(val) || val <= 0) return;
+      lot.area = val;
+      refreshMapAndUI();
+    });
+
+    document.getElementById('edit-lot-price').addEventListener('input', (e) => {
+      const targetId = selectedLotId || document.getElementById('editor-lot-selector').value || 'L1';
+      const lot = lotsData.find(l => l.id === targetId);
+      const val = parseFloat(e.target.value);
+      if (!lot || Number.isNaN(val) || val < 0) return;
+      lot.price = val;
+      refreshMapAndUI();
+    });
+
+    // =========================================================================
+    // 8. FILTROS, SIDEBAR MÓVIL, CIERRE DE FICHA Y NOTIFICACIONES TOAST
+    // =========================================================================
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentFilter = btn.dataset.filter;
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('active', 'bg-orange-500', 'text-white', 'shadow-md', 'shadow-orange-500/25');
+          b.classList.add('bg-slate-800/90', 'text-slate-100');
+        });
+        btn.classList.add('active', 'bg-orange-500', 'text-white', 'shadow-md', 'shadow-orange-500/25');
+        btn.classList.remove('bg-slate-800/90', 'text-slate-100');
+        refreshMapAndUI();
+      });
+    });
+
+    document.getElementById('btn-close-detail').addEventListener('click', () => {
+      selectedLotId = null;
+      document.getElementById('lot-detail-card').classList.add('hidden');
+      refreshMapAndUI();
+    });
+
+    document.getElementById('btn-toggle-sidebar').addEventListener('click', () => {
+      document.getElementById('sidebar-panel').classList.toggle('-translate-x-[115%]');
+    });
+
+    document.getElementById('btn-close-sidebar').addEventListener('click', () => {
+      document.getElementById('sidebar-panel').classList.add('-translate-x-[115%]');
+    });
+
+    let toastTimeout = null;
+    function showToast(message) {
+      const banner = document.getElementById('toast-banner');
+      document.getElementById('toast-message').textContent = message;
+      banner.classList.remove('opacity-0');
+      banner.classList.add('opacity-100');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        banner.classList.remove('opacity-100');
+        banner.classList.add('opacity-0');
+      }, 2800);
+    }
+
+    // =========================================================================
+    // 9. PERSISTENCIA DE EDICIONES Y SINCRONIZACIÓN CON CATÁLOGO DE TERRENOS
+    // =========================================================================
+    function saveEditorChanges() {
+      const payload = {
+        lotsData,
+        matrizCoords,
+        currentProjectCenter,
+        updatedAt: new Date().toISOString()
+      };
+      localStorage.setItem('nova_guadalupe_lots_geom', JSON.stringify(payload));
+
+      // Sincronizar también con catálogo en localStorage (terrenos.html)
+      const catalogRaw = localStorage.getItem('nova_properties_catalog');
+      if (catalogRaw) {
+        try {
+          const catalog = JSON.parse(catalogRaw);
+          const idx = catalog.findIndex(p => p.id === 'prop-guadalupe');
+          if (idx !== -1) {
+            catalog[idx].coords = `${currentProjectCenter[1].toFixed(6)},${currentProjectCenter[0].toFixed(6)}`;
+            catalog[idx].lotsData = lotsData;
+            localStorage.setItem('nova_properties_catalog', JSON.stringify(catalog));
+          }
+        } catch(e){}
+      }
+
+      showToast('✅ ¡Cambios guardados con éxito!');
+    }
+
+    function resetEditorGeometry() {
+      if (confirm('¿Deseas restablecer las posiciones y dimensiones del plano a su estado original?')) {
+        localStorage.removeItem('nova_guadalupe_lots_geom');
+        const fresh = createInitialGeometry();
+        lotsData = fresh.generatedLots;
+        matrizCoords = fresh.generatedMatriz;
+        currentProjectCenter = [...PROJECT_CENTER];
+        document.getElementById('input-teleport-coords').value = `${currentProjectCenter[1].toFixed(6)}, ${currentProjectCenter[0].toFixed(6)}`;
+        updateGoogleMapsLink(currentProjectCenter);
+        refreshMapAndUI();
+        showToast('Geometría restablecida al diseño inicial');
+      }
+    }
+
+    const btnSaveEditor = document.getElementById('btn-save-editor-changes');
+    if (btnSaveEditor) btnSaveEditor.addEventListener('click', saveEditorChanges);
+
+    const btnResetEditor = document.getElementById('btn-reset-editor-geometry');
+    if (btnResetEditor) btnResetEditor.addEventListener('click', resetEditorGeometry);
+
+    // =========================================================================
+    // 10. SELECTOR DINÁMICO DE PROPIEDADES DEL CATÁLOGO DE TERRENOS
+    // =========================================================================
+    let catalogMarker = null;
+
+    function initCatalogSelector() {
+      const picker = document.getElementById('catalog-property-picker');
+      if (!picker) return;
+
+      let catalog = [];
+      const stored = localStorage.getItem('nova_properties_catalog');
+      if (stored) {
+        try { catalog = JSON.parse(stored); } catch(e){}
+      }
+
+      // Propiedades fallback si aún no se abrió terrenos.html
+      if (!catalog || catalog.length === 0) {
+        catalog = [
+          { id: 'prop-1', title: 'Refugio Bosque Los Pinos', location: 'Oxapampa, Pasco', coords: '-10.5775,-75.4017' },
+          { id: 'prop-2', title: 'Villa Cordillera Alta', location: 'Cieneguilla, Lima', coords: '-12.0911,-76.7725' },
+          { id: 'prop-3', title: 'Finca El Manantial', location: 'Urubamba, Valle Sagrado', coords: '-13.3039,-72.1158' },
+          { id: 'prop-4', title: 'Lote Mirador del Valle', location: 'Lunahuaná, Cañete', coords: '-12.9608,-76.1361' },
+          { id: 'prop-5', title: 'Cabaña Vista Ocaso', location: 'Pozuzo, Selva Central', coords: '-10.0683,-75.5528' },
+          { id: 'prop-6', title: 'Pradera Silvestre Estate', location: 'Callejón de Huaylas, Huaraz', coords: '-9.5278,-77.5278' }
+        ];
+      }
+
+      if (catalog && catalog.length > 0) {
+        picker.innerHTML = '<option value="guadalupe" selected>📍 Proyecto Guadalupe (3D)</option>';
+        catalog.forEach(prop => {
+          if (prop.id !== 'prop-guadalupe') {
+            const opt = document.createElement('option');
+            opt.value = prop.id;
+            opt.textContent = `📌 ${prop.title} (${prop.location})`;
+            picker.appendChild(opt);
+          }
+        });
+      }
+
+      picker.addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (val === 'guadalupe') {
+          if (catalogMarker) { catalogMarker.remove(); catalogMarker = null; }
+          map.flyTo({
+            center: [currentProjectCenter[0] - 0.00032, currentProjectCenter[1] - 0.00016],
+            zoom: 18.2,
+            pitch: is3DView ? 56 : 0,
+            bearing: 24,
+            duration: 1200
+          });
+          updateGoogleMapsLink(currentProjectCenter);
+          document.getElementById('top-project-title').textContent = 'Proyecto Guadalupe – Laguna Huaypo';
+          document.getElementById('sidebar-panel').classList.remove('hidden');
+          showToast('Navegando a Proyecto Guadalupe (3D)');
+        } else {
+          const prop = catalog.find(p => p.id === val);
+          if (prop && prop.coords) {
+            const parts = prop.coords.split(',').map(s => parseFloat(s.trim()));
+            if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+              const targetCoords = [parts[1], parts[0]]; // [lng, lat]
+              map.flyTo({
+                center: targetCoords,
+                zoom: 15.5,
+                pitch: 45,
+                duration: 1500
+              });
+              updateGoogleMapsLink(targetCoords);
+              document.getElementById('top-project-title').textContent = prop.title;
+
+              if (catalogMarker) catalogMarker.remove();
+              const pinEl = document.createElement('div');
+              pinEl.className = 'w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 border-2 border-white shadow-xl flex items-center justify-center text-slate-950 font-black cursor-pointer text-xs';
+              pinEl.innerHTML = '★';
+              catalogMarker = new maplibregl.Marker({ element: pinEl })
+                .setLngLat(targetCoords)
+                .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML(`
+                  <div style="color: #0b1120; font-family: sans-serif; padding: 4px;">
+                    <h4 style="font-weight: 800; font-size: 13px; margin: 0 0 2px 0;">${prop.title}</h4>
+                    <p style="font-size: 11px; margin: 0 0 6px 0; color: #475569;">${prop.location}</p>
+                    <a href="terrenos.html" style="display: inline-block; background: #f97316; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; text-decoration: none;">Ver en Catálogo</a>
+                  </div>
+                `))
+                .addTo(map);
+              catalogMarker.togglePopup();
+              showToast(`Ubicación: ${prop.title} (${prop.location})`);
+            }
+          }
+        }
+      });
+
+      // Si viene por parámetro ?prop=ID
+      const urlParams = new URLSearchParams(window.location.search);
+      const reqId = urlParams.get('prop');
+      if (reqId && reqId !== 'guadalupe' && reqId !== 'prop-guadalupe') {
+        setTimeout(() => {
+          picker.value = reqId;
+          picker.dispatchEvent(new Event('change'));
+        }, 600);
+      }
+    }
+
+    // Inicializar selector de catálogo al cargar mapa
+    map.on('load', () => {
+      initCatalogSelector();
+      updateGoogleMapsLink(currentProjectCenter);
+    });
+  </script>
+</body>
+</html>
