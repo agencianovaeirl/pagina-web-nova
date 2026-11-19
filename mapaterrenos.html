@@ -59,20 +59,24 @@
     .custom-scroll::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.5); border-radius: 999px; }
 
     .lot-label-badge {
-      padding: 2.5px 7px;
-      border-radius: 6px;
-      font-size: 10px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 9px;
       font-weight: 800;
-      line-height: 1.15;
+      line-height: 1.1;
       white-space: nowrap;
       color: #ffffff;
-      border: 1.5px solid rgba(255, 255, 255, 0.9);
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.75);
+      border: 1.2px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.75);
       cursor: pointer;
       user-select: none;
-      transition: filter 0.15s ease, transform 0.15s ease;
+      transform: none !important; /* Mantiene el tamaño fijo exacto sin modificar al hacer zoom */
+      transition: filter 0.15s ease;
+      text-align: center;
+      box-sizing: border-box;
+      pointer-events: auto;
     }
-    .lot-label-badge:hover { filter: brightness(1.2); transform: scale(1.08); }
+    .lot-label-badge:hover { filter: brightness(1.25); }
 
     .poi-badge {
       background: rgba(11, 17, 32, 0.92);
@@ -174,10 +178,10 @@
           <span>Google Maps</span>
         </a>
 
-        <!-- Botón Editor Móvil -->
-        <button id="btn-toggle-editor-mobile" class="lg:hidden bg-slate-800/90 hover:bg-[#d4af37]/20 text-[#f2ca50] border border-[#d4af37]/40 px-2.5 py-1.5 rounded-xl text-[11px] font-bold flex items-center gap-1 shrink-0 transition">
-          <span class="material-symbols-outlined text-[15px]">lock</span>
-          <span class="editor-btn-text">Editor</span>
+        <!-- Botón Modo Editor Móvil (Sin Clave) -->
+        <button id="btn-toggle-editor-mobile" class="lg:hidden bg-[#142c1e] hover:bg-[#d4af37] text-[#f2ca50] hover:text-[#1c1300] border border-[#d4af37]/60 px-2.5 py-1.5 rounded-xl text-[11px] font-black flex items-center gap-1 shrink-0 transition-all shadow cursor-pointer">
+          <span class="material-symbols-outlined text-[16px] editor-btn-icon">edit_note</span>
+          <span class="editor-btn-text">MODO EDITOR</span>
         </button>
       </div>
     </div>
@@ -210,10 +214,10 @@
 
       <div class="hidden lg:block h-5 w-px bg-slate-700 mx-1 shrink-0"></div>
 
-      <!-- Botón Modo Editor Desktop (NOVA2026) -->
-      <button id="btn-toggle-editor" class="hidden lg:flex bg-slate-800/90 hover:bg-[#d4af37]/20 text-[#f2ca50] border border-[#d4af37]/40 px-3 py-1.5 rounded-xl text-xs font-bold items-center gap-1.5 whitespace-nowrap transition shrink-0">
-        <span class="material-symbols-outlined text-[16px]">lock</span>
-        <span class="editor-btn-text">Modo Editor</span>
+      <!-- Botón Modo Editor Desktop (Sin Clave) -->
+      <button id="btn-toggle-editor" class="hidden lg:flex bg-[#142c1e] hover:bg-[#d4af37] text-[#f2ca50] hover:text-[#1c1300] border border-[#d4af37]/60 px-3.5 py-1.5 rounded-xl text-xs font-black items-center gap-1.5 whitespace-nowrap transition-all shadow-md shrink-0 cursor-pointer" title="Activar Modo Editor de Lotes y Plano sin clave">
+        <span class="material-symbols-outlined text-[17px] editor-btn-icon">edit_note</span>
+        <span class="editor-btn-text">MODO EDITOR</span>
       </button>
 
     </div>
@@ -291,21 +295,25 @@
     </a>
   </section>
 
-  <!-- Panel Unificado de Edición (Lotes + Plano Activo) -->
-  <section id="unified-editor-panel" class="hidden fixed bottom-16 left-2.5 right-2.5 sm:left-auto sm:bottom-20 sm:right-3 z-40 sm:w-88 max-h-[62vh] sm:max-h-[76vh] overflow-y-auto custom-scroll glass-card rounded-2xl p-3 sm:p-3.5 space-y-2.5">
+  <!-- Panel Unificado de Edición (Lotes + Plano Activo + Imagen Referencial) -->
+  <section id="unified-editor-panel" class="hidden fixed bottom-16 left-2.5 right-2.5 sm:left-auto sm:bottom-20 sm:right-3 z-40 sm:w-96 max-h-[66vh] sm:max-h-[80vh] overflow-y-auto custom-scroll glass-card rounded-2xl p-3 sm:p-4 space-y-3">
     <div class="flex items-center justify-between gap-2 border-b border-slate-700/80 pb-2">
       <div class="flex items-center gap-1.5">
-        <span class="w-2 h-2 rounded-full bg-[#d4af37] animate-pulse"></span>
-        <h3 class="text-[11px] sm:text-xs font-extrabold uppercase tracking-wider text-[#f2ca50]">Editor de Lotes &amp; Plano</h3>
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <h3 class="text-xs font-extrabold uppercase tracking-wider text-[#f2ca50]">Modo Editor Activo</h3>
       </div>
       <div class="flex items-center gap-1 bg-slate-900/90 p-0.5 rounded-xl border border-slate-700">
         <button id="tab-edit-lotes" class="px-2.5 py-1 rounded-lg bg-[#d4af37] text-[#1c1300] text-[11px] font-black transition">Lotes</button>
         <button id="tab-edit-plano" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition">Plano</button>
+        <button id="tab-edit-imagen" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition flex items-center gap-1" title="Cambiar y ver imagen del plano referencial">
+          <span class="material-symbols-outlined text-[13px]">image</span>
+          <span>Plano Ref.</span>
+        </button>
       </div>
     </div>
 
     <!-- Pestaña 1: Edición de Lotes -->
-    <div id="editor-view-lotes" class="space-y-2">
+    <div id="editor-view-lotes" class="space-y-2.5">
       <div>
         <label class="block text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Lote Seleccionado</label>
         <select id="editor-lot-selector" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white font-bold"></select>
@@ -331,18 +339,19 @@
         </div>
       </div>
 
-      <p class="text-[10px] text-slate-400 leading-snug">
-        Arrastra los vértices blancos en el mapa para ajustar las esquinas del lote seleccionado.
-      </p>
+      <div class="p-2.5 rounded-xl bg-slate-900/90 border border-white/10 text-[11px] text-slate-300 flex items-start gap-2">
+        <span class="material-symbols-outlined text-[16px] text-amber-400 shrink-0">touch_app</span>
+        <span>Arrastra los <strong>vértices blancos circulares</strong> en el mapa satelital para remodelar las esquinas del lote seleccionado en tiempo real.</span>
+      </div>
     </div>
 
     <!-- Pestaña 2: Edición de Posición y Rotación del Plano Completo -->
-    <div id="editor-view-plano" class="hidden space-y-2">
+    <div id="editor-view-plano" class="hidden space-y-2.5">
       <p class="text-[11px] text-slate-300 leading-snug">
         Arrastra el ancla dorada <strong>«Mover Plano»</strong> en el mapa o usa los controles de precisión:
       </p>
 
-      <div class="bg-slate-900/90 border border-slate-700/80 rounded-xl p-2 space-y-2">
+      <div class="bg-slate-900/90 border border-slate-700/80 rounded-xl p-2.5 space-y-2">
         <div class="flex items-center justify-between text-[11px]">
           <span class="text-slate-300 font-semibold">Paso de movimiento:</span>
           <select id="nudge-step-select" class="bg-slate-800 border border-slate-600 rounded-lg px-2 py-0.5 text-white font-bold text-[11px]">
@@ -352,15 +361,15 @@
             <option value="100">100 metros</option>
           </select>
         </div>
-        <div class="grid grid-cols-3 gap-1.5 max-w-[165px] mx-auto">
+        <div class="grid grid-cols-3 gap-1.5 max-w-[170px] mx-auto">
           <div></div>
-          <button id="btn-nudge-n" class="py-1.5 rounded-lg bg-slate-800 hover:bg-[#d4af37] hover:text-black text-white font-bold text-xs">↑ N</button>
+          <button id="btn-nudge-n" class="py-1.5 rounded-lg bg-slate-800 hover:bg-[#d4af37] hover:text-black text-white font-bold text-xs cursor-pointer">↑ N</button>
           <div></div>
-          <button id="btn-nudge-w" class="py-1.5 rounded-lg bg-slate-800 hover:bg-[#d4af37] hover:text-black text-white font-bold text-xs">← O</button>
-          <button id="btn-rotate-plan" class="py-1.5 rounded-lg bg-slate-700 hover:bg-amber-500 text-amber-300 hover:text-white font-bold text-[10px]" title="Rotar plano +5°">↻ +5°</button>
-          <button id="btn-nudge-e" class="py-1.5 rounded-lg bg-slate-800 hover:bg-[#d4af37] hover:text-black text-white font-bold text-xs">E →</button>
+          <button id="btn-nudge-w" class="py-1.5 rounded-lg bg-slate-800 hover:bg-[#d4af37] hover:text-black text-white font-bold text-xs cursor-pointer">← O</button>
+          <button id="btn-rotate-plan" class="py-1.5 rounded-lg bg-slate-700 hover:bg-amber-500 text-amber-300 hover:text-white font-bold text-[10px] cursor-pointer" title="Rotar plano +5°">↻ +5°</button>
+          <button id="btn-nudge-e" class="py-1.5 rounded-lg bg-slate-800 hover:bg-[#d4af37] hover:text-black text-white font-bold text-xs cursor-pointer">E →</button>
           <div></div>
-          <button id="btn-nudge-s" class="py-1.5 rounded-lg bg-slate-800 hover:bg-[#d4af37] hover:text-black text-white font-bold text-xs">↓ S</button>
+          <button id="btn-nudge-s" class="py-1.5 rounded-lg bg-slate-800 hover:bg-[#d4af37] hover:text-black text-white font-bold text-xs cursor-pointer">↓ S</button>
           <div></div>
         </div>
       </div>
@@ -368,66 +377,125 @@
       <div class="space-y-1">
         <label class="block text-[10px] uppercase tracking-wider text-slate-400 font-bold">Mover a Coordenada GPS (Lat, Lng)</label>
         <div class="flex gap-1.5">
-          <input id="input-teleport-coords" type="text" placeholder="-13.421719, -72.089713" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white" />
-          <button id="btn-teleport-coords" class="px-3 py-1.5 rounded-xl bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] text-xs font-black transition">Ir</button>
+          <input id="input-teleport-coords" type="text" placeholder="-13.421719, -72.089713" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white font-mono" />
+          <button id="btn-teleport-coords" class="px-3.5 py-1.5 rounded-xl bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] text-xs font-black transition cursor-pointer">Ir</button>
         </div>
+      </div>
+    </div>
+
+    <!-- Pestaña 3: Imagen del Plano Referencial para la Distribución de Lotes -->
+    <div id="editor-view-imagen" class="hidden space-y-2.5">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-bold text-amber-300 flex items-center gap-1">
+          <span class="material-symbols-outlined text-[15px]">architecture</span>
+          Plano de Distribución Referencial
+        </span>
+        <button onclick="toggleFloatingPlanViewer()" class="text-[10px] text-[#f2ca50] hover:underline flex items-center gap-0.5 cursor-pointer">
+          <span class="material-symbols-outlined text-[13px]">visibility</span>
+          <span>Ver Flotante</span>
+        </button>
+      </div>
+
+      <!-- Miniatura / Vista Previa -->
+      <div class="relative w-full h-32 rounded-xl overflow-hidden border border-amber-500/40 bg-black group cursor-pointer" onclick="toggleFloatingPlanViewer()" title="Clic para ampliar plano flotante">
+        <img id="ref-plan-preview-img" src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80" alt="Plano Referencial" class="w-full h-full object-contain" />
+        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 text-white text-xs font-bold">
+          <span class="material-symbols-outlined text-[18px]">open_in_full</span>
+          <span>Abrir Visor Flotante</span>
+        </div>
+      </div>
+
+      <!-- Controles para cambiar la imagen del plano -->
+      <div class="space-y-1.5">
+        <label class="block text-[10px] uppercase tracking-wider text-slate-400 font-bold">Cambiar Imagen del Plano</label>
+        <div class="flex gap-1.5 items-center">
+          <input type="text" id="input-ref-plan-url" placeholder="Pega URL o sube archivo..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-[11px] text-white focus:border-amber-400 outline-none" />
+          <label class="cursor-pointer px-3 py-1.5 bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] font-black text-xs rounded-xl flex items-center gap-1 shrink-0 transition shadow" title="Subir plano desde tu computadora al Bucket INMOBILIARIA">
+            <span class="material-symbols-outlined text-[15px]">cloud_upload</span>
+            <span>Subir</span>
+            <input type="file" id="file-upload-ref-plan" accept="image/*" class="hidden" onchange="handleReferencePlanUpload(event)" />
+          </label>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-1">
+        <button type="button" onclick="applyReferencePlanUrl()" class="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1 shadow cursor-pointer">
+          <span class="material-symbols-outlined text-[15px]">check_circle</span>
+          <span>Guardar Imagen</span>
+        </button>
+        <button type="button" onclick="toggleFloatingPlanViewer()" class="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-[#f2ca50] font-bold text-xs flex items-center gap-1 border border-white/10 cursor-pointer">
+          <span class="material-symbols-outlined text-[15px]">picture_in_picture</span>
+          <span>Flotante</span>
+        </button>
       </div>
     </div>
   </section>
 
+  <!-- Modal / Visor Flotante del Plano Referencial de Lotes (Permite contrastar con el mapa satelital) -->
+  <div id="floating-plan-viewer" class="hidden fixed top-24 right-3 sm:right-6 z-40 w-[92vw] sm:w-[420px] max-h-[82vh] glass-card rounded-2xl overflow-hidden shadow-2xl border border-amber-500/50 flex flex-col">
+    <div class="p-3 bg-slate-900/95 border-b border-slate-700/80 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-1.5 min-w-0">
+        <span class="material-symbols-outlined text-amber-400 text-[18px]">map</span>
+        <h4 class="text-xs font-black text-white truncate">Plano Referencial de Lotización</h4>
+      </div>
+      <div class="flex items-center gap-1 shrink-0">
+        <button onclick="toggleFloatingPlanViewer()" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Imagen del Plano con Control de Opacidad -->
+    <div class="relative flex-1 bg-black/90 p-2 overflow-hidden flex items-center justify-center min-h-[220px]">
+      <img id="floating-plan-img" src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80" alt="Plano Referencial" class="max-h-[50vh] max-w-full object-contain transition-opacity duration-150 rounded-lg" />
+    </div>
+
+    <!-- Barra de Herramientas del Visor de Plano -->
+    <div class="p-3 bg-slate-900/95 border-t border-slate-700/80 space-y-2 text-xs">
+      <div class="flex items-center justify-between text-[11px]">
+        <span class="text-slate-300 font-bold flex items-center gap-1">
+          <span class="material-symbols-outlined text-[14px] text-amber-400">opacity</span> Opacidad
+        </span>
+        <span id="floating-opacity-label" class="font-bold text-amber-300">100%</span>
+      </div>
+      <input type="range" id="floating-opacity-slider" min="15" max="100" value="100" class="w-full accent-amber-400 cursor-pointer" oninput="updatePlanOpacity(this.value)" />
+      
+      <div class="flex items-center justify-between gap-2 pt-1 border-t border-white/10">
+        <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] font-black text-[11px] flex items-center gap-1 transition shadow">
+          <span class="material-symbols-outlined text-[15px]">cloud_upload</span>
+          <span>Cambiar Imagen</span>
+          <input type="file" accept="image/*" class="hidden" onchange="handleReferencePlanUpload(event)" />
+        </label>
+        <button onclick="window.open(currentReferencePlanUrl, '_blank')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold flex items-center gap-1 cursor-pointer">
+          <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+          <span>Pantalla Completa</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Barra Inferior de Navegación Rápida -->
   <footer class="fixed bottom-2.5 left-2.5 right-2.5 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-30 glass-panel rounded-2xl p-1 flex items-center justify-between sm:justify-center gap-1">
-    <button id="btn-fly-project" class="flex-1 sm:flex-initial justify-center px-2.5 sm:px-3.5 py-2 rounded-xl bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] text-[11px] sm:text-xs font-extrabold flex items-center gap-1 shadow-md shadow-[#d4af37]/25 transition">
+    <button id="btn-fly-project" class="flex-1 sm:flex-initial justify-center px-2.5 sm:px-3.5 py-2 rounded-xl bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] text-[11px] sm:text-xs font-extrabold flex items-center gap-1 shadow-md shadow-[#d4af37]/25 transition cursor-pointer">
       <span class="material-symbols-outlined text-[16px]">location_on</span>
       <span>Ver Lotes</span>
     </button>
 
-    <button id="btn-fly-laguna" class="flex-1 sm:flex-initial justify-center px-2.5 sm:px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-sky-300 text-[11px] sm:text-xs font-bold flex items-center gap-1 transition">
+    <button id="btn-fly-laguna" class="flex-1 sm:flex-initial justify-center px-2.5 sm:px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-sky-300 text-[11px] sm:text-xs font-bold flex items-center gap-1 transition cursor-pointer">
       <span class="material-symbols-outlined text-[16px]">water</span>
       <span>Laguna Huaypo</span>
     </button>
 
-    <button id="btn-toggle-roads" class="flex-1 sm:flex-initial justify-center px-2.5 sm:px-3.5 py-2 rounded-xl bg-amber-500/20 border border-amber-400/50 text-amber-300 text-[11px] sm:text-xs font-bold flex items-center gap-1 transition">
+    <button id="btn-toggle-roads" class="flex-1 sm:flex-initial justify-center px-2.5 sm:px-3.5 py-2 rounded-xl bg-amber-500 text-[#1a1200] font-black border border-amber-300 text-[11px] sm:text-xs flex items-center gap-1 shadow-md shadow-amber-500/30 transition cursor-pointer" title="Activar/Desactivar visualización de carreteras principales y rutas">
       <span class="material-symbols-outlined text-[16px]">alt_route</span>
       <span>Carreteras</span>
     </button>
 
-    <button id="btn-toggle-view" class="flex-1 sm:flex-initial justify-center px-2.5 sm:px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-[11px] sm:text-xs font-bold flex items-center gap-1 transition">
+    <button id="btn-toggle-view" class="flex-1 sm:flex-initial justify-center px-2.5 sm:px-3.5 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-[11px] sm:text-xs font-bold flex items-center gap-1 transition cursor-pointer">
       <span class="material-symbols-outlined text-[16px] text-[#f2ca50]">view_in_ar</span>
       <span id="view-mode-label">Vista 2D Cenital</span>
     </button>
   </footer>
-
-  <!-- Modal de Contraseña para Modo Editor (NOVA2026) -->
-  <div id="password-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="glass-card rounded-2xl w-full max-w-sm p-5 space-y-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-xl bg-[#d4af37]/20 border border-[#d4af37]/40 flex items-center justify-center text-[#f2ca50]">
-            <span class="material-symbols-outlined text-[18px]">lock</span>
-          </div>
-          <div>
-            <h3 class="text-sm font-extrabold text-white">Acceso Administrador</h3>
-            <p class="text-[11px] text-slate-400">Agencia Nova E.I.R.L.</p>
-          </div>
-        </div>
-        <button id="btn-close-pwd-modal" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-
-      <div class="space-y-1.5">
-        <label class="block text-xs font-semibold text-slate-300">Ingrese la clave de edición:</label>
-        <input id="input-editor-password" type="password" placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 focus:border-[#d4af37] rounded-xl px-3.5 py-2.5 text-sm text-white font-bold tracking-widest outline-none" />
-        <p id="pwd-error-msg" class="hidden text-[11px] font-semibold text-rose-400">Clave incorrecta. Intente nuevamente.</p>
-      </div>
-
-      <div class="flex gap-2">
-        <button id="btn-cancel-pwd" class="flex-1 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition">Cancelar</button>
-        <button id="btn-confirm-pwd" class="flex-1 py-2 rounded-xl bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] text-xs font-extrabold transition">Ingresar</button>
-      </div>
-    </div>
-  </div>
 
   <!-- Banner de Notificación Toast -->
   <div id="toast-banner" class="fixed top-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-opacity duration-300">
@@ -572,6 +640,18 @@
             tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
             tileSize: 256,
             maxzoom: 17
+          },
+          'esri-transportation': {
+            type: 'raster',
+            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}'],
+            tileSize: 256,
+            maxzoom: 19
+          },
+          'esri-places': {
+            type: 'raster',
+            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'],
+            tileSize: 256,
+            maxzoom: 19
           }
         },
         layers: [
@@ -585,6 +665,20 @@
               'raster-contrast': 0.06,
               'raster-saturation': 0.08
             }
+          },
+          {
+            id: 'esri-roads-overlay',
+            type: 'raster',
+            source: 'esri-transportation',
+            layout: { 'visibility': 'visible' },
+            paint: { 'raster-opacity': 0.85 }
+          },
+          {
+            id: 'esri-places-overlay',
+            type: 'raster',
+            source: 'esri-places',
+            layout: { 'visibility': 'visible' },
+            paint: { 'raster-opacity': 0.90 }
           }
         ]
       }
@@ -599,32 +693,75 @@
       return {
         type: 'FeatureCollection',
         features: [
+          // 1. Carretera Principal CU-1185 (Chinchero - Cruzpata - Huaypo - Maras)
           {
             type: 'Feature',
-            properties: { name: 'Carretera CU-1185 (Principal)' },
+            properties: { 
+              name: 'Carretera Principal CU-1185 (Asfaltada)',
+              type: 'main'
+            },
             geometry: {
               type: 'LineString',
               coordinates: [
-                [-72.09135, -13.42015],
-                [-72.09102, -13.42078],
-                [-72.09076, -13.42126],
-                [-72.09064, -13.42152],
-                [-72.09052, -13.42171],
+                [-72.0495, -13.3985],
+                [-72.0560, -13.4035],
+                [-72.0645, -13.4090],
+                [-72.0720, -13.4135],
+                [-72.0790, -13.4168],
+                [-72.0835, -13.4185],
+                [-72.0862, -13.4200],
+                [-72.0882, -13.4211],
+                [-72.08905, -13.42155],
+                [-72.08955, -13.42180],
+                [-72.08998, -13.42196], // Frente a Proyecto Guadalupe
                 [-72.09032, -13.42183],
-                [-72.08998, -13.42196],
-                [-72.08955, -13.42212],
-                [-72.08905, -13.42231],
-                [-72.08852, -13.42252],
-                [-72.08795, -13.42274],
-                [-72.08725, -13.42302],
-                [-72.08635, -13.42338],
-                [-72.08520, -13.42384]
+                [-72.09052, -13.42171],
+                [-72.09064, -13.42152],
+                [-72.09076, -13.42126],
+                [-72.09102, -13.42078],
+                [-72.09135, -13.42015],
+                [-72.09380, -13.41750],
+                [-72.09750, -13.41400],
+                [-72.10300, -13.41050],
+                [-72.11200, -13.40500],
+                [-72.12400, -13.39500],
+                [-72.13850, -13.36500]
               ]
             }
           },
+          // 2. Carretera Nacional 28B (Troncal Cusco - Chinchero - Urubamba)
           {
             type: 'Feature',
-            properties: { name: 'Ruta hacia Laguna de Huaypo' },
+            properties: { 
+              name: 'Carretera Nacional 28B (Cusco - Urubamba)',
+              type: 'highway'
+            },
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                [-72.0250, -13.4880],
+                [-72.0320, -13.4650],
+                [-72.0400, -13.4420],
+                [-72.0440, -13.4250],
+                [-72.0475, -13.4080],
+                [-72.0495, -13.3985],
+                [-72.0520, -13.3900],
+                [-72.0580, -13.3760],
+                [-72.0650, -13.3620],
+                [-72.0720, -13.3480],
+                [-72.0820, -13.3320],
+                [-72.0980, -13.3180],
+                [-72.1158, -13.3039]
+              ]
+            }
+          },
+          // 3. Circuito Perimétrico Laguna de Huaypo
+          {
+            type: 'Feature',
+            properties: { 
+              name: 'Ruta Turística Laguna de Huaypo',
+              type: 'scenic'
+            },
             geometry: {
               type: 'LineString',
               coordinates: [
@@ -636,18 +773,28 @@
                 [-72.09065, -13.41340],
                 [-72.08960, -13.41050],
                 [-72.08810, -13.40680],
-                [-72.08640, -13.40260]
+                [-72.08640, -13.40260],
+                [-72.08450, -13.39800],
+                [-72.08150, -13.39400],
+                [-72.07600, -13.39300],
+                [-72.07100, -13.39700],
+                [-72.06800, -13.40400]
               ]
             }
           },
+          // 4. Acceso Directo Pavimentado a Proyecto Guadalupe
           {
             type: 'Feature',
-            properties: { name: 'Acceso Directo a Lotes' },
+            properties: { 
+              name: 'Acceso Directo Proyecto Guadalupe',
+              type: 'access'
+            },
             geometry: {
               type: 'LineString',
               coordinates: [
-                [-72.08995, -13.42197],
-                [-72.08972, -13.42182],
+                [-72.08998, -13.42196],
+                [-72.08975, -13.42183],
+                [-72.08945, -13.42162],
                 [-72.08918, -13.42140]
               ]
             }
@@ -715,27 +862,66 @@
     }
 
     map.on('load', () => {
-      // Líneas de carreteras principales
+      // Líneas y Trazado de Carreteras Principales con Alta Visibilidad
       map.addSource('roads-source', { type: 'geojson', data: buildRoadsGeoJSON() });
+      
+      // Resplandor exterior (Glow) para contraste satelital
+      map.addLayer({
+        id: 'roads-glow',
+        type: 'line',
+        source: 'roads-source',
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: {
+          'line-color': '#f59e0b',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 14, 10, 18, 16, 20, 22],
+          'line-opacity': 0.45,
+          'line-blur': 3
+        }
+      });
+
+      // Borde Negro de Contraste Profundo
       map.addLayer({
         id: 'roads-casing',
         type: 'line',
         source: 'roads-source',
         layout: { 'line-join': 'round', 'line-cap': 'round' },
         paint: {
-          'line-color': '#0f172a',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 14, 4, 18, 7.5, 20, 10],
+          'line-color': '#000000',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3.5, 14, 6.5, 18, 11, 20, 15],
           'line-opacity': 0.95
         }
       });
+
+      // Línea Principal de Carretera (Neón Oro / Ámbar / Cian / Esmeralda según tipo)
       map.addLayer({
         id: 'roads-line',
         type: 'line',
         source: 'roads-source',
         layout: { 'line-join': 'round', 'line-cap': 'round' },
         paint: {
-          'line-color': '#f59e0b',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 14, 2.2, 18, 4.4, 20, 6.2]
+          'line-color': [
+            'match',
+            ['get', 'type'],
+            'highway', '#f59e0b',
+            'scenic', '#38bdf8',
+            'access', '#34d399',
+            '#ffea00'
+          ],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 2, 14, 3.8, 18, 6.5, 20, 9]
+        }
+      });
+
+      // Línea Central Blanca Segmentada (Guía de Carril Oficial)
+      map.addLayer({
+        id: 'roads-dash',
+        type: 'line',
+        source: 'roads-source',
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: {
+          'line-color': '#ffffff',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.6, 14, 1.2, 18, 2, 20, 2.8],
+          'line-dasharray': [3, 2.5],
+          'line-opacity': 0.95
         }
       });
 
@@ -790,19 +976,22 @@
       renderCatalogPropertiesPins();
       renderPropertySelectorPills();
       syncFromSupabase();
+      initReferencePlanImage();
 
       refreshMapAndUI();
     });
 
     // =========================================================================
-    // 4. ETIQUETAS COMPACTAS Y PINES DE OTRAS PROPIEDADES DEL CATÁLOGO
+    // 4. ETIQUETAS DE LOTES FIJAS DENTRO DE SU RECUADRO Y PUNTOS DE INTERÉS
     // =========================================================================
     function updateLotMarkersScale() {
       const z = map.getZoom();
-      const scale = Math.max(0.72, Math.min(1.02, 0.72 + (z - 16) * 0.065));
+      // Mantiene el tamaño fijo exacto del recuadro de cada lote sin modificar al hacer zoom
+      const isVisibleZoom = z >= 16.5;
       lotMarkerRefs.forEach(item => {
         if (item.innerEl) {
-          item.innerEl.style.transform = `scale(${scale.toFixed(3)})`;
+          item.innerEl.style.display = isVisibleZoom ? 'block' : 'none';
+          item.innerEl.style.transform = 'none'; // Tamaño fijo sin modificación al hacer zoom
         }
       });
     }
@@ -819,13 +1008,14 @@
         const badge = document.createElement('div');
         badge.className = 'lot-label-badge';
 
-        let bg = 'rgba(16, 185, 129, 0.92)';
+        let bg = 'rgba(16, 185, 129, 0.94)';
         if (lot.status === 'reservado') bg = 'rgba(217, 119, 6, 0.94)';
         if (lot.status === 'vendido') bg = 'rgba(225, 29, 72, 0.94)';
 
         badge.style.background = bg;
         badge.style.opacity = isVisible ? '1' : '0.28';
-        badge.textContent = `${lot.id} • ${lot.area}m²`;
+        badge.style.transform = 'none';
+        badge.innerHTML = `<span class="font-black">${lot.id}</span> <span class="opacity-90 font-semibold">• ${lot.area}m²</span>`;
 
         badge.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -853,15 +1043,28 @@
       matrizEl.textContent = 'Área Matriz • 836 m²';
       poiMarkerRefs.push(new maplibregl.Marker({ element: matrizEl }).setLngLat(matrizCenter).addTo(map));
 
+      // Badge Carretera CU-1185
       const roadEl = document.createElement('div');
       roadEl.className = 'poi-badge';
-      roadEl.textContent = 'Carretera CU-1185';
+      roadEl.textContent = 'Carretera CU-1185 (Asfaltada)';
       poiMarkerRefs.push(
         new maplibregl.Marker({ element: roadEl })
           .setLngLat([currentProjectCenter[0] - 0.00018, currentProjectCenter[1] - 0.00038])
           .addTo(map)
       );
 
+      // Badge Carretera Nacional 28B
+      const road28El = document.createElement('div');
+      road28El.className = 'poi-badge';
+      road28El.style.borderColor = '#f59e0b';
+      road28El.textContent = 'Carretera Nacional 28B (Cusco - Urubamba)';
+      poiMarkerRefs.push(
+        new maplibregl.Marker({ element: road28El })
+          .setLngLat([-72.0515, -13.3900])
+          .addTo(map)
+      );
+
+      // Badge Laguna de Huaypo
       const lagunaEl = document.createElement('div');
       lagunaEl.className = 'poi-badge';
       lagunaEl.style.borderColor = 'rgba(56, 189, 248, 0.85)';
@@ -1161,14 +1364,120 @@
       showToast('Vista panorámica: Laguna de Huaypo');
     });
 
+    // =========================================================================
+    // GESTIÓN DE LA IMAGEN DEL PLANO REFERENCIAL (MODO EDITOR)
+    // =========================================================================
+    const STORAGE_KEY_REF_PLAN = 'nova_reference_plan_img';
+    let currentReferencePlanUrl = localStorage.getItem(STORAGE_KEY_REF_PLAN) || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80';
+
+    function initReferencePlanImage() {
+      const saved = localStorage.getItem(STORAGE_KEY_REF_PLAN);
+      if (saved) currentReferencePlanUrl = saved;
+      updateReferencePlanDOM();
+    }
+
+    function updateReferencePlanDOM() {
+      const preview = document.getElementById('ref-plan-preview-img');
+      if (preview) preview.src = currentReferencePlanUrl;
+      const floating = document.getElementById('floating-plan-img');
+      if (floating) floating.src = currentReferencePlanUrl;
+      const input = document.getElementById('input-ref-plan-url');
+      if (input && !currentReferencePlanUrl.startsWith('data:')) {
+        input.value = currentReferencePlanUrl;
+      }
+    }
+
+    function toggleFloatingPlanViewer() {
+      const viewer = document.getElementById('floating-plan-viewer');
+      if (!viewer) return;
+      viewer.classList.toggle('hidden');
+    }
+
+    function updatePlanOpacity(val) {
+      const opacity = parseInt(val, 10) / 100;
+      const floatingImg = document.getElementById('floating-plan-img');
+      if (floatingImg) floatingImg.style.opacity = opacity;
+      const label = document.getElementById('floating-opacity-label');
+      if (label) label.textContent = `${val}%`;
+    }
+
+    async function handleReferencePlanUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      showToast(`Cargando imagen: ${file.name}...`);
+
+      // Previsualización instantánea local
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        currentReferencePlanUrl = e.target.result;
+        updateReferencePlanDOM();
+      };
+      reader.readAsDataURL(file);
+
+      // Subida al Bucket INMOBILIARIA en Supabase
+      try {
+        const sbUrl = localStorage.getItem('supabase_url') || DEFAULT_SUPABASE_URL;
+        const sbKey = localStorage.getItem('supabase_key') || DEFAULT_SUPABASE_KEY;
+        const bucket = localStorage.getItem('supabase_bucket') || 'INMOBILIARIA';
+        const ext = file.name.split('.').pop() || 'jpg';
+        const cleanName = `planos/plano_${Date.now()}_${Math.random().toString(36).substring(2,7)}.${ext}`;
+
+        const uploadEndpoint = `${sbUrl}/storage/v1/object/${bucket}/${cleanName}`;
+        const res = await fetch(uploadEndpoint, {
+          method: 'POST',
+          headers: {
+            'apikey': sbKey,
+            'Authorization': `Bearer ${sbKey}`,
+            'Content-Type': file.type || 'image/jpeg',
+            'x-upsert': 'true'
+          },
+          body: file
+        });
+
+        if (res.ok) {
+          const publicUrl = `${sbUrl}/storage/v1/object/public/${bucket}/${cleanName}`;
+          currentReferencePlanUrl = publicUrl;
+          localStorage.setItem(STORAGE_KEY_REF_PLAN, publicUrl);
+          updateReferencePlanDOM();
+          showToast('✅ Plano subido al Bucket INMOBILIARIA');
+        }
+      } catch (err) {
+        console.warn("[Upload Plan Error]", err);
+        localStorage.setItem(STORAGE_KEY_REF_PLAN, currentReferencePlanUrl);
+        showToast('Plano aplicado localmente');
+      }
+    }
+
+    function applyReferencePlanUrl() {
+      const input = document.getElementById('input-ref-plan-url');
+      const val = input ? input.value.trim() : '';
+      if (!val) {
+        showToast('Ingresa una URL de imagen válida');
+        return;
+      }
+      currentReferencePlanUrl = val;
+      localStorage.setItem(STORAGE_KEY_REF_PLAN, val);
+      updateReferencePlanDOM();
+      showToast('✅ Imagen del plano referencial actualizada');
+    }
+
     document.getElementById('btn-toggle-roads').addEventListener('click', () => {
       showRoads = !showRoads;
       const vis = showRoads ? 'visible' : 'none';
-      if (map.getLayer('roads-casing')) map.setLayoutProperty('roads-casing', 'visibility', vis);
-      if (map.getLayer('roads-line')) map.setLayoutProperty('roads-line', 'visibility', vis);
+      const roadLayers = ['roads-glow', 'roads-casing', 'roads-line', 'roads-dash', 'esri-roads-overlay', 'esri-places-overlay'];
+      roadLayers.forEach(ly => {
+        if (map.getLayer(ly)) map.setLayoutProperty(ly, 'visibility', vis);
+      });
       const btn = document.getElementById('btn-toggle-roads');
-      btn.style.opacity = showRoads ? '1' : '0.5';
-      showToast(showRoads ? 'Carreteras activadas' : 'Carreteras ocultas');
+      if (btn) {
+        if (showRoads) {
+          btn.className = 'flex-1 sm:flex-initial justify-center px-2.5 sm:px-3.5 py-2 rounded-xl bg-amber-500 text-[#1a1200] font-black border border-amber-300 text-[11px] sm:text-xs flex items-center gap-1 shadow-md shadow-amber-500/30 transition cursor-pointer';
+        } else {
+          btn.className = 'flex-1 sm:flex-initial justify-center px-2.5 sm:px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 border border-white/10 text-[11px] sm:text-xs font-bold flex items-center gap-1 transition cursor-pointer';
+        }
+      }
+      showToast(showRoads ? '🛣️ Vista Carreteras: Activada (CU-1185, 28B y Rutas Principales)' : 'Vista Carreteras: Oculta');
     });
 
     document.getElementById('btn-toggle-view').addEventListener('click', () => {
@@ -1186,84 +1495,96 @@
     });
 
     // =========================================================================
-    // 7. MODO EDITOR UNIFICADO PROTEGIDO CON CLAVE ("NOVA2026")
+    // 7. MODO EDITOR UNIFICADO (SIN CLAVE - ACCESO DIRECTO CON EDITOR DE PLANO)
     // =========================================================================
     function handleToggleEditorClick() {
       if (isEditorMode) {
         disableEditorMode();
-        return;
+      } else {
+        enableEditorMode();
       }
-      document.getElementById('pwd-error-msg').classList.add('hidden');
-      document.getElementById('input-editor-password').value = '';
-      document.getElementById('password-modal').classList.remove('hidden');
-      setTimeout(() => document.getElementById('input-editor-password').focus(), 80);
     }
 
     document.getElementById('btn-toggle-editor').addEventListener('click', handleToggleEditorClick);
     document.getElementById('btn-toggle-editor-mobile').addEventListener('click', handleToggleEditorClick);
 
-    function verifyEditorPassword() {
-      const val = document.getElementById('input-editor-password').value.trim();
-      if (val === EDITOR_SECRET_KEY) {
-        document.getElementById('password-modal').classList.add('hidden');
-        enableEditorMode();
-      } else {
-        document.getElementById('pwd-error-msg').classList.remove('hidden');
-      }
-    }
-
-    document.getElementById('btn-confirm-pwd').addEventListener('click', verifyEditorPassword);
-    document.getElementById('input-editor-password').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') verifyEditorPassword();
-    });
-    document.getElementById('btn-close-pwd-modal').addEventListener('click', () => {
-      document.getElementById('password-modal').classList.add('hidden');
-    });
-    document.getElementById('btn-cancel-pwd').addEventListener('click', () => {
-      document.getElementById('password-modal').classList.add('hidden');
-    });
-
     function enableEditorMode() {
       isEditorMode = true;
       if (!selectedLotId) selectedLotId = 'L1';
-      document.querySelectorAll('.editor-btn-text').forEach(el => { el.textContent = 'Salir'; });
-      document.getElementById('btn-toggle-editor').classList.add('bg-[#d4af37]', 'text-black');
-      document.getElementById('btn-toggle-editor-mobile').classList.add('bg-[#d4af37]', 'text-black');
+      document.querySelectorAll('.editor-btn-text').forEach(el => { el.textContent = 'CERRAR EDITOR'; });
+      document.querySelectorAll('.editor-btn-icon').forEach(el => { el.textContent = 'close'; });
+
+      const btn = document.getElementById('btn-toggle-editor');
+      if (btn) {
+        btn.classList.add('bg-[#d4af37]', 'text-[#1c1300]', 'shadow-[0_0_20px_rgba(212,175,55,0.7)]', 'border-[#fff5c0]');
+        btn.classList.remove('bg-[#142c1e]', 'text-[#f2ca50]');
+      }
+      const btnMob = document.getElementById('btn-toggle-editor-mobile');
+      if (btnMob) {
+        btnMob.classList.add('bg-[#d4af37]', 'text-[#1c1300]', 'border-[#fff5c0]');
+        btnMob.classList.remove('bg-[#142c1e]', 'text-[#f2ca50]');
+      }
+
       document.getElementById('unified-editor-panel').classList.remove('hidden');
       document.getElementById('input-teleport-coords').value = `${currentProjectCenter[1].toFixed(6)}, ${currentProjectCenter[0].toFixed(6)}`;
+      updateReferencePlanDOM();
       refreshMapAndUI();
-      showToast('Modo Editor activado (NOVA2026)');
+      showToast('🛠️ MODO EDITOR ACTIVO (Sin clave): Arrastra vértices o el ancla dorada del plano');
     }
 
     function disableEditorMode() {
       isEditorMode = false;
-      document.getElementById('btn-toggle-editor').querySelector('.editor-btn-text').textContent = 'Modo Editor';
-      document.getElementById('btn-toggle-editor-mobile').querySelector('.editor-btn-text').textContent = 'Editor';
-      document.getElementById('btn-toggle-editor').classList.remove('bg-[#d4af37]', 'text-black');
-      document.getElementById('btn-toggle-editor-mobile').classList.remove('bg-[#d4af37]', 'text-black');
+      document.querySelectorAll('.editor-btn-text').forEach(el => { el.textContent = 'MODO EDITOR'; });
+      document.querySelectorAll('.editor-btn-icon').forEach(el => { el.textContent = 'edit_note'; });
+
+      const btn = document.getElementById('btn-toggle-editor');
+      if (btn) {
+        btn.classList.remove('bg-[#d4af37]', 'text-[#1c1300]', 'shadow-[0_0_20px_rgba(212,175,55,0.7)]', 'border-[#fff5c0]');
+        btn.classList.add('bg-[#142c1e]', 'text-[#f2ca50]');
+      }
+      const btnMob = document.getElementById('btn-toggle-editor-mobile');
+      if (btnMob) {
+        btnMob.classList.remove('bg-[#d4af37]', 'text-[#1c1300]', 'border-[#fff5c0]');
+        btnMob.classList.add('bg-[#142c1e]', 'text-[#f2ca50]');
+      }
+
       document.getElementById('unified-editor-panel').classList.add('hidden');
+      const floatViewer = document.getElementById('floating-plan-viewer');
+      if (floatViewer) floatViewer.classList.add('hidden');
+
       clearEditorHandles();
       updateDetailCard();
       saveLotsData();
       showToast('Modo Editor cerrado • Cambios guardados');
     }
 
+    // Pestañas del Editor Unificado
     document.getElementById('tab-edit-lotes').addEventListener('click', () => {
       document.getElementById('editor-view-lotes').classList.remove('hidden');
       document.getElementById('editor-view-plano').classList.add('hidden');
-      document.getElementById('tab-edit-lotes').classList.add('bg-[#d4af37]', 'text-[#1c1300]');
-      document.getElementById('tab-edit-lotes').classList.remove('text-slate-300');
-      document.getElementById('tab-edit-plano').classList.remove('bg-[#d4af37]', 'text-[#1c1300]');
-      document.getElementById('tab-edit-plano').classList.add('text-slate-300');
+      document.getElementById('editor-view-imagen').classList.add('hidden');
+      document.getElementById('tab-edit-lotes').className = 'px-2.5 py-1 rounded-lg bg-[#d4af37] text-[#1c1300] text-[11px] font-black transition';
+      document.getElementById('tab-edit-plano').className = 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition';
+      document.getElementById('tab-edit-imagen').className = 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition flex items-center gap-1';
     });
 
     document.getElementById('tab-edit-plano').addEventListener('click', () => {
-      document.getElementById('editor-view-plano').classList.remove('hidden');
       document.getElementById('editor-view-lotes').classList.add('hidden');
-      document.getElementById('tab-edit-plano').classList.add('bg-[#d4af37]', 'text-[#1c1300]');
-      document.getElementById('tab-edit-plano').classList.remove('text-slate-300');
-      document.getElementById('tab-edit-lotes').classList.remove('bg-[#d4af37]', 'text-[#1c1300]');
-      document.getElementById('tab-edit-lotes').classList.add('text-slate-300');
+      document.getElementById('editor-view-plano').classList.remove('hidden');
+      document.getElementById('editor-view-imagen').classList.add('hidden');
+      document.getElementById('tab-edit-plano').className = 'px-2.5 py-1 rounded-lg bg-[#d4af37] text-[#1c1300] text-[11px] font-black transition';
+      document.getElementById('tab-edit-lotes').className = 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition';
+      document.getElementById('tab-edit-imagen').className = 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition flex items-center gap-1';
+    });
+
+    document.getElementById('tab-edit-imagen').addEventListener('click', () => {
+      document.getElementById('editor-view-lotes').classList.add('hidden');
+      document.getElementById('editor-view-plano').classList.add('hidden');
+      document.getElementById('editor-view-imagen').classList.remove('hidden');
+      document.getElementById('tab-edit-imagen').className = 'px-2.5 py-1 rounded-lg bg-[#d4af37] text-[#1c1300] text-[11px] font-black transition flex items-center gap-1';
+      document.getElementById('tab-edit-lotes').className = 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition';
+      document.getElementById('tab-edit-plano').className = 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition';
+      updateReferencePlanDOM();
     });
 
     document.getElementById('editor-lot-selector').addEventListener('change', (e) => {
