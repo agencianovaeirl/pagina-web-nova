@@ -143,88 +143,30 @@
   <!-- Contenedor Principal del Mapa Satelital 3D -->
   <div id="map"></div>
 
-  <!-- Barra Superior: Identidad + Selector de Propiedades + Filtros + Editor -->
-  <header class="fixed top-2.5 left-2.5 right-2.5 z-30 flex flex-col gap-2 pointer-events-none">
-    
-    <!-- Fila 1: Header con Botón Regresar, Logo, Selector y Botón Google Maps -->
-    <div class="glass-panel rounded-2xl px-3 py-2 flex items-center justify-between gap-2.5 pointer-events-auto">
-      <div class="flex items-center gap-2.5 min-w-0">
-        <!-- Botón Volver a Terrenos -->
-        <a href="terrenos.html" class="p-2 rounded-xl bg-[#142c1e] hover:bg-[#1f452f] text-[#f2ca50] border border-[#d4af37]/40 font-bold text-xs flex items-center gap-1 shrink-0 transition shadow group" title="Regresar al Catálogo de Terrenos">
-          <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
-          <span class="hidden sm:inline">Volver</span>
-        </a>
+  <!-- Botones de Navegación Flotantes Superiores (Sin barra superior y sin botón Google Maps) -->
+  <div class="fixed top-3 left-3 z-30 flex items-center gap-2 pointer-events-auto">
+    <!-- Botón Volver a Terrenos -->
+    <a href="terrenos.html" class="px-3 py-2 rounded-xl bg-slate-900/90 hover:bg-[#142c1e] text-[#f2ca50] border border-[#d4af37]/50 font-bold text-xs flex items-center gap-1.5 shadow-xl transition backdrop-blur-md group" title="Regresar al Catálogo de Terrenos">
+      <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+      <span>Volver a Terrenos</span>
+    </a>
 
-        <!-- Botón Toggle Sidebar Móvil -->
-        <button id="btn-toggle-sidebar" class="lg:hidden p-2 rounded-xl bg-slate-800/90 text-[#f2ca50] border border-[#d4af37]/30 hover:bg-slate-700 shrink-0" title="Ver lista de lotes">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-        </button>
+    <!-- Botón Toggle Sidebar Móvil -->
+    <button id="btn-toggle-sidebar" class="lg:hidden p-2 rounded-xl bg-slate-900/90 text-[#f2ca50] border border-[#d4af37]/40 hover:bg-slate-800 shadow-xl backdrop-blur-md" title="Ver lista de lotes">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </div>
 
-        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-[#d4af37] to-[#96741b] flex items-center justify-center shadow-lg shadow-[#d4af37]/20 shrink-0">
-          <span class="material-symbols-outlined text-[20px] text-[#1c1300] font-black">satellite_alt</span>
-        </div>
-        <div class="min-w-0">
-          <div class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#f2ca50] truncate">Agencia NOVA E.I.R.L. • Mapa Satelital 3D</div>
-          <h1 id="header-project-title" class="text-xs sm:text-base font-extrabold text-white leading-tight truncate">Proyecto Guadalupe – Laguna Huaypo</h1>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-2 shrink-0">
-        <!-- Botón Abrir en Google Maps -->
-        <a id="map-external-link" href="https://maps.google.com/?q=-13.421719,-72.089713" target="_blank" rel="noopener noreferrer"
-          class="hidden sm:flex py-1.5 px-3 rounded-xl bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] font-black text-xs uppercase tracking-wider items-center gap-1 shadow-lg transition border border-[#f2ca50] hover:scale-105 active:scale-95"
-          title="Abrir ubicación en la aplicación de Google Maps">
-          <span class="material-symbols-outlined text-[16px]">open_in_new</span>
-          <span>Google Maps</span>
-        </a>
-
-        <!-- Botón Modo Editor Móvil (Sin Clave) -->
-        <button id="btn-toggle-editor-mobile" class="lg:hidden bg-[#142c1e] hover:bg-[#d4af37] text-[#f2ca50] hover:text-[#1c1300] border border-[#d4af37]/60 px-2.5 py-1.5 rounded-xl text-[11px] font-black flex items-center gap-1 shrink-0 transition-all shadow cursor-pointer">
-          <span class="material-symbols-outlined text-[16px] editor-btn-icon">edit_note</span>
-          <span class="editor-btn-text">MODO EDITOR</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Fila 2: Selector de Inmuebles / Proyectos + Filtro de Lotes + Modo Editor -->
-    <div class="glass-panel rounded-2xl p-1.5 flex items-center justify-between gap-2 overflow-x-auto no-scrollbar pointer-events-auto">
-      
-      <!-- Selector de Inmuebles del Catálogo (Pills conservadas de terrenos.html) -->
-      <div id="map-property-selector" class="flex items-center gap-1.5 shrink-0 overflow-x-auto no-scrollbar">
-        <!-- Se llena dinámicamente con las propiedades registradas -->
-      </div>
-
-      <div class="h-5 w-px bg-slate-700 mx-1 shrink-0"></div>
-
-      <!-- Filtros de Lotes de Lotización (Todos, Disponibles, Reservados, Vendidos) -->
-      <div class="flex items-center gap-1 shrink-0">
-        <button data-filter="todos" class="filter-btn active bg-[#d4af37] text-[#1c1300] shadow-md shadow-[#d4af37]/25 px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-black whitespace-nowrap transition">
-          Todos <span id="count-todos" class="ml-0.5 opacity-90">7</span>
-        </button>
-        <button data-filter="disponible" class="filter-btn bg-slate-800/90 text-slate-100 hover:bg-slate-700 px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 whitespace-nowrap transition">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Disponibles <span id="count-disponible">5</span>
-        </button>
-        <button data-filter="reservado" class="filter-btn bg-slate-800/90 text-slate-100 hover:bg-slate-700 px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 whitespace-nowrap transition">
-          <span class="w-2 h-2 rounded-full bg-amber-400"></span> Reservados <span id="count-reservado">1</span>
-        </button>
-        <button data-filter="vendido" class="filter-btn bg-slate-800/90 text-slate-100 hover:bg-slate-700 px-2.5 sm:px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold flex items-center gap-1.5 whitespace-nowrap transition">
-          <span class="w-2 h-2 rounded-full bg-rose-500"></span> Vendidos <span id="count-vendido">1</span>
-        </button>
-      </div>
-
-      <div class="hidden lg:block h-5 w-px bg-slate-700 mx-1 shrink-0"></div>
-
-      <!-- Botón Modo Editor Desktop (Sin Clave) -->
-      <button id="btn-toggle-editor" class="hidden lg:flex bg-[#142c1e] hover:bg-[#d4af37] text-[#f2ca50] hover:text-[#1c1300] border border-[#d4af37]/60 px-3.5 py-1.5 rounded-xl text-xs font-black items-center gap-1.5 whitespace-nowrap transition-all shadow-md shrink-0 cursor-pointer" title="Activar Modo Editor de Lotes y Plano sin clave">
-        <span class="material-symbols-outlined text-[17px] editor-btn-icon">edit_note</span>
-        <span class="editor-btn-text">MODO EDITOR</span>
-      </button>
-
-    </div>
-  </header>
+  <!-- Botón Modo Editor Flotante Superior Derecho -->
+  <div class="fixed top-3 right-3 z-30 flex items-center gap-2 pointer-events-auto">
+    <button id="btn-toggle-editor" class="bg-[#142c1e]/90 hover:bg-[#d4af37] text-[#f2ca50] hover:text-[#1c1300] border border-[#d4af37]/60 px-3.5 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 whitespace-nowrap transition-all shadow-xl backdrop-blur-md cursor-pointer" title="Activar Modo Editor de Lotes y Plano sin clave">
+      <span class="material-symbols-outlined text-[18px] editor-btn-icon">edit_note</span>
+      <span class="editor-btn-text">MODO EDITOR</span>
+    </button>
+  </div>
 
   <!-- Panel Lateral Izquierdo: Plano de Distribución y Lista de Lotes -->
-  <aside id="sidebar-panel" class="fixed top-32 lg:top-24 bottom-16 lg:bottom-20 left-2.5 right-2.5 sm:right-auto sm:w-72 z-30 glass-panel rounded-2xl flex flex-col overflow-hidden transition-transform duration-300 -translate-x-[115%] lg:translate-x-0">
+  <aside id="sidebar-panel" class="fixed top-14 sm:top-16 bottom-16 lg:bottom-20 left-2.5 right-2.5 sm:right-auto sm:w-72 z-30 glass-panel rounded-2xl flex flex-col overflow-hidden transition-transform duration-300 -translate-x-[115%] lg:translate-x-0">
     <div class="p-3.5 border-b border-slate-700/80 flex items-center justify-between">
       <div>
         <h2 id="sidebar-project-name" class="text-sm font-extrabold text-white">Plano de Distribución</h2>
@@ -232,6 +174,30 @@
       </div>
       <button id="btn-close-sidebar" class="lg:hidden p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Botón para Consultar PRECIOS GUADALUPE.jpg directo desde el panel -->
+    <div class="p-2 border-b border-slate-700/80 bg-slate-900/60">
+      <button type="button" onclick="openPreciosGuadalupeModal()" class="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500/20 to-yellow-500/20 hover:from-amber-500/30 hover:to-yellow-500/30 border border-amber-400/50 text-[#f2ca50] font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer shadow">
+        <span class="material-symbols-outlined text-[17px]">receipt_long</span>
+        <span>Ver Precios Oficiales (JPG)</span>
+      </button>
+    </div>
+
+    <!-- Filtros de Estado de Lotes -->
+    <div class="p-2 border-b border-slate-700/80 flex items-center gap-1 overflow-x-auto no-scrollbar">
+      <button data-filter="todos" class="filter-btn active bg-[#d4af37] text-[#1c1300] px-2 py-1 rounded-lg text-[10px] font-black whitespace-nowrap">
+        Todos <span id="count-todos">7</span>
+      </button>
+      <button data-filter="disponible" class="filter-btn bg-slate-800/90 text-slate-100 hover:bg-slate-700 px-2 py-1 rounded-lg text-[10px] font-bold whitespace-nowrap">
+        Disp <span id="count-disponible">5</span>
+      </button>
+      <button data-filter="reservado" class="filter-btn bg-slate-800/90 text-slate-100 hover:bg-slate-700 px-2 py-1 rounded-lg text-[10px] font-bold whitespace-nowrap">
+        Res <span id="count-reservado">1</span>
+      </button>
+      <button data-filter="vendido" class="filter-btn bg-slate-800/90 text-slate-100 hover:bg-slate-700 px-2 py-1 rounded-lg text-[10px] font-bold whitespace-nowrap">
+        Ven <span id="count-vendido">1</span>
       </button>
     </div>
 
@@ -250,7 +216,7 @@
   </aside>
 
   <!-- Tarjeta Flotante Derecha / Bottom-Sheet en Móvil: Ficha Técnica del Lote -->
-  <section id="lot-detail-card" class="hidden fixed bottom-16 left-2.5 right-2.5 sm:left-auto sm:bottom-auto sm:top-24 sm:right-3 z-30 sm:w-96 max-h-[68vh] sm:max-h-[80vh] overflow-y-auto custom-scroll glass-card rounded-2xl p-3.5 sm:p-4 space-y-3">
+  <section id="lot-detail-card" class="hidden fixed bottom-16 left-2.5 right-2.5 sm:left-auto sm:bottom-auto sm:top-16 sm:right-3 z-30 sm:w-96 max-h-[68vh] sm:max-h-[80vh] overflow-y-auto custom-scroll glass-card rounded-2xl p-3.5 sm:p-4 space-y-3">
     <div class="flex items-start justify-between gap-2">
       <div>
         <div class="flex items-center gap-2">
@@ -305,9 +271,9 @@
       <div class="flex items-center gap-1 bg-slate-900/90 p-0.5 rounded-xl border border-slate-700">
         <button id="tab-edit-lotes" class="px-2.5 py-1 rounded-lg bg-[#d4af37] text-[#1c1300] text-[11px] font-black transition">Lotes</button>
         <button id="tab-edit-plano" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition">Plano</button>
-        <button id="tab-edit-imagen" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition flex items-center gap-1" title="Cambiar y ver imagen del plano referencial">
-          <span class="material-symbols-outlined text-[13px]">image</span>
-          <span>Plano Ref.</span>
+        <button id="tab-edit-precios" class="px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition flex items-center gap-1" title="Gestionar y reemplazar PRECIOS GUADALUPE.jpg">
+          <span class="material-symbols-outlined text-[13px]">receipt_long</span>
+          <span>Precios Guadalupe</span>
         </button>
       </div>
     </div>
@@ -383,94 +349,108 @@
       </div>
     </div>
 
-    <!-- Pestaña 3: Imagen del Plano Referencial para la Distribución de Lotes -->
-    <div id="editor-view-imagen" class="hidden space-y-2.5">
+    <!-- Pestaña 3: Gestión y Reemplazo de PRECIOS GUADALUPE.jpg -->
+    <div id="editor-view-precios" class="hidden space-y-3">
       <div class="flex items-center justify-between">
         <span class="text-[11px] font-bold text-amber-300 flex items-center gap-1">
-          <span class="material-symbols-outlined text-[15px]">architecture</span>
-          Plano de Distribución Referencial
+          <span class="material-symbols-outlined text-[15px]">receipt_long</span>
+          <span>Archivo: PRECIOS GUADALUPE.jpg</span>
         </span>
-        <button onclick="toggleFloatingPlanViewer()" class="text-[10px] text-[#f2ca50] hover:underline flex items-center gap-0.5 cursor-pointer">
+        <button type="button" onclick="openPreciosGuadalupeModal()" class="text-[10px] text-[#f2ca50] hover:underline flex items-center gap-0.5 cursor-pointer">
           <span class="material-symbols-outlined text-[13px]">visibility</span>
-          <span>Ver Flotante</span>
+          <span>Ampliar</span>
         </button>
       </div>
 
       <!-- Miniatura / Vista Previa -->
-      <div class="relative w-full h-32 rounded-xl overflow-hidden border border-amber-500/40 bg-black group cursor-pointer" onclick="toggleFloatingPlanViewer()" title="Clic para ampliar plano flotante">
-        <img id="ref-plan-preview-img" src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80" alt="Plano Referencial" class="w-full h-full object-contain" />
-        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 text-white text-xs font-bold">
+      <div class="relative w-full h-36 rounded-xl overflow-hidden border border-amber-500/40 bg-slate-950 group cursor-pointer" onclick="openPreciosGuadalupeModal()" title="Clic para ampliar y ver precios">
+        <img id="precios-guadalupe-preview-img" src="assets/PRECIOS GUADALUPE.jpg" alt="PRECIOS GUADALUPE.jpg" class="w-full h-full object-contain p-1" />
+        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 text-white text-xs font-bold">
           <span class="material-symbols-outlined text-[18px]">open_in_full</span>
-          <span>Abrir Visor Flotante</span>
+          <span>Ver Tamaño Completo</span>
         </div>
       </div>
 
-      <!-- Controles para cambiar la imagen del plano -->
-      <div class="space-y-1.5">
-        <label class="block text-[10px] uppercase tracking-wider text-slate-400 font-bold">Cambiar Imagen del Plano</label>
-        <div class="flex gap-1.5 items-center">
-          <input type="text" id="input-ref-plan-url" placeholder="Pega URL o sube archivo..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-[11px] text-white focus:border-amber-400 outline-none" />
-          <label class="cursor-pointer px-3 py-1.5 bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] font-black text-xs rounded-xl flex items-center gap-1 shrink-0 transition shadow" title="Subir plano desde tu computadora al Bucket INMOBILIARIA">
-            <span class="material-symbols-outlined text-[15px]">cloud_upload</span>
-            <span>Subir</span>
-            <input type="file" id="file-upload-ref-plan" accept="image/*" class="hidden" onchange="handleReferencePlanUpload(event)" />
-          </label>
+      <!-- Estado actual y ruta -->
+      <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-[11px] space-y-1">
+        <div class="flex items-center justify-between text-slate-300">
+          <span class="text-slate-400">Origen activo:</span>
+          <span id="precios-guadalupe-status-badge" class="font-bold text-amber-300 truncate max-w-[180px]">assets/PRECIOS GUADALUPE.jpg</span>
+        </div>
+        <div class="text-[10px] text-slate-400">
+          Puedes subir una nueva imagen escaneada o con precios actualizados. Se actualizará en tiempo real y quedará registrada.
         </div>
       </div>
 
-      <div class="flex items-center gap-2 pt-1">
-        <button type="button" onclick="applyReferencePlanUrl()" class="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1 shadow cursor-pointer">
-          <span class="material-symbols-outlined text-[15px]">check_circle</span>
-          <span>Guardar Imagen</span>
-        </button>
-        <button type="button" onclick="toggleFloatingPlanViewer()" class="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-[#f2ca50] font-bold text-xs flex items-center gap-1 border border-white/10 cursor-pointer">
-          <span class="material-symbols-outlined text-[15px]">picture_in_picture</span>
-          <span>Flotante</span>
-        </button>
+      <!-- Botones de Acción para Reemplazar y Gestionar PRECIOS GUADALUPE.jpg -->
+      <div class="space-y-2">
+        <label class="w-full cursor-pointer py-2.5 px-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-[#1a1200] font-black text-xs rounded-xl flex items-center justify-center gap-2 transition shadow-lg shadow-amber-500/20 active:scale-95">
+          <span class="material-symbols-outlined text-[18px]">upload_file</span>
+          <span>REEMPLAZAR PRECIOS GUADALUPE.JPG</span>
+          <input type="file" id="file-upload-precios-guadalupe" accept="image/*" class="hidden" onchange="handlePreciosGuadalupeUpload(event)" />
+        </label>
+
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="openPreciosGuadalupeModal()" class="flex-1 py-1.5 px-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-[#f2ca50] font-bold text-xs flex items-center justify-center gap-1 border border-slate-700 cursor-pointer">
+            <span class="material-symbols-outlined text-[15px]">zoom_in</span>
+            <span>Ver / Ampliar</span>
+          </button>
+          <button type="button" onclick="restoreDefaultPreciosGuadalupe()" class="py-1.5 px-2.5 rounded-xl bg-slate-800 hover:bg-rose-950/50 text-slate-300 hover:text-rose-300 font-bold text-xs flex items-center justify-center gap-1 border border-slate-700 cursor-pointer" title="Volver a la imagen original por defecto">
+            <span class="material-symbols-outlined text-[15px]">restart_alt</span>
+            <span>Restaurar</span>
+          </button>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Modal / Visor Flotante del Plano Referencial de Lotes (Permite contrastar con el mapa satelital) -->
-  <div id="floating-plan-viewer" class="hidden fixed top-24 right-3 sm:right-6 z-40 w-[92vw] sm:w-[420px] max-h-[82vh] glass-card rounded-2xl overflow-hidden shadow-2xl border border-amber-500/50 flex flex-col">
-    <div class="p-3 bg-slate-900/95 border-b border-slate-700/80 flex items-center justify-between gap-2">
-      <div class="flex items-center gap-1.5 min-w-0">
-        <span class="material-symbols-outlined text-amber-400 text-[18px]">map</span>
-        <h4 class="text-xs font-black text-white truncate">Plano Referencial de Lotización</h4>
+  <!-- Modal / Visor de Pantalla Completa para PRECIOS GUADALUPE.jpg -->
+  <div id="modal-precios-guadalupe" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col p-2 sm:p-4 transition-opacity duration-200">
+    <!-- Cabecera del Modal -->
+    <div class="flex items-center justify-between gap-3 bg-slate-900/90 border border-slate-700/80 px-4 py-3 rounded-2xl shadow-xl shrink-0">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <span class="material-symbols-outlined text-[#f2ca50] text-[22px]">receipt_long</span>
+        <div>
+          <h3 class="text-xs sm:text-sm font-extrabold text-white truncate">PRECIOS GUADALUPE.jpg</h3>
+          <p class="text-[10px] sm:text-[11px] text-slate-400">Lista Oficial de Precios • Proyecto Guadalupe</p>
+        </div>
       </div>
-      <div class="flex items-center gap-1 shrink-0">
-        <button onclick="toggleFloatingPlanViewer()" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer">
+
+      <!-- Acciones: Zoom, Descargar, Reemplazar, Cerrar -->
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button type="button" onclick="zoomPreciosGuadalupe(-0.25)" class="p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1 border border-slate-700" title="Alejar zoom">
+          <span class="material-symbols-outlined text-[16px]">remove</span>
+        </button>
+        <span id="precios-zoom-label" class="text-[11px] font-mono text-amber-300 px-1 hidden sm:inline">100%</span>
+        <button type="button" onclick="zoomPreciosGuadalupe(0.25)" class="p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1 border border-slate-700" title="Acercar zoom">
+          <span class="material-symbols-outlined text-[16px]">add</span>
+        </button>
+        <button type="button" onclick="resetZoomPreciosGuadalupe()" class="p-1.5 sm:px-2 sm:py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold hidden sm:inline" title="Reiniciar Zoom">
+          1:1
+        </button>
+
+        <div class="h-4 w-px bg-slate-700 mx-1 hidden sm:block"></div>
+
+        <a id="btn-download-precios" href="assets/PRECIOS GUADALUPE.jpg" download="PRECIOS_GUADALUPE.jpg" class="p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1 border border-slate-700" title="Descargar imagen">
+          <span class="material-symbols-outlined text-[16px]">download</span>
+          <span class="hidden md:inline">Descargar</span>
+        </a>
+
+        <label class="cursor-pointer p-1.5 sm:px-2.5 sm:py-1 rounded-xl bg-[#d4af37] hover:bg-[#e9c349] text-[#1a1200] text-xs font-black flex items-center gap-1 shadow cursor-pointer" title="Subir y reemplazar archivo">
+          <span class="material-symbols-outlined text-[16px]">upload_file</span>
+          <span class="hidden md:inline">Reemplazar</span>
+          <input type="file" accept="image/*" class="hidden" onchange="handlePreciosGuadalupeUpload(event)" />
+        </label>
+
+        <button type="button" onclick="closePreciosGuadalupeModal()" class="p-1.5 rounded-xl bg-rose-600/80 hover:bg-rose-500 text-white transition cursor-pointer ml-1" title="Cerrar">
           <span class="material-symbols-outlined text-[18px]">close</span>
         </button>
       </div>
     </div>
-    
-    <!-- Imagen del Plano con Control de Opacidad -->
-    <div class="relative flex-1 bg-black/90 p-2 overflow-hidden flex items-center justify-center min-h-[220px]">
-      <img id="floating-plan-img" src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80" alt="Plano Referencial" class="max-h-[50vh] max-w-full object-contain transition-opacity duration-150 rounded-lg" />
-    </div>
 
-    <!-- Barra de Herramientas del Visor de Plano -->
-    <div class="p-3 bg-slate-900/95 border-t border-slate-700/80 space-y-2 text-xs">
-      <div class="flex items-center justify-between text-[11px]">
-        <span class="text-slate-300 font-bold flex items-center gap-1">
-          <span class="material-symbols-outlined text-[14px] text-amber-400">opacity</span> Opacidad
-        </span>
-        <span id="floating-opacity-label" class="font-bold text-amber-300">100%</span>
-      </div>
-      <input type="range" id="floating-opacity-slider" min="15" max="100" value="100" class="w-full accent-amber-400 cursor-pointer" oninput="updatePlanOpacity(this.value)" />
-      
-      <div class="flex items-center justify-between gap-2 pt-1 border-t border-white/10">
-        <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-[#d4af37] hover:bg-[#e9c349] text-[#241a00] font-black text-[11px] flex items-center gap-1 transition shadow">
-          <span class="material-symbols-outlined text-[15px]">cloud_upload</span>
-          <span>Cambiar Imagen</span>
-          <input type="file" accept="image/*" class="hidden" onchange="handleReferencePlanUpload(event)" />
-        </label>
-        <button onclick="window.open(currentReferencePlanUrl, '_blank')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold flex items-center gap-1 cursor-pointer">
-          <span class="material-symbols-outlined text-[14px]">open_in_new</span>
-          <span>Pantalla Completa</span>
-        </button>
-      </div>
+    <!-- Contenedor de la Imagen con Scroll / Zoom -->
+    <div class="flex-1 overflow-auto custom-scroll flex items-center justify-center p-2 sm:p-4 mt-2">
+      <img id="modal-precios-img" src="assets/PRECIOS GUADALUPE.jpg" alt="PRECIOS GUADALUPE.jpg" class="max-h-[82vh] max-w-full object-contain rounded-xl shadow-2xl transition-transform duration-150" style="transform-origin: center center;" />
     </div>
   </div>
 
@@ -976,7 +956,7 @@
       renderCatalogPropertiesPins();
       renderPropertySelectorPills();
       syncFromSupabase();
-      initReferencePlanImage();
+      initPreciosGuadalupe();
 
       refreshMapAndUI();
     });
@@ -1141,8 +1121,10 @@
           bearing: 24,
           duration: 1200
         });
-        document.getElementById('header-project-title').textContent = "Proyecto Guadalupe – Laguna Huaypo";
-        document.getElementById('map-external-link').href = `https://maps.google.com/?q=${currentProjectCenter[1]},${currentProjectCenter[0]}`;
+        const hTitle = document.getElementById('header-project-title');
+        if (hTitle) hTitle.textContent = "Proyecto Guadalupe – Laguna Huaypo";
+        const mapExt = document.getElementById('map-external-link');
+        if (mapExt) mapExt.href = `https://maps.google.com/?q=${currentProjectCenter[1]},${currentProjectCenter[0]}`;
         showToast("Visualizando Lotes de Proyecto Guadalupe");
       };
       container.appendChild(btnGuadalupe);
@@ -1165,8 +1147,10 @@
             bearing: 0,
             duration: 1400
           });
-          document.getElementById('header-project-title').textContent = `${prop.title} (${prop.location || ''})`;
-          document.getElementById('map-external-link').href = `https://maps.google.com/?q=${lat},${lng}`;
+          const hTitle = document.getElementById('header-project-title');
+          if (hTitle) hTitle.textContent = `${prop.title} (${prop.location || ''})`;
+          const mapExt = document.getElementById('map-external-link');
+          if (mapExt) mapExt.href = `https://maps.google.com/?q=${lat},${lng}`;
           showToast(`Volando a: ${prop.title}`);
         };
         container.appendChild(btn);
@@ -1189,8 +1173,10 @@
         pinEl.innerHTML = `<span class="material-symbols-outlined text-[14px]">home</span><span>${prop.title}</span>`;
         pinEl.onclick = () => {
           map.flyTo({ center: [lng, lat], zoom: 17, pitch: 48, duration: 1200 });
-          document.getElementById('header-project-title').textContent = `${prop.title} (${prop.location || ''})`;
-          document.getElementById('map-external-link').href = `https://maps.google.com/?q=${lat},${lng}`;
+          const hTitle = document.getElementById('header-project-title');
+          if (hTitle) hTitle.textContent = `${prop.title} (${prop.location || ''})`;
+          const mapExt = document.getElementById('map-external-link');
+          if (mapExt) mapExt.href = `https://maps.google.com/?q=${lat},${lng}`;
         };
 
         const marker = new maplibregl.Marker({ element: pinEl })
@@ -1365,63 +1351,100 @@
     });
 
     // =========================================================================
-    // GESTIÓN DE LA IMAGEN DEL PLANO REFERENCIAL (MODO EDITOR)
+    // 6. GESTIÓN Y REEMPLAZO DE PRECIOS GUADALUPE.JPG (MODO EDITOR Y MODAL)
     // =========================================================================
-    const STORAGE_KEY_REF_PLAN = 'nova_reference_plan_img';
-    let currentReferencePlanUrl = localStorage.getItem(STORAGE_KEY_REF_PLAN) || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80';
+    const STORAGE_KEY_PRECIOS_GUADALUPE = 'nova_precios_guadalupe_img';
+    const DEFAULT_PRECIOS_GUADALUPE_PATH = 'assets/PRECIOS GUADALUPE.jpg';
+    let currentPreciosGuadalupeUrl = localStorage.getItem(STORAGE_KEY_PRECIOS_GUADALUPE) || DEFAULT_PRECIOS_GUADALUPE_PATH;
+    let currentPreciosZoom = 1;
 
-    function initReferencePlanImage() {
-      const saved = localStorage.getItem(STORAGE_KEY_REF_PLAN);
-      if (saved) currentReferencePlanUrl = saved;
-      updateReferencePlanDOM();
+    function initPreciosGuadalupe() {
+      const saved = localStorage.getItem(STORAGE_KEY_PRECIOS_GUADALUPE);
+      if (saved) {
+        currentPreciosGuadalupeUrl = saved;
+      }
+      updatePreciosGuadalupeDOM();
     }
 
-    function updateReferencePlanDOM() {
-      const preview = document.getElementById('ref-plan-preview-img');
-      if (preview) preview.src = currentReferencePlanUrl;
-      const floating = document.getElementById('floating-plan-img');
-      if (floating) floating.src = currentReferencePlanUrl;
-      const input = document.getElementById('input-ref-plan-url');
-      if (input && !currentReferencePlanUrl.startsWith('data:')) {
-        input.value = currentReferencePlanUrl;
+    function updatePreciosGuadalupeDOM() {
+      const preview = document.getElementById('precios-guadalupe-preview-img');
+      if (preview) preview.src = currentPreciosGuadalupeUrl;
+
+      const modalImg = document.getElementById('modal-precios-img');
+      if (modalImg) modalImg.src = currentPreciosGuadalupeUrl;
+
+      const downloadBtn = document.getElementById('btn-download-precios');
+      if (downloadBtn) downloadBtn.href = currentPreciosGuadalupeUrl;
+
+      const badge = document.getElementById('precios-guadalupe-status-badge');
+      if (badge) {
+        if (currentPreciosGuadalupeUrl === DEFAULT_PRECIOS_GUADALUPE_PATH) {
+          badge.textContent = "assets/PRECIOS GUADALUPE.jpg";
+          badge.className = "font-bold text-amber-300 truncate max-w-[180px]";
+        } else if (currentPreciosGuadalupeUrl.startsWith('data:')) {
+          badge.textContent = "Cargada Localmente";
+          badge.className = "font-bold text-emerald-400 truncate max-w-[180px]";
+        } else {
+          badge.textContent = "Supabase / Nube";
+          badge.className = "font-bold text-sky-400 truncate max-w-[180px]";
+        }
       }
     }
 
-    function toggleFloatingPlanViewer() {
-      const viewer = document.getElementById('floating-plan-viewer');
-      if (!viewer) return;
-      viewer.classList.toggle('hidden');
+    function openPreciosGuadalupeModal() {
+      const modal = document.getElementById('modal-precios-guadalupe');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      resetZoomPreciosGuadalupe();
     }
 
-    function updatePlanOpacity(val) {
-      const opacity = parseInt(val, 10) / 100;
-      const floatingImg = document.getElementById('floating-plan-img');
-      if (floatingImg) floatingImg.style.opacity = opacity;
-      const label = document.getElementById('floating-opacity-label');
-      if (label) label.textContent = `${val}%`;
+    function closePreciosGuadalupeModal() {
+      const modal = document.getElementById('modal-precios-guadalupe');
+      if (!modal) return;
+      modal.classList.add('hidden');
     }
 
-    async function handleReferencePlanUpload(event) {
+    function zoomPreciosGuadalupe(delta) {
+      currentPreciosZoom = Math.min(3, Math.max(0.5, currentPreciosZoom + delta));
+      applyPreciosZoom();
+    }
+
+    function resetZoomPreciosGuadalupe() {
+      currentPreciosZoom = 1;
+      applyPreciosZoom();
+    }
+
+    function applyPreciosZoom() {
+      const modalImg = document.getElementById('modal-precios-img');
+      if (modalImg) {
+        modalImg.style.transform = `scale(${currentPreciosZoom})`;
+      }
+      const label = document.getElementById('precios-zoom-label');
+      if (label) {
+        label.textContent = `${Math.round(currentPreciosZoom * 100)}%`;
+      }
+    }
+
+    async function handlePreciosGuadalupeUpload(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
 
-      showToast(`Cargando imagen: ${file.name}...`);
+      showToast(`Cargando ${file.name}...`);
 
-      // Previsualización instantánea local
+      // 1. Previsualización instantánea local
       const reader = new FileReader();
       reader.onload = (e) => {
-        currentReferencePlanUrl = e.target.result;
-        updateReferencePlanDOM();
+        currentPreciosGuadalupeUrl = e.target.result;
+        updatePreciosGuadalupeDOM();
       };
       reader.readAsDataURL(file);
 
-      // Subida al Bucket INMOBILIARIA en Supabase
+      // 2. Subida al Bucket INMOBILIARIA en Supabase
       try {
         const sbUrl = localStorage.getItem('supabase_url') || DEFAULT_SUPABASE_URL;
         const sbKey = localStorage.getItem('supabase_key') || DEFAULT_SUPABASE_KEY;
         const bucket = localStorage.getItem('supabase_bucket') || 'INMOBILIARIA';
-        const ext = file.name.split('.').pop() || 'jpg';
-        const cleanName = `planos/plano_${Date.now()}_${Math.random().toString(36).substring(2,7)}.${ext}`;
+        const cleanName = `documentos/PRECIOS_GUADALUPE.jpg`;
 
         const uploadEndpoint = `${sbUrl}/storage/v1/object/${bucket}/${cleanName}`;
         const res = await fetch(uploadEndpoint, {
@@ -1436,31 +1459,36 @@
         });
 
         if (res.ok) {
-          const publicUrl = `${sbUrl}/storage/v1/object/public/${bucket}/${cleanName}`;
-          currentReferencePlanUrl = publicUrl;
-          localStorage.setItem(STORAGE_KEY_REF_PLAN, publicUrl);
-          updateReferencePlanDOM();
-          showToast('✅ Plano subido al Bucket INMOBILIARIA');
+          const publicUrl = `${sbUrl}/storage/v1/object/public/${bucket}/${cleanName}?t=${Date.now()}`;
+          currentPreciosGuadalupeUrl = publicUrl;
+          localStorage.setItem(STORAGE_KEY_PRECIOS_GUADALUPE, publicUrl);
+          updatePreciosGuadalupeDOM();
+          showToast('✅ PRECIOS GUADALUPE.jpg subido y actualizado');
+        } else {
+          console.warn("[Upload Precios Warning]", res.status, res.statusText);
+          localStorage.setItem(STORAGE_KEY_PRECIOS_GUADALUPE, currentPreciosGuadalupeUrl);
+          showToast('✅ Imagen de precios actualizada localmente');
         }
       } catch (err) {
-        console.warn("[Upload Plan Error]", err);
-        localStorage.setItem(STORAGE_KEY_REF_PLAN, currentReferencePlanUrl);
-        showToast('Plano aplicado localmente');
+        console.warn("[Upload Precios Error]", err);
+        localStorage.setItem(STORAGE_KEY_PRECIOS_GUADALUPE, currentPreciosGuadalupeUrl);
+        showToast('✅ Imagen de precios guardada localmente');
       }
     }
 
-    function applyReferencePlanUrl() {
-      const input = document.getElementById('input-ref-plan-url');
-      const val = input ? input.value.trim() : '';
-      if (!val) {
-        showToast('Ingresa una URL de imagen válida');
-        return;
-      }
-      currentReferencePlanUrl = val;
-      localStorage.setItem(STORAGE_KEY_REF_PLAN, val);
-      updateReferencePlanDOM();
-      showToast('✅ Imagen del plano referencial actualizada');
+    function restoreDefaultPreciosGuadalupe() {
+      if (!confirm('¿Deseas restaurar la imagen original por defecto de PRECIOS GUADALUPE.jpg?')) return;
+      localStorage.removeItem(STORAGE_KEY_PRECIOS_GUADALUPE);
+      currentPreciosGuadalupeUrl = DEFAULT_PRECIOS_GUADALUPE_PATH;
+      updatePreciosGuadalupeDOM();
+      showToast('🔄 Imagen original de PRECIOS GUADALUPE.jpg restaurada');
     }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closePreciosGuadalupeModal();
+      }
+    });
 
     document.getElementById('btn-toggle-roads').addEventListener('click', () => {
       showRoads = !showRoads;
@@ -1505,8 +1533,10 @@
       }
     }
 
-    document.getElementById('btn-toggle-editor').addEventListener('click', handleToggleEditorClick);
-    document.getElementById('btn-toggle-editor-mobile').addEventListener('click', handleToggleEditorClick);
+    const btnEditor = document.getElementById('btn-toggle-editor');
+    if (btnEditor) btnEditor.addEventListener('click', handleToggleEditorClick);
+    const btnEditorMob = document.getElementById('btn-toggle-editor-mobile');
+    if (btnEditorMob) btnEditorMob.addEventListener('click', handleToggleEditorClick);
 
     function enableEditorMode() {
       isEditorMode = true;
@@ -1527,7 +1557,7 @@
 
       document.getElementById('unified-editor-panel').classList.remove('hidden');
       document.getElementById('input-teleport-coords').value = `${currentProjectCenter[1].toFixed(6)}, ${currentProjectCenter[0].toFixed(6)}`;
-      updateReferencePlanDOM();
+      updatePreciosGuadalupeDOM();
       refreshMapAndUI();
       showToast('🛠️ MODO EDITOR ACTIVO (Sin clave): Arrastra vértices o el ancla dorada del plano');
     }
@@ -1549,8 +1579,7 @@
       }
 
       document.getElementById('unified-editor-panel').classList.add('hidden');
-      const floatViewer = document.getElementById('floating-plan-viewer');
-      if (floatViewer) floatViewer.classList.add('hidden');
+      closePreciosGuadalupeModal();
 
       clearEditorHandles();
       updateDetailCard();
@@ -1562,29 +1591,29 @@
     document.getElementById('tab-edit-lotes').addEventListener('click', () => {
       document.getElementById('editor-view-lotes').classList.remove('hidden');
       document.getElementById('editor-view-plano').classList.add('hidden');
-      document.getElementById('editor-view-imagen').classList.add('hidden');
+      document.getElementById('editor-view-precios').classList.add('hidden');
       document.getElementById('tab-edit-lotes').className = 'px-2.5 py-1 rounded-lg bg-[#d4af37] text-[#1c1300] text-[11px] font-black transition';
       document.getElementById('tab-edit-plano').className = 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition';
-      document.getElementById('tab-edit-imagen').className = 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition flex items-center gap-1';
+      document.getElementById('tab-edit-precios').className = 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition flex items-center gap-1';
     });
 
     document.getElementById('tab-edit-plano').addEventListener('click', () => {
       document.getElementById('editor-view-lotes').classList.add('hidden');
       document.getElementById('editor-view-plano').classList.remove('hidden');
-      document.getElementById('editor-view-imagen').classList.add('hidden');
+      document.getElementById('editor-view-precios').classList.add('hidden');
       document.getElementById('tab-edit-plano').className = 'px-2.5 py-1 rounded-lg bg-[#d4af37] text-[#1c1300] text-[11px] font-black transition';
       document.getElementById('tab-edit-lotes').className = 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition';
-      document.getElementById('tab-edit-imagen').className = 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition flex items-center gap-1';
+      document.getElementById('tab-edit-precios').className = 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition flex items-center gap-1';
     });
 
-    document.getElementById('tab-edit-imagen').addEventListener('click', () => {
+    document.getElementById('tab-edit-precios').addEventListener('click', () => {
       document.getElementById('editor-view-lotes').classList.add('hidden');
       document.getElementById('editor-view-plano').classList.add('hidden');
-      document.getElementById('editor-view-imagen').classList.remove('hidden');
-      document.getElementById('tab-edit-imagen').className = 'px-2.5 py-1 rounded-lg bg-[#d4af37] text-[#1c1300] text-[11px] font-black transition flex items-center gap-1';
+      document.getElementById('editor-view-precios').classList.remove('hidden');
+      document.getElementById('tab-edit-precios').className = 'px-2.5 py-1 rounded-lg bg-[#d4af37] text-[#1c1300] text-[11px] font-black transition flex items-center gap-1';
       document.getElementById('tab-edit-lotes').className = 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition';
       document.getElementById('tab-edit-plano').className = 'px-2.5 py-1 rounded-lg text-slate-300 hover:text-white text-[11px] font-bold transition';
-      updateReferencePlanDOM();
+      updatePreciosGuadalupeDOM();
     });
 
     document.getElementById('editor-lot-selector').addEventListener('change', (e) => {
