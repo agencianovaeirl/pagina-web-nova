@@ -797,11 +797,16 @@
                             SQL</button>
                     </div>
                     <pre id="sb-sql-code"
-                        class="overflow-x-auto text-emerald-300 p-2.5 bg-black/90 rounded border border-white/5 whitespace-pre leading-relaxed">CREATE TABLE IF NOT EXISTS nova_propiedades (
+                        class="overflow-x-auto text-emerald-300 p-2.5 bg-black/90 rounded border border-white/5 whitespace-pre leading-relaxed">-- TABLA PRINCIPAL NOVA PROPIEDADES (COMPATIBLE CON TERRENOS Y MAPA INTERACTIVO)
+CREATE TABLE IF NOT EXISTS public.nova_propiedades (
     id TEXT PRIMARY KEY,
     title TEXT NOT NULL,
+    nombre TEXT,
     location TEXT NOT NULL,
     location_key TEXT DEFAULT 'cusco',
+    ubicacion_gps TEXT,
+    lat NUMERIC,
+    lng NUMERIC,
     type TEXT DEFAULT 'terreno',
     price TEXT NOT NULL,
     price_num NUMERIC DEFAULT 0,
@@ -821,14 +826,36 @@
     lot_area_matriz TEXT,
     lot_carretera TEXT,
     lotizacion_img TEXT,
+    plano_url TEXT,
     lot_data_json TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    lotes JSONB,
+    calco_config JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Políticas RLS para lectura pública y guardado:
-ALTER TABLE nova_propiedades ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Lectura pública de propiedades" ON nova_propiedades FOR SELECT USING (true);
-CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL USING (true);</pre>
+-- AGREGAR COLUMNAS FALTANTES SI LA TABLA YA EXISTÍA PREVIAMENTE
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS nombre TEXT;
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS ubicacion_gps TEXT;
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS lat NUMERIC;
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS lng NUMERIC;
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS is_lotizacion BOOLEAN DEFAULT false;
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS lot_project_name TEXT;
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS lot_area_matriz TEXT;
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS lot_carretera TEXT;
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS lotizacion_img TEXT;
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS plano_url TEXT;
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS lot_data_json TEXT;
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS lotes JSONB;
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS calco_config JSONB;
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+
+-- HABILITAR RLS Y PERMITIR LECTURA Y ESCRITURA PÚBLICA / ANON
+ALTER TABLE public.nova_propiedades ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Lectura publica nova_propiedades" ON public.nova_propiedades;
+CREATE POLICY "Lectura publica nova_propiedades" ON public.nova_propiedades FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Escritura publica nova_propiedades" ON public.nova_propiedades;
+CREATE POLICY "Escritura publica nova_propiedades" ON public.nova_propiedades FOR ALL USING (true);</pre>
                 </div>
 
                 <!-- Status Feedback Message -->
@@ -2121,23 +2148,55 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
 
             const detailedDesc = String(row.detailed_desc || row.detailedDesc || row.descripcion || row.detalle || 'Predio con asesoría legal integral y saneamiento físico garantizado por Agencia NOVA.');
 
-            let coords = String(row.coords || row.coordenadas || row.lat_lng || row.latlng || '-13.3039,-72.1158').trim();
-            if (row.lat && row.lng) {
+            let coords = String(row.coords || row.ubicacion_gps || row.coordenadas || row.lat_lng || row.latlng || '').trim();
+            if (!coords && row.lat != null && row.lng != null) {
                 coords = `${row.lat},${row.lng}`;
+            }
+            if (!coords) {
+                coords = '-13.3039,-72.1158';
             }
 
             const mapZoom = parseInt(row.map_zoom || row.mapZoom || 13, 10);
 
-            // Campos de lotización y planos integrados (mapaterrenoscontrol.html)
-            const isLotizacion = Boolean(row.is_lotizacion || row.isLotizacion);
-            const lotProjectName = String(row.lot_project_name || row.lotProjectName || '');
-            const lotAreaMatriz = String(row.lot_area_matriz || row.lotAreaMatriz || '');
-            const lotCarretera = String(row.lot_carretera || row.lotCarretera || '');
-            const lotizacionImg = resolveSupabaseImageUrl(row.lotizacion_img || row.lotizacionImg || '', '');
+            // Desempaquetar datos extendidos de lotización y plano si vienen en detailed_desc (<!--NOVA_DATA:...-->)
+            let unpackedLotes = null;
+            let unpackedCalco = null;
+            let unpackedPlano = '';
+            const novaMatch = String(row.detailed_desc || '').match(/<!--NOVA_DATA:([\s\S]*?)-->/);
+            if (novaMatch) {
+                try {
+                    const extra = JSON.parse(decodeURIComponent(escape(atob(novaMatch[1]))));
+                    if (extra.lotes) unpackedLotes = extra.lotes;
+                    if (extra.calco) unpackedCalco = extra.calco;
+                    if (extra.plano_url) unpackedPlano = extra.plano_url;
+                } catch(e) {
+                    try {
+                        const extra = JSON.parse(novaMatch[1]);
+                        if (extra.lotes) unpackedLotes = extra.lotes;
+                        if (extra.calco) unpackedCalco = extra.calco;
+                        if (extra.plano_url) unpackedPlano = extra.plano_url;
+                    } catch(e2) {}
+                }
+            }
+
+            // Campos de lotización y planos integrados (mapaterrenos.html / mapaterrenoscontrol.html)
             let lotDataJson = row.lot_data_json || row.lotDataJson || '';
             if (typeof lotDataJson === 'object' && lotDataJson !== null) {
                 try { lotDataJson = JSON.stringify(lotDataJson, null, 2); } catch (e) { lotDataJson = ''; }
             }
+            if (!lotDataJson && (row.lotes || unpackedLotes)) {
+                try {
+                    lotDataJson = JSON.stringify(row.lotes || unpackedLotes, null, 2);
+                } catch(e) {}
+            }
+
+            const rawLotes = row.lotes || unpackedLotes;
+            const hasLotes = (Array.isArray(rawLotes) && rawLotes.length > 0) || (typeof lotDataJson === 'string' && lotDataJson.trim().length > 2);
+            const isLotizacion = Boolean(row.is_lotizacion || row.isLotizacion || hasLotes);
+            const lotProjectName = String(row.lot_project_name || row.lotProjectName || row.nombre || row.title || '');
+            const lotAreaMatriz = String(row.lot_area_matriz || row.lotAreaMatriz || '');
+            const lotCarretera = String(row.lot_carretera || row.lotCarretera || '');
+            const lotizacionImg = resolveSupabaseImageUrl(row.lotizacion_img || row.lotizacionImg || row.plano_url || unpackedPlano || '', '');
 
             return {
                 id,
@@ -2298,17 +2357,54 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
         window.initCatalogo = renderCatalog;
 
         // GUARDAR / ACTUALIZAR TERRENO EN LA TABLA NOVA PROPIEDADES EN SUPABASE (UPSERT)
+        // GUARDAR / ACTUALIZAR TERRENO EN LA TABLA NOVA PROPIEDADES EN SUPABASE (UPSERT)
         async function savePropertyToSupabase(prop) {
             try {
                 const table = getSupabaseTable();
                 const baseUrl = getSupabaseUrl();
                 const endpoint = `${baseUrl}/rest/v1/${encodeURIComponent(table)}`;
 
+                // Desglosar coordenadas si es posible
+                let latNum = null;
+                let lngNum = null;
+                if (prop.coords && typeof prop.coords === 'string' && prop.coords.includes(',')) {
+                    const parts = prop.coords.split(',');
+                    const p0 = parseFloat(parts[0].trim());
+                    const p1 = parseFloat(parts[1].trim());
+                    if (!isNaN(p0)) latNum = p0;
+                    if (!isNaN(p1)) lngNum = p1;
+                }
+
+                // Parsear lotes si están en formato JSON string
+                let parsedLotes = null;
+                if (prop.lotDataJson) {
+                    try {
+                        parsedLotes = typeof prop.lotDataJson === 'string' ? JSON.parse(prop.lotDataJson) : prop.lotDataJson;
+                    } catch(e) {}
+                }
+
+                // Generar token NOVA_DATA empaquetado para no perder nunca datos de lotes o calco
+                const cleanDesc = (prop.detailedDesc || '').replace(/<!--NOVA_DATA:[\s\S]*?-->/g, '').trim();
+                let extraEncoded = '';
+                try {
+                    const extraObj = {
+                        lotes: parsedLotes,
+                        calco: prop.calcoConfig || null,
+                        plano_url: prop.lotizacionImg || null
+                    };
+                    extraEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(extraObj))));
+                } catch(e) {}
+                const fullDesc = extraEncoded ? `${cleanDesc}\n<!--NOVA_DATA:${extraEncoded}-->` : cleanDesc;
+
                 const payload = {
                     id: prop.id,
                     title: prop.title,
+                    nombre: prop.title,
                     location: prop.location,
                     location_key: prop.locationKey || 'cusco',
+                    ubicacion_gps: prop.coords || '-13.3039,-72.1158',
+                    lat: latNum,
+                    lng: lngNum,
                     type: prop.type || 'terreno',
                     price: prop.price,
                     price_num: prop.priceNum || 0,
@@ -2320,16 +2416,18 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                     feat1_text: prop.feat1Text || 'Título SUNARP',
                     feat2_icon: prop.feat2Icon || 'bolt',
                     feat2_text: prop.feat2Text || 'Servicios Listos',
-                    detailed_desc: prop.detailedDesc || '',
+                    detailed_desc: fullDesc,
                     coords: prop.coords || '-13.3039,-72.1158',
                     map_zoom: prop.mapZoom || 13,
-                    // Campos de Lotización y Plano 3D
+                    // Campos de Lotización y Plano 3D / Interactivo
                     is_lotizacion: !!prop.isLotizacion,
-                    lot_project_name: prop.lotProjectName || null,
+                    lot_project_name: prop.lotProjectName || prop.title || null,
                     lot_area_matriz: prop.lotAreaMatriz || null,
                     lot_carretera: prop.lotCarretera || null,
                     lotizacion_img: prop.lotizacionImg || null,
-                    lot_data_json: typeof prop.lotDataJson === 'string' ? prop.lotDataJson : JSON.stringify(prop.lotDataJson || [])
+                    plano_url: prop.lotizacionImg || null,
+                    lot_data_json: typeof prop.lotDataJson === 'string' ? prop.lotDataJson : JSON.stringify(prop.lotDataJson || []),
+                    lotes: Array.isArray(parsedLotes) ? parsedLotes : null
                 };
 
                 let res = await fetch(endpoint, {
@@ -2340,12 +2438,18 @@ CREATE POLICY "Escritura autorizada de propiedades" ON nova_propiedades FOR ALL 
                     body: JSON.stringify(payload)
                 });
 
-                // Fallback automático si la tabla remota no tiene aún las columnas de lotización añadidas
+                // Fallback automático si la tabla remota no tiene aún las columnas nuevas añadidas
                 if (!res.ok) {
                     const errTxt = await res.text();
                     console.warn('[Supabase Upsert Aviso]', res.status, errTxt);
-                    if (errTxt.includes('is_lotizacion') || errTxt.includes('lot_') || errTxt.includes('column')) {
+                    if (errTxt.includes('is_lotizacion') || errTxt.includes('lot_') || errTxt.includes('nombre') || errTxt.includes('ubicacion_gps') || errTxt.includes('plano_url') || errTxt.includes('lotes') || errTxt.includes('column')) {
                         const fallbackPayload = { ...payload };
+                        delete fallbackPayload.nombre;
+                        delete fallbackPayload.ubicacion_gps;
+                        delete fallbackPayload.lat;
+                        delete fallbackPayload.lng;
+                        delete fallbackPayload.plano_url;
+                        delete fallbackPayload.lotes;
                         delete fallbackPayload.is_lotizacion;
                         delete fallbackPayload.lot_project_name;
                         delete fallbackPayload.lot_area_matriz;
