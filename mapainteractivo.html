@@ -501,9 +501,10 @@
     </div>
 
     <!-- Pestañas del Editor -->
-    <div class="grid grid-cols-2 gap-1 p-2 border-b border-white/10 bg-slate-950/40 text-[10.5px] font-bold">
-      <button onclick="switchEditorTab(1)" id="tabBtn1" class="py-2 px-1 rounded-xl bg-amber-400 text-slate-950 transition">1. Proyecto y Calco</button>
-      <button onclick="switchEditorTab(2)" id="tabBtn2" class="py-2 px-1 rounded-xl text-slate-300 hover:bg-white/10 transition">2. Polígonos Lotes</button>
+    <div class="grid grid-cols-3 gap-1 p-2 border-b border-white/10 bg-slate-950/40 text-[10px] font-bold">
+      <button onclick="switchEditorTab(1)" id="tabBtn1" class="py-2 px-1 rounded-xl bg-amber-400 text-slate-950 transition text-center">1. Proyecto</button>
+      <button onclick="switchEditorTab(2)" id="tabBtn2" class="py-2 px-1 rounded-xl text-slate-300 hover:bg-white/10 transition text-center">2. Polígonos</button>
+      <button onclick="switchEditorTab(3)" id="tabBtn3" class="py-2 px-1 rounded-xl text-slate-300 hover:bg-white/10 transition text-center">3. Texto y Línea</button>
     </div>
 
     <!-- Contenido Scrolleable -->
@@ -782,6 +783,116 @@ CREATE POLICY "Lectura pública de propiedades" ON public.nova_propiedades FOR S
 CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades FOR ALL USING (true) WITH CHECK (true);</textarea>
         </div>
       </div>
+
+      <!-- PESTAÑA 3: TEXTO Y LÍNEA -->
+      <div id="editorTab3" class="hidden space-y-4">
+        <!-- Botón rápido al convertidor/detector con pestaña de texto y líneas -->
+        <button onclick="abrirModuloDetectarLotes('textLines')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-sky-400 to-emerald-400 hover:from-amber-300 hover:to-emerald-300 text-slate-950 text-xs font-black uppercase tracking-wider transition shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          <span>DETECTAR LOTES / TEXTO Y LÍNEAS</span>
+        </button>
+
+        <!-- Sección Textos en el Mapa -->
+        <div class="p-3.5 rounded-2xl bg-slate-900/75 border border-white/10 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span>✏️ Textos y Rótulos</span>
+            </h3>
+            <span id="editorTextCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">0</span>
+          </div>
+
+          <div class="space-y-2">
+            <div>
+              <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Contenido</label>
+              <input id="inpEditorTextContent" type="text" placeholder="Ej. Manzana A / Calle Principal" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Tamaño (px)</label>
+                <input id="inpEditorTextSize" type="number" value="15" min="8" max="60" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
+              </div>
+              <div>
+                <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Color</label>
+                <select id="selEditorTextColor" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400">
+                  <option value="#ffffff" selected>Blanco</option>
+                  <option value="#fbbf24">Amarillo</option>
+                  <option value="#38bdf8">Cian</option>
+                  <option value="#10b981">Verde</option>
+                  <option value="#f43f5e">Rojo</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-1.5 pt-1">
+            <button onclick="addTextToMap()" class="py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+              ➕ Agregar
+            </button>
+            <button onclick="editSelectedText()" class="py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+              ✏️ Editar
+            </button>
+            <button onclick="deleteSelectedText()" class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+              🗑️ Borrar
+            </button>
+          </div>
+
+          <!-- Lista de textos colocados -->
+          <div id="editorTextsList" class="max-h-28 overflow-y-auto custom-scroll space-y-1 pt-1 text-[11px]"></div>
+        </div>
+
+        <!-- Sección Líneas y Trazos en el Mapa -->
+        <div class="p-3.5 rounded-2xl bg-slate-900/75 border border-white/10 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span>📏 Líneas y Delimitaciones</span>
+            </h3>
+            <span id="editorLineCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">0</span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-1.5">
+            <div>
+              <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Color</label>
+              <select id="selEditorLineColor" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
+                <option value="#38bdf8" selected>Cian</option>
+                <option value="#fbbf24">Amarillo</option>
+                <option value="#10b981">Verde</option>
+                <option value="#ffffff">Blanco</option>
+                <option value="#ef4444">Rojo</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Grosor</label>
+              <select id="selEditorLineWidth" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
+                <option value="1.5">1.5 px</option>
+                <option value="2.5" selected>2.5 px</option>
+                <option value="4">4 px</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Estilo</label>
+              <select id="selEditorLineDash" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
+                <option value="solid" selected>Continua</option>
+                <option value="dashed">Punteada</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-1.5 pt-1">
+            <button onclick="startDrawingLineOnMap()" id="btnStartDrawLine" class="py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+              ➕ Trazar
+            </button>
+            <button onclick="editSelectedLine()" class="py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+              ✏️ Editar
+            </button>
+            <button onclick="deleteSelectedLine()" class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+              🗑️ Borrar
+            </button>
+          </div>
+
+          <!-- Lista de líneas trazadas -->
+          <div id="editorLinesList" class="max-h-28 overflow-y-auto custom-scroll space-y-1 pt-1 text-[11px]"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -865,8 +976,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     let polygonsLayerGroup = null;
     let labelsLayerGroup = null;
     let pinsLayerGroup = null;
+    let customLinesLayerGroup = null;
+    let customTextsLayerGroup = null;
     let editorHandlesGroup = null;
     let calcoOverlayEl = null;
+    let selectedCustomTextId = null;
+    let selectedCustomLineId = null;
+    let isDrawingCustomLine = false;
+    let customLineDraftPoints = [];
 
     // Distritos precargados de la región Cusco (SOLO nombres de distrito, sin POIs)
     const BASE_DISTRICTS = [
@@ -1065,8 +1182,23 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       if (!p) return true;
       const id = String(p.id || '').toLowerCase();
       const nombre = String(p.nombre || p.title || p.titulo || '').toLowerCase();
-      return id.includes('maluma') || nombre.includes('maluma');
+      return id.includes('maluma') || nombre.includes('maluma') || id.includes('carrusel') || nombre.includes('carrusel');
     }
+
+    // Purga inmediata de cualquier registro residual de Maluma en localStorage del navegador
+    (function purgeMalumaResidualStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('nova_map_projects');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            const cleaned = parsed.filter(p => !isExcludedProject(p));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
+            localStorage.setItem('nova_map_projects', JSON.stringify(cleaned));
+          }
+        }
+      } catch(e) {}
+    })();
 
     function loadProjectsLocal() {
       try {
@@ -1090,11 +1222,12 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       saveProjectsLocal();
     }
 
-    function abrirModuloDetectarLotes() {
+    function abrirModuloDetectarLotes(initialTab = 'lotes') {
       if (!currentProject) return;
       if (window.LotizadorImagenModulo) {
         window.LotizadorImagenModulo.abrir({
           initialImageUrl: currentProject.plano_url || '',
+          initialTab: initialTab || 'lotes',
           onExport: (payload) => integrarPoligonosDesdeModulo(payload)
         });
       } else {
@@ -1170,6 +1303,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         polygonsLayerGroup = L.layerGroup().addTo(map2d);
         labelsLayerGroup = L.layerGroup().addTo(map2d);
         pinsLayerGroup = L.layerGroup().addTo(map2d);
+        customLinesLayerGroup = L.layerGroup().addTo(map2d);
+        customTextsLayerGroup = L.layerGroup().addTo(map2d);
         editorHandlesGroup = L.layerGroup().addTo(map2d);
         drawDraftLayerGroup = L.layerGroup().addTo(map2d);
 
@@ -1442,6 +1577,50 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           labelsLayerGroup.addLayer(lblMarker);
         });
       });
+
+      // Renderizar líneas y delimitaciones del proyecto
+      if (customLinesLayerGroup) {
+        customLinesLayerGroup.clearLayers();
+        (currentProject?.custom_lines || []).forEach(line => {
+          if (typeof line.lat1 !== 'number' || typeof line.lat2 !== 'number') return;
+          const isSel = line.id === selectedCustomLineId;
+          const pline = L.polyline([[line.lat1, line.lng1], [line.lat2, line.lng2]], {
+            color: isSel ? '#f59e0b' : (line.color || '#38bdf8'),
+            weight: (line.width || 2.5) + (isSel ? 2 : 0),
+            dashArray: line.dash === 'dashed' ? '6, 6' : undefined,
+            interactive: isEditorOpen
+          });
+          if (isEditorOpen) {
+            pline.on('click', (e) => {
+              L.DomEvent.stopPropagation(e);
+              selectCustomLine(line.id);
+            });
+          }
+          customLinesLayerGroup.addLayer(pline);
+        });
+      }
+
+      // Renderizar textos y rótulos del proyecto
+      if (customTextsLayerGroup) {
+        customTextsLayerGroup.clearLayers();
+        (currentProject?.custom_texts || []).forEach(t => {
+          if (typeof t.lat !== 'number' || typeof t.lng !== 'number') return;
+          const isSel = t.id === selectedCustomTextId;
+          const txtIcon = L.divIcon({
+            className: 'custom-map-text-icon',
+            html: `<div style="color:${t.color || '#ffffff'}; font-size:${t.size || 15}px; font-weight:900; text-shadow:0 1px 3px #000, 0 0 6px #000; padding:2px 4px; border-radius:4px; ${isSel ? 'border:1.5px dashed #f59e0b; background:rgba(0,0,0,0.6);' : ''} cursor:pointer; user-select:none; white-space:nowrap;">${escapeHtml(t.text || '')}</div>`,
+            iconSize: [0, 0]
+          });
+          const marker = L.marker([t.lat, t.lng], { icon: txtIcon, interactive: isEditorOpen });
+          if (isEditorOpen) {
+            marker.on('click', (e) => {
+              L.DomEvent.stopPropagation(e);
+              selectCustomText(t.id);
+            });
+          }
+          customTextsLayerGroup.addLayer(marker);
+        });
+      }
 
       updateLabelsVisibilityByZoom();
       updateHudCounters();
@@ -1952,28 +2131,34 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
     function switchEditorTab(tabNum) {
       activeEditorTab = tabNum;
-      [1, 2].forEach(n => {
+      [1, 2, 3].forEach(n => {
         const panel = document.getElementById(`editorTab${n}`);
         const btn = document.getElementById(`tabBtn${n}`);
         if (!panel || !btn) return;
         if (n === tabNum) {
           panel.classList.remove('hidden');
-          btn.className = 'py-2 px-1 rounded-xl bg-amber-400 text-slate-950 transition';
+          btn.className = 'py-2 px-1 rounded-xl bg-amber-400 text-slate-950 transition text-center';
         } else {
           panel.classList.add('hidden');
-          btn.className = 'py-2 px-1 rounded-xl text-slate-300 hover:bg-white/10 transition';
+          btn.className = 'py-2 px-1 rounded-xl text-slate-300 hover:bg-white/10 transition text-center';
         }
       });
+      if (tabNum === 3) {
+        renderEditorTextsList();
+        renderEditorLinesList();
+      }
       rebuildEditorHandles();
     }
 
     function syncProjectFormUI() {
       const sel = document.getElementById('editorProjectSelect');
       if (sel) {
-        sel.innerHTML = projects.map(p =>
+        sel.innerHTML = (projects || []).filter(p => !isExcludedProject(p)).map(p =>
           `<option value="${escapeHtml(p.id)}" ${currentProject && p.id === currentProject.id ? 'selected' : ''}>${escapeHtml(p.nombre)} (${(p.lotes || []).length} lotes)</option>`
         ).join('');
       }
+      renderEditorTextsList();
+      renderEditorLinesList();
       if (!currentProject) return;
       document.getElementById('inpProjectName').value = currentProject.nombre || '';
       const planEl = document.getElementById('inpPlanUrl'); if (planEl) planEl.value = currentProject.plano_url || '';
@@ -2123,8 +2308,49 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       });
 
       currentProject.lotes = nuevosLotes;
-      if (Array.isArray(payload.customTexts)) currentProject.custom_texts = payload.customTexts;
-      if (Array.isArray(payload.customLines)) currentProject.custom_lines = payload.customLines;
+      if (Array.isArray(payload.customTexts)) {
+        currentProject.custom_texts = payload.customTexts.map(t => {
+          const east = (t.x - imgW / 2) * mPerPx;
+          const north = -(t.y - imgH / 2) * mPerPx;
+          const rx = east * cosA + north * sinA;
+          const ry = -east * sinA + north * cosA;
+          const ll = offsetMetersToLatLng(refLat, refLng, rx, ry);
+          return {
+            id: t.id || `txt-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+            text: t.text,
+            lat: ll.lat,
+            lng: ll.lng,
+            size: t.size || 15,
+            color: t.color || '#ffffff'
+          };
+        });
+      }
+      if (Array.isArray(payload.customLines)) {
+        currentProject.custom_lines = payload.customLines.map(l => {
+          const east1 = (l.x1 - imgW / 2) * mPerPx;
+          const north1 = -(l.y1 - imgH / 2) * mPerPx;
+          const rx1 = east1 * cosA + north1 * sinA;
+          const ry1 = -east1 * sinA + north1 * cosA;
+          const ll1 = offsetMetersToLatLng(refLat, refLng, rx1, ry1);
+
+          const east2 = (l.x2 - imgW / 2) * mPerPx;
+          const north2 = -(l.y2 - imgH / 2) * mPerPx;
+          const rx2 = east2 * cosA + north2 * sinA;
+          const ry2 = -east2 * sinA + north2 * cosA;
+          const ll2 = offsetMetersToLatLng(refLat, refLng, rx2, ry2);
+
+          return {
+            id: l.id || `line-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+            lat1: ll1.lat,
+            lng1: ll1.lng,
+            lat2: ll2.lat,
+            lng2: ll2.lng,
+            width: l.width || 2.5,
+            color: l.color || '#38bdf8',
+            dash: l.dash || 'solid'
+          };
+        });
+      }
       if (currentProject.calco_config) {
         currentProject.calco_config.widthM = +(imgW * mPerPx).toFixed(2);
         currentProject.calco_config.heightM = +(imgH * mPerPx).toFixed(2);
@@ -2139,6 +2365,234 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       if (isEditorOpen && showCalco) renderCalcoOverlay();
       flyToProject(currentProject);
       showToast(`${nuevosLotes.length} polígonos georreferenciados e integrados en "${currentProject.nombre}".`);
+    }
+
+    // =========================================================================
+    // GESTIÓN DE TEXTO Y LÍNEAS EN MODO EDICIÓN
+    // =========================================================================
+    function renderEditorTextsList() {
+      const container = document.getElementById('editorTextsList');
+      const badge = document.getElementById('editorTextCountBadge');
+      if (!currentProject) return;
+      if (!Array.isArray(currentProject.custom_texts)) currentProject.custom_texts = [];
+      if (badge) badge.textContent = `${currentProject.custom_texts.length}`;
+      if (!container) return;
+
+      if (!currentProject.custom_texts.length) {
+        container.innerHTML = '<div class="text-[10px] text-slate-500 italic p-1">No hay textos añadidos.</div>';
+        return;
+      }
+
+      container.innerHTML = currentProject.custom_texts.map(t => `
+        <div onclick="selectCustomText('${t.id}')" class="p-1.5 rounded-lg border cursor-pointer flex items-center justify-between gap-1 transition ${t.id === selectedCustomTextId ? 'bg-sky-500/20 border-sky-400 text-sky-200' : 'bg-slate-900/60 border-white/5 text-slate-300 hover:bg-white/5'}">
+          <div class="truncate flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full inline-block" style="background:${t.color || '#fff'}"></span>
+            <span class="font-bold text-xs">${escapeHtml(t.text || 'Texto')}</span>
+          </div>
+          <button onclick="event.stopPropagation(); deleteSelectedText('${t.id}')" class="text-red-400 hover:text-red-300 p-0.5" title="Borrar">✕</button>
+        </div>
+      `).join('');
+    }
+
+    function renderEditorLinesList() {
+      const container = document.getElementById('editorLinesList');
+      const badge = document.getElementById('editorLineCountBadge');
+      if (!currentProject) return;
+      if (!Array.isArray(currentProject.custom_lines)) currentProject.custom_lines = [];
+      if (badge) badge.textContent = `${currentProject.custom_lines.length}`;
+      if (!container) return;
+
+      if (!currentProject.custom_lines.length) {
+        container.innerHTML = '<div class="text-[10px] text-slate-500 italic p-1">No hay líneas añadidas.</div>';
+        return;
+      }
+
+      container.innerHTML = currentProject.custom_lines.map((l, idx) => `
+        <div onclick="selectCustomLine('${l.id}')" class="p-1.5 rounded-lg border cursor-pointer flex items-center justify-between gap-1 transition ${l.id === selectedCustomLineId ? 'bg-sky-500/20 border-sky-400 text-sky-200' : 'bg-slate-900/60 border-white/5 text-slate-300 hover:bg-white/5'}">
+          <div class="truncate flex items-center gap-1.5">
+            <span class="w-2.5 h-0.5 inline-block" style="background:${l.color || '#38bdf8'}"></span>
+            <span class="text-xs">Línea ${idx + 1} (${l.dash || 'continua'})</span>
+          </div>
+          <button onclick="event.stopPropagation(); deleteSelectedLine('${l.id}')" class="text-red-400 hover:text-red-300 p-0.5" title="Borrar">✕</button>
+        </div>
+      `).join('');
+    }
+
+    function addTextToMap() {
+      if (!currentProject) return;
+      const contentInp = document.getElementById('inpEditorTextContent');
+      const textVal = (contentInp?.value || '').trim() || 'Rótulo Plano';
+      const sizeVal = Number(document.getElementById('inpEditorTextSize')?.value) || 15;
+      const colorVal = document.getElementById('selEditorTextColor')?.value || '#ffffff';
+
+      const center = map2d ? map2d.getCenter() : { lat: currentProject.lat, lng: currentProject.lng };
+      if (!Array.isArray(currentProject.custom_texts)) currentProject.custom_texts = [];
+
+      const newId = `txt-${Date.now()}`;
+      currentProject.custom_texts.push({
+        id: newId,
+        text: textVal,
+        size: sizeVal,
+        color: colorVal,
+        lat: center.lat,
+        lng: center.lng
+      });
+
+      selectedCustomTextId = newId;
+      currentProject.updated_at = new Date().toISOString();
+      saveProjectsLocal();
+      renderAllProjectsAndLots();
+      renderEditorTextsList();
+      showToast(`Texto "${textVal}" agregado en el centro del mapa.`);
+    }
+
+    function selectCustomText(id) {
+      selectedCustomTextId = id;
+      const t = (currentProject?.custom_texts || []).find(x => x.id === id);
+      if (t) {
+        const cInp = document.getElementById('inpEditorTextContent');
+        const sInp = document.getElementById('inpEditorTextSize');
+        const colSel = document.getElementById('selEditorTextColor');
+        if (cInp) cInp.value = t.text || '';
+        if (sInp) sInp.value = t.size || 15;
+        if (colSel) colSel.value = t.color || '#ffffff';
+      }
+      renderAllProjectsAndLots();
+      renderEditorTextsList();
+    }
+
+    function editSelectedText() {
+      if (!currentProject || !selectedCustomTextId) {
+        showToast('Selecciona primero un texto de la lista o mapa.');
+        return;
+      }
+      const t = (currentProject?.custom_texts || []).find(x => x.id === selectedCustomTextId);
+      if (!t) return;
+      t.text = document.getElementById('inpEditorTextContent')?.value || t.text;
+      t.size = Number(document.getElementById('inpEditorTextSize')?.value) || t.size;
+      t.color = document.getElementById('selEditorTextColor')?.value || t.color;
+
+      currentProject.updated_at = new Date().toISOString();
+      saveProjectsLocal();
+      renderAllProjectsAndLots();
+      renderEditorTextsList();
+      showToast('Texto actualizado.');
+    }
+
+    function deleteSelectedText(id) {
+      const targetId = id || selectedCustomTextId;
+      if (!currentProject || !targetId) {
+        showToast('Selecciona primero un texto a eliminar.');
+        return;
+      }
+      currentProject.custom_texts = (currentProject.custom_texts || []).filter(x => x.id !== targetId);
+      if (selectedCustomTextId === targetId) selectedCustomTextId = null;
+      currentProject.updated_at = new Date().toISOString();
+      saveProjectsLocal();
+      renderAllProjectsAndLots();
+      renderEditorTextsList();
+      showToast('Texto eliminado.');
+    }
+
+    function startDrawingLineOnMap() {
+      if (!currentProject || !map2d) return;
+      isDrawingCustomLine = true;
+      customLineDraftPoints = [];
+      showToast('Haz clic en el mapa en 2 puntos para trazar la línea.');
+      const btn = document.getElementById('btnStartDrawLine');
+      if (btn) btn.classList.add('ring-2', 'ring-sky-400');
+
+      const onMapClick = (e) => {
+        if (!isDrawingCustomLine) {
+          map2d.off('click', onMapClick);
+          return;
+        }
+        customLineDraftPoints.push(e.latlng);
+        if (customLineDraftPoints.length === 1) {
+          showToast('Punto 1 fijado. Haz clic en el punto final de la línea.');
+        } else if (customLineDraftPoints.length >= 2) {
+          const pt1 = customLineDraftPoints[0];
+          const pt2 = customLineDraftPoints[1];
+          const colorVal = document.getElementById('selEditorLineColor')?.value || '#38bdf8';
+          const widthVal = Number(document.getElementById('selEditorLineWidth')?.value) || 2.5;
+          const dashVal = document.getElementById('selEditorLineDash')?.value || 'solid';
+
+          if (!Array.isArray(currentProject.custom_lines)) currentProject.custom_lines = [];
+          const newId = `line-${Date.now()}`;
+          currentProject.custom_lines.push({
+            id: newId,
+            lat1: pt1.lat,
+            lng1: pt1.lng,
+            lat2: pt2.lat,
+            lng2: pt2.lng,
+            color: colorVal,
+            width: widthVal,
+            dash: dashVal
+          });
+
+          isDrawingCustomLine = false;
+          customLineDraftPoints = [];
+          map2d.off('click', onMapClick);
+          if (btn) btn.classList.remove('ring-2', 'ring-sky-400');
+
+          selectedCustomLineId = newId;
+          currentProject.updated_at = new Date().toISOString();
+          saveProjectsLocal();
+          renderAllProjectsAndLots();
+          renderEditorLinesList();
+          showToast('Línea trazada e integrada en el mapa.');
+        }
+      };
+
+      map2d.on('click', onMapClick);
+    }
+
+    function selectCustomLine(id) {
+      selectedCustomLineId = id;
+      const l = (currentProject?.custom_lines || []).find(x => x.id === id);
+      if (l) {
+        const colSel = document.getElementById('selEditorLineColor');
+        const wSel = document.getElementById('selEditorLineWidth');
+        const dSel = document.getElementById('selEditorLineDash');
+        if (colSel) colSel.value = l.color || '#38bdf8';
+        if (wSel) wSel.value = String(l.width || 2.5);
+        if (dSel) dSel.value = l.dash || 'solid';
+      }
+      renderAllProjectsAndLots();
+      renderEditorLinesList();
+    }
+
+    function editSelectedLine() {
+      if (!currentProject || !selectedCustomLineId) {
+        showToast('Selecciona primero una línea de la lista o mapa.');
+        return;
+      }
+      const l = (currentProject?.custom_lines || []).find(x => x.id === selectedCustomLineId);
+      if (!l) return;
+      l.color = document.getElementById('selEditorLineColor')?.value || l.color;
+      l.width = Number(document.getElementById('selEditorLineWidth')?.value) || l.width;
+      l.dash = document.getElementById('selEditorLineDash')?.value || l.dash;
+
+      currentProject.updated_at = new Date().toISOString();
+      saveProjectsLocal();
+      renderAllProjectsAndLots();
+      renderEditorLinesList();
+      showToast('Línea actualizada.');
+    }
+
+    function deleteSelectedLine(id) {
+      const targetId = id || selectedCustomLineId;
+      if (!currentProject || !targetId) {
+        showToast('Selecciona primero una línea a eliminar.');
+        return;
+      }
+      currentProject.custom_lines = (currentProject.custom_lines || []).filter(x => x.id !== targetId);
+      if (selectedCustomLineId === targetId) selectedCustomLineId = null;
+      currentProject.updated_at = new Date().toISOString();
+      saveProjectsLocal();
+      renderAllProjectsAndLots();
+      renderEditorLinesList();
+      showToast('Línea eliminada.');
     }
 
     // =========================================================================
@@ -4918,6 +5372,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           this.options = options;
           this.ensureMounted();
           this.$('backdrop').classList.add('open');
+          if (options.initialTab) {
+            this.switchTab(options.initialTab);
+          }
           if (options.initialImageUrl && !this.imgNaturalW) {
             this.cargarImagenDesdeUrl(options.initialImageUrl);
           }

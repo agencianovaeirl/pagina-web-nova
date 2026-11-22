@@ -71,38 +71,27 @@
             backdrop-filter: blur(4px);
         }
 
-        /* Logotipo Dorado NOVA – Levitación 3D Continua + Respiración de Aura Dorada */
+        /* Logotipo Dorado NOVA – Levitación 3D Continua (Sin resplandores amarillos) */
         @keyframes novaLogoFloat3D {
             0% {
                 transform: translateY(0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
-                filter: drop-shadow(0 15px 25px rgba(0,0,0,0.65)) drop-shadow(0 0 15px rgba(245, 158, 11, 0.25));
+                filter: drop-shadow(0 15px 25px rgba(0,0,0,0.65));
             }
             25% {
                 transform: translateY(-8px) rotateX(2deg) rotateY(-2.5deg) rotateZ(-0.8deg) scale(1.015);
-                filter: drop-shadow(0 22px 35px rgba(0,0,0,0.75)) drop-shadow(0 0 28px rgba(251, 191, 36, 0.45));
+                filter: drop-shadow(0 22px 35px rgba(0,0,0,0.75));
             }
             50% {
                 transform: translateY(-16px) rotateX(0deg) rotateY(0deg) rotateZ(0.5deg) scale(1.03);
-                filter: drop-shadow(0 30px 45px rgba(0,0,0,0.8)) drop-shadow(0 0 38px rgba(245, 158, 11, 0.55));
+                filter: drop-shadow(0 30px 45px rgba(0,0,0,0.85));
             }
             75% {
                 transform: translateY(-7px) rotateX(-2deg) rotateY(2.5deg) rotateZ(0.8deg) scale(1.015);
-                filter: drop-shadow(0 20px 30px rgba(0,0,0,0.7)) drop-shadow(0 0 25px rgba(251, 191, 36, 0.4));
+                filter: drop-shadow(0 20px 30px rgba(0,0,0,0.7));
             }
             100% {
                 transform: translateY(0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
-                filter: drop-shadow(0 15px 25px rgba(0,0,0,0.65)) drop-shadow(0 0 15px rgba(245, 158, 11, 0.25));
-            }
-        }
-
-        @keyframes novaGoldenPulse {
-            0%, 100% {
-                opacity: 0.35;
-                transform: scale(0.92);
-            }
-            50% {
-                opacity: 0.75;
-                transform: scale(1.08);
+                filter: drop-shadow(0 15px 25px rgba(0,0,0,0.65));
             }
         }
 
@@ -116,27 +105,22 @@
             transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        .nova-logo-aura {
-            position: absolute;
-            inset: -20px;
-            border-radius: 50%;
-            background: radial-gradient(ellipse at center, rgba(251, 191, 36, 0.35) 0%, rgba(245, 158, 11, 0.15) 45%, transparent 70%);
-            filter: blur(28px);
-            pointer-events: none;
-            z-index: -1;
-            animation: novaGoldenPulse 4s ease-in-out infinite;
-        }
-
         .nova-logo-img {
-            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.4s ease;
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.3s ease;
             cursor: pointer;
-            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.7));
+            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.75));
             user-select: none;
         }
 
+        /* Hover y Clic: movimiento e inclinación 3D limpia sin resplandor amarillo */
         .nova-logo-img:hover {
-            transform: scale(1.07) translateY(-6px);
-            filter: brightness(1.25) drop-shadow(0 25px 45px rgba(0,0,0,0.85)) drop-shadow(0 0 45px rgba(251, 191, 36, 0.8));
+            transform: scale(1.04) translateY(-6px);
+            filter: drop-shadow(0 25px 45px rgba(0,0,0,0.85));
+        }
+
+        .nova-logo-img:active {
+            transform: scale(0.98) translateY(-2px);
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8));
         }
     </style>
 </head>
@@ -169,10 +153,9 @@
             class="relative z-10 py-12 sm:py-16 lg:py-20 min-h-[620px] flex items-center justify-center">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center">
 
-                <!-- Logotipo con levitación continua + destello y escala al hover -->
+                <!-- Logotipo Oficial Lobo Dorado 3D NOVA -->
                 <div class="relative flex items-center justify-center select-none py-2">
                     <div class="nova-logo-float-container">
-                        <div class="nova-logo-aura"></div>
                         <img id="novaLogo" src="assets/logo-nova-dorado.png"
                             onerror="if(!this.dataset.t){this.dataset.t=1;this.src='logo-nova-dorado.png';}else if(this.dataset.t==1){this.dataset.t=2;this.src='assets/logo-nova-dorado-opt.png';}else{this.src='assets/logo-nova-publicidad.png';}"
                             alt="Agencia NOVA E.I.R.L. - Logo Oficial Dorado"
@@ -348,7 +331,7 @@
         </section>
     </div>
 
-    <!-- SECTION: CARTELERA DE ESPECTÁCULOS Y EVENTOS (Exacto a la imagen corregida con la misma interactividad) -->
+    <!-- SECTION: ESPECTÁCULOS Y EVENTOS ESTELARES -->
     <section id="eventos"
         class="py-14 sm:py-16 bg-[#121826] text-white relative overflow-hidden border-t border-b border-white/5">
         <!-- Ambient subtle glow accents matching reference mockup: warm amber glow on left, soft rose glow on right -->

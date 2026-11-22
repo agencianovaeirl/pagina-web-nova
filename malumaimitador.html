@@ -1394,39 +1394,12 @@ GRANT ALL ON TABLE public.galeria_carrusles TO service_role;</pre>
                 console.warn('[Supabase galeria_carrusles]', err);
             }
 
-            // 2. Respaldo simultáneo garantizado en nova_propiedades (disponible y verificado 100%)
-            try {
-                const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(mediaData))));
-                const fallbackPayload = {
-                    id: SUPABASE_ROW_ID,
-                    title: 'Maluma Carruseles Nube',
-                    location: 'Cusco',
-                    price: '0',
-                    area: '0',
-                    image: mediaData.presentaciones[0] || 'assets/maluma-show-estelar.jpg',
-                    detailed_desc: `<!--NOVA_GALLERY:${encodedData}-->`
-                };
-
-                const resFb = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_FALLBACK_TABLE}`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'resolution=merge-duplicates'
-                    },
-                    body: JSON.stringify(fallbackPayload)
-                });
-
-                if (resFb.ok || savedInCarrusles) {
-                    updateSbStatus('', `<i class="fas fa-check-circle"></i> Sincronizado en Supabase (${savedInCarrusles ? 'galeria_carrusles' : 'en la nube'})`);
-                    return true;
-                }
-            } catch (errFb) {
-                console.warn('[Supabase Fallback]', errFb);
+            if (savedInCarrusles) {
+                updateSbStatus('', `<i class="fas fa-check-circle"></i> Sincronizado en Supabase (galeria_carrusles)`);
+                return true;
             }
 
-            updateSbStatus('', '<i class="fas fa-cloud"></i> Guardado en la nube');
+            updateSbStatus('', '<i class="fas fa-cloud"></i> Guardado localmente');
             return false;
         }
 
@@ -1477,35 +1450,7 @@ GRANT ALL ON TABLE public.galeria_carrusles TO service_role;</pre>
                     console.warn('[Supabase galeria_carrusles load]', e);
                 }
 
-                // 2. Si no se encontró en galeria_carrusles, cargar desde el respaldo en nova_propiedades
-                if (!cloudData) {
-                    const resFb = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_FALLBACK_TABLE}?id=eq.${SUPABASE_ROW_ID}&select=detailed_desc&_t=${Date.now()}`, {
-                        headers: {
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': `Bearer ${SUPABASE_KEY}`
-                        }
-                    });
-
-                    if (resFb.ok) {
-                        const rows = await resFb.json();
-                        if (rows && rows.length > 0 && rows[0].detailed_desc) {
-                            const match = rows[0].detailed_desc.match(/<!--NOVA_GALLERY:([\s\S]*?)-->/);
-                            if (match) {
-                                try {
-                                    cloudData = JSON.parse(decodeURIComponent(escape(atob(match[1]))));
-                                    loadedFromSource = 'nube';
-                                } catch (parseErr) {
-                                    try { 
-                                        cloudData = JSON.parse(match[1]); 
-                                        loadedFromSource = 'nube';
-                                    } catch (e2) { }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // 3. Aplicar datos de la nube automáticamente
+                // 2. Aplicar datos de la nube automáticamente
                 if (cloudData && typeof cloudData === 'object') {
                     if (Array.isArray(cloudData.presentaciones) && cloudData.presentaciones.length > 0) {
                         mediaData.presentaciones = cloudData.presentaciones;
