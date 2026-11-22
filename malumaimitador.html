@@ -1149,7 +1149,12 @@ ALTER TABLE public.galeria_carrusles ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Lectura publica galeria_carrusles" ON public.galeria_carrusles;
 CREATE POLICY "Lectura publica galeria_carrusles" ON public.galeria_carrusles FOR SELECT USING (true);
 DROP POLICY IF EXISTS "Escritura publica galeria_carrusles" ON public.galeria_carrusles;
-CREATE POLICY "Escritura publica galeria_carrusles" ON public.galeria_carrusles FOR ALL USING (true);</pre>
+CREATE POLICY "Escritura publica galeria_carrusles" ON public.galeria_carrusles FOR ALL USING (true);
+
+-- CONCEDER PERMISOS A ROLES DE SUPABASE (anon, authenticated, service_role)
+GRANT ALL ON TABLE public.galeria_carrusles TO anon;
+GRANT ALL ON TABLE public.galeria_carrusles TO authenticated;
+GRANT ALL ON TABLE public.galeria_carrusles TO service_role;</pre>
             </div>
 
             <div class="modal-footer-actions">
@@ -1173,12 +1178,16 @@ CREATE POLICY "Escritura publica galeria_carrusles" ON public.galeria_carrusles 
         const SUPABASE_ROW_ID = "maluma_carruseles_cloud";
 
         let supabaseClient = null;
-        if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-            try {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            } catch (e) {
-                console.warn('[Supabase Client]', e.message);
+        function getSupabaseClient() {
+            if (supabaseClient) return supabaseClient;
+            if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+                try {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                } catch (e) {
+                    console.warn('[Supabase Client init]', e.message);
+                }
             }
+            return supabaseClient;
         }
 
         function updateSbStatus(type, text) {
@@ -1319,29 +1328,52 @@ CREATE POLICY "Escritura publica galeria_carrusles" ON public.galeria_carrusles 
 
             let savedInCarrusles = false;
 
-            // 1. Intentar guardar en la tabla galeria_carrusles
+            // 1. Intentar guardar en la tabla galeria_carrusles (con SDK oficial y REST)
             try {
                 const payload = {
                     id: 'maluma_carruseles',
                     seccion: 'maluma',
+                    categoria: 'carruseles',
+                    url: (mediaData.presentaciones && mediaData.presentaciones[0]) ? mediaData.presentaciones[0] : '',
+                    titulo: 'Galería Maluma Imitador Oficial',
+                    orden: 0,
                     data: mediaData,
                     updated_at: new Date().toISOString()
                 };
 
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'resolution=merge-duplicates'
-                    },
-                    body: JSON.stringify(payload)
-                });
+                const client = getSupabaseClient();
+                if (client) {
+                    try {
+                        const { error: sbErr } = await client
+                            .from(SUPABASE_TABLE)
+                            .upsert(payload, { onConflict: 'id' });
+                        if (!sbErr) {
+                            savedInCarrusles = true;
+                            console.log('[Supabase SDK] ✅ Guardado en galeria_carrusles exitosamente.');
+                        } else {
+                            console.warn('[Supabase SDK upsert]', sbErr);
+                        }
+                    } catch (sdkErr) {
+                        console.warn('[Supabase SDK err]', sdkErr);
+                    }
+                }
 
-                if (res.ok) {
-                    savedInCarrusles = true;
-                    console.log('[Supabase] ✅ Guardado en galeria_carrusles exitosamente.');
+                if (!savedInCarrusles) {
+                    const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'resolution=merge-duplicates'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (res.ok) {
+                        savedInCarrusles = true;
+                        console.log('[Supabase REST] ✅ Guardado en galeria_carrusles exitosamente.');
+                    }
                 }
             } catch (err) {
                 console.warn('[Supabase galeria_carrusles]', err);
@@ -1390,22 +1422,45 @@ CREATE POLICY "Escritura publica galeria_carrusles" ON public.galeria_carrusles 
             try {
                 let cloudData = null;
 
-                // 1. Intentar cargar desde galeria_carrusles
+                // 1. Intentar cargar desde galeria_carrusles (con SDK oficial o REST)
+                let loadedFromSource = '';
                 try {
-                    const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?id=eq.maluma_carruseles&select=*&_t=${Date.now()}`, {
-                        headers: {
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': `Bearer ${SUPABASE_KEY}`
-                        }
-                    });
+                    const client = getSupabaseClient();
+                    if (client) {
+                        try {
+                            const { data: rowData, error: loadErr } = await client
+                                .from(SUPABASE_TABLE)
+                                .select('*')
+                                .eq('id', 'maluma_carruseles')
+                                .maybeSingle();
+                            if (!loadErr && rowData && rowData.data) {
+                                cloudData = rowData.data;
+                                loadedFromSource = 'galeria_carrusles';
+                                console.log('[Supabase SDK] ✅ Datos cargados desde galeria_carrusles');
+                            }
+                        } catch (sdkLoadErr) { }
+                    }
 
-                    if (res.ok) {
-                        const rows = await res.json();
-                        if (rows && rows.length > 0 && rows[0].data) {
-                            cloudData = rows[0].data;
+                    if (!cloudData) {
+                        const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?id=eq.maluma_carruseles&select=*&_t=${Date.now()}`, {
+                            headers: {
+                                'apikey': SUPABASE_KEY,
+                                'Authorization': `Bearer ${SUPABASE_KEY}`
+                            }
+                        });
+
+                        if (res.ok) {
+                            const rows = await res.json();
+                            if (rows && rows.length > 0 && rows[0].data) {
+                                cloudData = rows[0].data;
+                                loadedFromSource = 'galeria_carrusles';
+                                console.log('[Supabase REST] ✅ Datos cargados desde galeria_carrusles');
+                            }
                         }
                     }
-                } catch (e) { }
+                } catch (e) {
+                    console.warn('[Supabase galeria_carrusles load]', e);
+                }
 
                 // 2. Si no se encontró en galeria_carrusles, cargar desde el respaldo en nova_propiedades
                 if (!cloudData) {
@@ -1423,8 +1478,12 @@ CREATE POLICY "Escritura publica galeria_carrusles" ON public.galeria_carrusles 
                             if (match) {
                                 try {
                                     cloudData = JSON.parse(decodeURIComponent(escape(atob(match[1]))));
+                                    loadedFromSource = 'nube';
                                 } catch (parseErr) {
-                                    try { cloudData = JSON.parse(match[1]); } catch (e2) { }
+                                    try { 
+                                        cloudData = JSON.parse(match[1]); 
+                                        loadedFromSource = 'nube';
+                                    } catch (e2) { }
                                 }
                             }
                         }
@@ -1445,7 +1504,7 @@ CREATE POLICY "Escritura publica galeria_carrusles" ON public.galeria_carrusles 
 
                     try { localStorage.setItem('nova_maluma_gallery', JSON.stringify(mediaData)); } catch (e) { }
                     renderAllCarousels();
-                    updateSbStatus('', '<i class="fas fa-check-circle"></i> Sincronizado con Supabase');
+                    updateSbStatus('', `<i class="fas fa-check-circle"></i> Sincronizado en Supabase (${loadedFromSource || 'en la nube'})`);
                     console.log('[Supabase] ✅ Carruseles actualizados automáticamente desde la nube');
                     return true;
                 }
