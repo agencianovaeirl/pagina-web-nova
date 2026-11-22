@@ -71,57 +71,72 @@
             backdrop-filter: blur(4px);
         }
 
-        /* Logotipo Dorado NOVA – Levitación Continua + Destello y Escala al Hover */
-        @keyframes novaLogoFloat {
-
-            0%,
-            100% {
-                transform: translateY(0px) rotate(0deg);
+        /* Logotipo Dorado NOVA – Levitación 3D Continua + Respiración de Aura Dorada */
+        @keyframes novaLogoFloat3D {
+            0% {
+                transform: translateY(0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+                filter: drop-shadow(0 15px 25px rgba(0,0,0,0.65)) drop-shadow(0 0 15px rgba(245, 158, 11, 0.25));
             }
-
+            25% {
+                transform: translateY(-8px) rotateX(2deg) rotateY(-2.5deg) rotateZ(-0.8deg) scale(1.015);
+                filter: drop-shadow(0 22px 35px rgba(0,0,0,0.75)) drop-shadow(0 0 28px rgba(251, 191, 36, 0.45));
+            }
             50% {
-                transform: translateY(-10px) rotate(0.4deg);
+                transform: translateY(-16px) rotateX(0deg) rotateY(0deg) rotateZ(0.5deg) scale(1.03);
+                filter: drop-shadow(0 30px 45px rgba(0,0,0,0.8)) drop-shadow(0 0 38px rgba(245, 158, 11, 0.55));
+            }
+            75% {
+                transform: translateY(-7px) rotateX(-2deg) rotateY(2.5deg) rotateZ(0.8deg) scale(1.015);
+                filter: drop-shadow(0 20px 30px rgba(0,0,0,0.7)) drop-shadow(0 0 25px rgba(251, 191, 36, 0.4));
+            }
+            100% {
+                transform: translateY(0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+                filter: drop-shadow(0 15px 25px rgba(0,0,0,0.65)) drop-shadow(0 0 15px rgba(245, 158, 11, 0.25));
             }
         }
 
-        /* Destello rápido que parpadea una sola vez cuando se activa el hover */
-        @keyframes novaShimmer {
-            0% {
-                opacity: 1;
-                filter: brightness(1) drop-shadow(0 0 0px rgba(255, 220, 80, 0));
+        @keyframes novaGoldenPulse {
+            0%, 100% {
+                opacity: 0.35;
+                transform: scale(0.92);
             }
-
-            25% {
-                opacity: 1;
-                filter: brightness(1.45) drop-shadow(0 0 22px rgba(255, 210, 50, 0.7));
-            }
-
-            60% {
-                opacity: 1;
-                filter: brightness(1.15) drop-shadow(0 0 10px rgba(255, 200, 30, 0.35));
-            }
-
-            100% {
-                opacity: 1;
-                filter: brightness(1) drop-shadow(0 0 0px rgba(255, 220, 80, 0));
+            50% {
+                opacity: 0.75;
+                transform: scale(1.08);
             }
         }
 
         .nova-logo-float-container {
+            position: relative;
             display: inline-block;
-            animation: novaLogoFloat 6s ease-in-out infinite;
-            will-change: transform;
+            perspective: 1200px;
+            transform-style: preserve-3d;
+            animation: novaLogoFloat3D 5.5s ease-in-out infinite;
+            will-change: transform, filter;
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .nova-logo-aura {
+            position: absolute;
+            inset: -20px;
+            border-radius: 50%;
+            background: radial-gradient(ellipse at center, rgba(251, 191, 36, 0.35) 0%, rgba(245, 158, 11, 0.15) 45%, transparent 70%);
+            filter: blur(28px);
+            pointer-events: none;
+            z-index: -1;
+            animation: novaGoldenPulse 4s ease-in-out infinite;
         }
 
         .nova-logo-img {
-            transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.4s ease;
             cursor: pointer;
+            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.7));
+            user-select: none;
         }
 
-        /* Al situar el cursor: escala hacia arriba + leve desplazamiento + destello único */
         .nova-logo-img:hover {
-            transform: scale(1.08) translateY(-8px);
-            animation: novaShimmer 0.65s ease-out forwards;
+            transform: scale(1.07) translateY(-6px);
+            filter: brightness(1.25) drop-shadow(0 25px 45px rgba(0,0,0,0.85)) drop-shadow(0 0 45px rgba(251, 191, 36, 0.8));
         }
     </style>
 </head>
@@ -157,6 +172,7 @@
                 <!-- Logotipo con levitación continua + destello y escala al hover -->
                 <div class="relative flex items-center justify-center select-none py-2">
                     <div class="nova-logo-float-container">
+                        <div class="nova-logo-aura"></div>
                         <img id="novaLogo" src="assets/logo-nova-dorado.png"
                             onerror="if(!this.dataset.t){this.dataset.t=1;this.src='logo-nova-dorado.png';}else if(this.dataset.t==1){this.dataset.t=2;this.src='assets/logo-nova-dorado-opt.png';}else{this.src='assets/logo-nova-publicidad.png';}"
                             alt="Agencia NOVA E.I.R.L. - Logo Oficial Dorado"
@@ -543,17 +559,6 @@
 
             </div>
 
-            <!-- Textos de la Cartelera en la parte inferior, centrados entre ambos cuadros (Exacto a maqueta) -->
-            <div class="mt-10 sm:mt-12 text-center max-w-3xl mx-auto">
-                <h2
-                    class="text-2xl sm:text-3xl md:text-4xl font-black font-heading text-white tracking-wide uppercase leading-tight">
-                    CARTELERA DE ESPECTÁCULOS Y EVENTOS
-                </h2>
-                <p class="text-xs sm:text-sm text-slate-300 font-medium tracking-normal mt-2">
-                    Presentado por <span class="text-white font-semibold">Agencia NOVA PRODUCCIONES</span>
-                </p>
-            </div>
-
         </div>
     </section>
 
@@ -616,21 +621,7 @@
                     </a>
                 </div>
             </div>
-
-            <!-- Location & Schedule Info Centered -->
-            <div
-                class="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-slate-300 max-w-4xl mx-auto text-center sm:text-left">
-                <div class="flex items-center gap-3">
-                    <i data-lucide="map-pin" class="w-5 h-5 text-red-500 flex-shrink-0"></i>
-                    <span>Atención presencial previa cita y asesoría directa en campo.</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <i data-lucide="clock" class="w-5 h-5 text-amber-400 flex-shrink-0"></i>
-                    <span>Horario: Lunes a Domingo de 7:00 AM a 6:00 PM</span>
-                </div>
-            </div>
         </div>
-    </section>
     </section>
 
     <!-- FOOTER -->
@@ -2176,6 +2167,66 @@
             }
 
             render();
+        })();
+
+        // ==========================================
+        // MOVIMIENTO INTERACTIVO 3D DEL LOGOTIPO NOVA
+        // ==========================================
+        (function initNovaLogo3DMovement() {
+            const container = document.querySelector('.nova-logo-float-container');
+            const logo = document.getElementById('novaLogo');
+            const hero = document.getElementById('inicio');
+            if (!container || !logo || !hero) return;
+
+            let targetRotX = 0, targetRotY = 0, targetTransZ = 0;
+            let currentRotX = 0, currentRotY = 0, currentTransZ = 0;
+            let isHovered = false;
+
+            hero.addEventListener('mousemove', (e) => {
+                const rect = hero.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const deltaX = (x - centerX) / centerX;
+                const deltaY = (y - centerY) / centerY;
+
+                targetRotY = deltaX * 16;
+                targetRotX = -deltaY * 12;
+                targetTransZ = isHovered ? 38 : 12;
+            });
+
+            hero.addEventListener('mouseleave', () => {
+                targetRotX = 0;
+                targetRotY = 0;
+                targetTransZ = 0;
+                isHovered = false;
+            });
+
+            logo.addEventListener('mouseenter', () => {
+                isHovered = true;
+                targetTransZ = 45;
+            });
+            logo.addEventListener('mouseleave', () => {
+                isHovered = false;
+                targetTransZ = 12;
+            });
+
+            function update3D() {
+                currentRotX += (targetRotX - currentRotX) * 0.08;
+                currentRotY += (targetRotY - currentRotY) * 0.08;
+                currentTransZ += (targetTransZ - currentTransZ) * 0.08;
+
+                if (Math.abs(currentRotX) > 0.05 || Math.abs(currentRotY) > 0.05 || Math.abs(currentTransZ) > 0.05) {
+                    logo.style.transform = `perspective(1000px) rotateX(${currentRotX.toFixed(2)}deg) rotateY(${currentRotY.toFixed(2)}deg) translateZ(${currentTransZ.toFixed(2)}px)`;
+                } else if (!isHovered) {
+                    logo.style.transform = '';
+                }
+
+                requestAnimationFrame(update3D);
+            }
+            update3D();
         })();
     </script>
 </body>
