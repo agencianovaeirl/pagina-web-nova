@@ -1090,79 +1090,6 @@ CREATE POLICY "Escritura publica nova_propiedades" ON public.nova_propiedades FO
                         class="w-full bg-[#081810] border border-white/20 rounded-xl px-3.5 py-2.5 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]"></textarea>
                 </div>
 
-                <!-- SECCIÓN EXCLUSIVA: CONFIGURACIÓN DE LOTIZACIÓN Y PLANO 3D (mapaterrenoscontrol.html) -->
-                <div class="p-4 rounded-2xl bg-[#081810] border border-[#d4af37]/40 space-y-3.5 shadow-inner">
-                    <div class="flex items-center justify-between flex-wrap gap-2">
-                        <label class="flex items-center gap-2 cursor-pointer select-none">
-                            <input type="checkbox" id="crud-is-lotizacion" class="w-4 h-4 rounded text-[#d4af37] focus:ring-0 bg-[#122b1c] border-white/30 cursor-pointer" onchange="toggleLotizacionFields()">
-                            <span class="font-bold uppercase tracking-wider text-[#f2ca50] text-[11px] flex items-center gap-1.5">
-                                <span class="material-symbols-outlined text-[18px]">domain_verification</span>
-                                ¿Tiene Plano de Lotización / Subdivisión de Lotes?
-                            </span>
-                        </label>
-                        <span class="text-[10px] text-slate-400">Vincula con el visor satelital 3D de mapaterrenos.html</span>
-                    </div>
-
-                    <div id="lotizacion-fields-container" class="space-y-3 pt-2 border-t border-white/10 hidden">
-                        <!-- Nombre del Proyecto y Área Matriz -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block font-semibold text-slate-300 mb-1">Nombre del Proyecto / Lotización</label>
-                                <input type="text" id="crud-lot-project-name" placeholder="Ej. Proyecto Guadalupe – Laguna Huaypo"
-                                    class="w-full bg-[#122b1c] border border-white/20 rounded-xl px-3.5 py-2 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] text-xs">
-                            </div>
-                            <div>
-                                <label class="block font-semibold text-slate-300 mb-1">Área Matriz Total (m²)</label>
-                                <input type="text" id="crud-lot-area-matriz" placeholder="Ej. 836 m²"
-                                    class="w-full bg-[#122b1c] border border-white/20 rounded-xl px-3.5 py-2 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] text-xs">
-                            </div>
-                        </div>
-
-                        <!-- Carretera de Acceso y Subida de Imagen de Lotización al Bucket INMOBILIARIA -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block font-semibold text-slate-300 mb-1">Carretera / Ruta de Acceso</label>
-                                <input type="text" id="crud-lot-carretera" placeholder="Ej. Carretera Asfaltada CU-1185 Chinchero - Huaypo"
-                                    class="w-full bg-[#122b1c] border border-white/20 rounded-xl px-3.5 py-2 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] text-xs">
-                            </div>
-                            <div>
-                                <label class="block font-semibold text-slate-300 mb-1">Imagen del Plano / Lotización (Bucket INMOBILIARIA)</label>
-                                <div class="flex gap-2 items-center">
-                                    <input type="text" id="crud-lotizacion-img"
-                                        placeholder="https://... o plano_lotizacion.jpg"
-                                        class="flex-1 bg-[#122b1c] border border-white/20 rounded-xl px-3.5 py-2 text-white focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37] text-xs">
-                                    <label
-                                        class="cursor-pointer px-3 py-2 bg-[#d4af37]/20 hover:bg-[#d4af37] text-[#f2ca50] hover:text-[#241a00] rounded-xl text-[11px] font-bold flex items-center gap-1 border border-[#d4af37]/40 transition-all shrink-0"
-                                        title="Subir foto del plano o lotización directamente al Bucket INMOBILIARIA de Supabase">
-                                        <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
-                                        <span class="hidden sm:inline">Subir Plano</span>
-                                        <input type="file" accept="image/*" class="hidden"
-                                            onchange="uploadImageToSupabase(event, 'crud-lotizacion-img')">
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Editor de Lotes JSON con botón de carga de plantilla predeterminada -->
-                        <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <label class="block font-semibold text-slate-300">Definición de Lotes (JSON / Coordenadas y Precios)</label>
-                                <button type="button" onclick="loadDefaultLotTemplate()"
-                                    class="text-[11px] text-[#f2ca50] hover:underline flex items-center gap-1 cursor-pointer font-bold">
-                                    <span class="material-symbols-outlined text-[14px]">auto_fix_high</span>
-                                    Cargar Plantilla L1-L7 (Guadalupe)
-                                </button>
-                            </div>
-                            <textarea id="crud-lot-data-json" rows="4"
-                                placeholder='[{"id":"L1","area":"120.4 m²","price_usd":"$32,000","price_pen":"S/ 118,400","status":"disponible","frente":"8.2 m","fondo":"14.7 m"}, ...]'
-                                class="w-full bg-[#122b1c] border border-white/20 rounded-xl px-3 py-2 text-emerald-300 font-mono text-[11px] focus:border-[#d4af37] focus:ring-1 focus:ring-[#d4af37]"></textarea>
-                            <span class="text-[10px] text-slate-400 mt-1 block">
-                                Se vincula con las <strong>Coordenadas GPS</strong> ingresadas arriba para ubicar la lotización en <strong>mapaterrenos.html</strong>.
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Botones Formulario -->
                 <div class="flex items-center gap-3 pt-3">
                     <button type="submit"
@@ -1796,41 +1723,7 @@ CREATE POLICY "Escritura publica nova_propiedades" ON public.nova_propiedades FO
             });
         }
 
-        // MODAL FORMULARIO DE CREACIÓN / EDICIÓN (3 Fotos, Característica 1 en select, sin descripción breve, y Campos de Lotización)
-        function toggleLotizacionFields() {
-            const chk = document.getElementById('crud-is-lotizacion');
-            const container = document.getElementById('lotizacion-fields-container');
-            if (chk && container) {
-                if (chk.checked) {
-                    container.classList.remove('hidden');
-                } else {
-                    container.classList.add('hidden');
-                }
-            }
-        }
-
-        function loadDefaultLotTemplate() {
-            const defaultLots = [
-                { id: "L1", area: "120.4 m²", price_usd: "$32,000", price_pen: "S/ 118,400", status: "disponible", frente: "8.2 m", fondo: "14.7 m" },
-                { id: "L2", area: "118.9 m²", price_usd: "$31,500", price_pen: "S/ 116,550", status: "disponible", frente: "8.0 m", fondo: "14.8 m" },
-                { id: "L3", area: "125.0 m²", price_usd: "$33,500", price_pen: "S/ 123,950", status: "reservado", frente: "8.5 m", fondo: "14.7 m" },
-                { id: "L4", area: "115.6 m²", price_usd: "$30,800", price_pen: "S/ 113,960", status: "disponible", frente: "7.8 m", fondo: "14.8 m" },
-                { id: "L5", area: "122.3 m²", price_usd: "$32,500", price_pen: "S/ 120,250", status: "disponible", frente: "8.3 m", fondo: "14.7 m" },
-                { id: "L6", area: "119.5 m²", price_usd: "$31,800", price_pen: "S/ 117,660", status: "disponible", frente: "8.1 m", fondo: "14.8 m" },
-                { id: "L7", area: "114.3 m²", price_usd: "$30,200", price_pen: "S/ 111,740", status: "vendido", frente: "7.7 m", fondo: "14.8 m" }
-            ];
-            document.getElementById('crud-lot-data-json').value = JSON.stringify(defaultLots, null, 2);
-            if (!document.getElementById('crud-lot-project-name').value) {
-                document.getElementById('crud-lot-project-name').value = 'Proyecto Guadalupe – Laguna Huaypo';
-            }
-            if (!document.getElementById('crud-lot-area-matriz').value) {
-                document.getElementById('crud-lot-area-matriz').value = '836 m²';
-            }
-            if (!document.getElementById('crud-lot-carretera').value) {
-                document.getElementById('crud-lot-carretera').value = 'Carretera Asfaltada CU-1185 Chinchero - Huaypo';
-            }
-        }
-
+        // MODAL FORMULARIO DE CREACIÓN / EDICIÓN (3 Fotos, Característica 1 en select, sin descripción breve)
         function openPropertyFormModal(propData = null) {
             const form = document.getElementById('property-crud-form');
             form.reset();
@@ -1852,29 +1745,11 @@ CREATE POLICY "Escritura publica nova_propiedades" ON public.nova_propiedades FO
                 document.getElementById('crud-feat2').value = propData.feat2Text || '';
                 document.getElementById('crud-coords').value = propData.coords || '-13.3039,-72.1158';
                 document.getElementById('crud-detailed-desc').value = propData.detailedDesc || '';
-
-                // Campos de Lotización
-                document.getElementById('crud-is-lotizacion').checked = !!propData.isLotizacion;
-                document.getElementById('crud-lot-project-name').value = propData.lotProjectName || '';
-                document.getElementById('crud-lot-area-matriz').value = propData.lotAreaMatriz || '';
-                document.getElementById('crud-lot-carretera').value = propData.lotCarretera || '';
-                document.getElementById('crud-lotizacion-img').value = propData.lotizacionImg || '';
-                document.getElementById('crud-lot-data-json').value = typeof propData.lotDataJson === 'object' ? JSON.stringify(propData.lotDataJson, null, 2) : (propData.lotDataJson || '');
-                toggleLotizacionFields();
             } else {
                 document.getElementById('prop-form-title').innerText = 'Agregar Nueva Propiedad';
                 document.getElementById('crud-prop-id').value = '';
                 document.getElementById('crud-coords').value = '-13.3039,-72.1158';
                 document.getElementById('crud-feat1').value = 'Título SUNARP';
-
-                // Restablecer campos de Lotización
-                document.getElementById('crud-is-lotizacion').checked = false;
-                document.getElementById('crud-lot-project-name').value = '';
-                document.getElementById('crud-lot-area-matriz').value = '';
-                document.getElementById('crud-lot-carretera').value = '';
-                document.getElementById('crud-lotizacion-img').value = '';
-                document.getElementById('crud-lot-data-json').value = '';
-                toggleLotizacionFields();
             }
 
             document.getElementById('property-form-modal').classList.remove('hidden');
@@ -1923,21 +1798,19 @@ CREATE POLICY "Escritura publica nova_propiedades" ON public.nova_propiedades FO
             const coords = document.getElementById('crud-coords').value.trim() || '-13.3039,-72.1158';
             const detailedDesc = document.getElementById('crud-detailed-desc').value.trim();
 
-            // Extracción de datos de lotización
-            const isLotizacion = document.getElementById('crud-is-lotizacion').checked;
-            const lotProjectName = document.getElementById('crud-lot-project-name').value.trim();
-            const lotAreaMatriz = document.getElementById('crud-lot-area-matriz').value.trim();
-            const lotCarretera = document.getElementById('crud-lot-carretera').value.trim();
-            const lotizacionImgRaw = document.getElementById('crud-lotizacion-img').value.trim();
-            const lotizacionImg = resolveSupabaseImageUrl(lotizacionImgRaw);
-            const lotDataJson = document.getElementById('crud-lot-data-json').value.trim();
-
             const image = resolveSupabaseImageUrl(imageRaw);
             const image2 = resolveSupabaseImageUrl(image2Raw);
             const image3 = resolveSupabaseImageUrl(image3Raw);
 
             let props = getProperties();
             let savedProp = null;
+            const existingProp = id ? props.find(p => p.id === id) : null;
+            const isLotizacion = existingProp ? Boolean(existingProp.isLotizacion) : false;
+            const lotProjectName = existingProp ? (existingProp.lotProjectName || '') : '';
+            const lotAreaMatriz = existingProp ? (existingProp.lotAreaMatriz || '') : '';
+            const lotCarretera = existingProp ? (existingProp.lotCarretera || '') : '';
+            const lotizacionImg = existingProp ? (existingProp.lotizacionImg || '') : '';
+            const lotDataJson = existingProp ? (existingProp.lotDataJson || '') : '';
 
             if (id) {
                 const index = props.findIndex(p => p.id === id);
