@@ -349,18 +349,19 @@
             <!-- Two Featured Event Cards (Maluma Imitador a la izquierda & Son Tejada a la derecha) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch pt-2">
 
-                <!-- CARD 1: MALUMA IMITADOR OFICIAL (Con Slider de Gira 2026, Visor Lightbox y Botón Adjuntar Fotos) -->
-                <div
+                <!-- CARD 1: MALUMA IMITADOR OFICIAL (Con Slider de Gira 2026, Visor Lightbox y Enlace a malumaimitador.html) -->
+                <div id="maluma-imitador"
                     class="relative bg-[#271f2b]/90 hover:bg-[#2d2432] border border-rose-500/40 hover:border-rose-400 rounded-2xl p-5 sm:p-6 transition-all duration-300 shadow-xl hover:shadow-[0_0_25px_rgba(244,63,94,0.25)] group flex flex-col justify-between">
                     <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5">
                         <!-- Left: Thumbnail Slider Container (Fechas Últimas a Primeras de Izquierda a Derecha) -->
                         <div class="relative w-40 sm:w-48 h-72 sm:h-[308px] rounded-2xl overflow-hidden flex-shrink-0 shadow-2xl border-2 border-amber-400/50 hover:border-amber-300 bg-black group/thumb transition-all duration-300"
                             onmouseenter="stopMalumaAutoSlide()" onmouseleave="startMalumaAutoSlide()">
-                            <!-- Slide Image (Clic para abrir visor slider completo) -->
+                            <!-- Slide Image (Clic para indexar a malumaimitador.html) -->
                             <img id="maluma-card-img" src="assets/maluma_gallery/MALUMA%2028%20DICIEMBRE%202026.jpg"
                                 onerror="this.src='assets/maluma-8NiwCMgV3Po.jpg'"
-                                alt="Maluma Imitador Oficial - Gira 2026" onclick="openMalumaSlider(currentMalumaIdx)"
-                                class="w-full h-full object-cover cursor-pointer hover:scale-105 transition-all duration-500 select-none">
+                                alt="Maluma Imitador Oficial - Gira 2026" onclick="window.location.href='malumaimitador.html'"
+                                class="w-full h-full object-cover cursor-pointer hover:scale-105 transition-all duration-500 select-none"
+                                title="Clic para ver presentación oficial y galería en malumaimitador.html">
 
                             <!-- Gradientes de superposición -->
                             <div
@@ -392,34 +393,38 @@
                                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
                             </button>
 
-                            <!-- BOTÓN SHOW ESTELAR -->
-                            <button type="button" onclick="openMalumaSlider(currentMalumaIdx)"
-                                class="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 bg-[#f8c120] hover:bg-[#ffcf33] text-slate-950 font-heading font-black text-[11px] sm:text-xs px-3.5 py-1.5 rounded-xl uppercase tracking-wider shadow-2xl border border-amber-300 flex items-center gap-1.5 whitespace-nowrap hover:scale-105 active:scale-95 transition-all cursor-pointer">
+                            <!-- BOTÓN SHOW ESTELAR (Indexa a malumaimitador.html) -->
+                            <a href="malumaimitador.html"
+                                class="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 bg-[#f8c120] hover:bg-[#ffcf33] text-slate-950 font-heading font-black text-[11px] sm:text-xs px-3.5 py-1.5 rounded-xl uppercase tracking-wider shadow-2xl border border-amber-300 flex items-center gap-1.5 whitespace-nowrap hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                                title="Entrar al Show Estelar y Galería Oficial de Maluma Imitador">
                                 <span>SHOW ESTELAR</span>
                                 <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-                            </button>
+                            </a>
                         </div>
 
                         <!-- Right: Content Details -->
                         <div class="flex-1 text-center sm:text-left flex flex-col justify-between h-full pt-1">
                             <div>
                                 <!-- Category tag -->
-                                <span
-                                    class="text-rose-400 font-extrabold text-xs tracking-wider uppercase flex items-center justify-center sm:justify-start gap-1.5">
+                                <a href="malumaimitador.html"
+                                    class="text-rose-400 hover:text-rose-300 font-extrabold text-xs tracking-wider uppercase flex items-center justify-center sm:justify-start gap-1.5 transition-colors"
+                                    title="Ver detalles del concierto y fechas">
                                     <i data-lucide="mic" class="w-3.5 h-3.5"></i> CONCIERTO TRIBUTO &bull; 9 FECHAS
                                     CONFIRMADAS
-                                </span>
+                                </a>
 
-                                <!-- Main Title -->
-                                <h3 onclick="openMalumaSlider(currentMalumaIdx)"
-                                    class="text-2xl sm:text-3xl font-black font-heading text-white tracking-wide mt-1.5 leading-none cursor-pointer hover:text-amber-400 transition-colors"
-                                    title="Haz clic para explorar el slider de fechas completas">
-                                    MALUMA
-                                </h3>
-                                <span
-                                    class="text-amber-400 font-extrabold text-sm sm:text-base tracking-widest block uppercase mt-1">
-                                    IMITADOR OFICIAL
-                                </span>
+                                <!-- Main Title (Indexa a malumaimitador.html) -->
+                                <a href="malumaimitador.html" class="block group/title cursor-pointer mt-1.5"
+                                    title="Haz clic para ver la página oficial y galería completa de Maluma Tributo">
+                                    <h3
+                                        class="text-2xl sm:text-3xl font-black font-heading text-white tracking-wide leading-none group-hover/title:text-amber-400 transition-colors">
+                                        MALUMA
+                                    </h3>
+                                    <span
+                                        class="text-amber-400 group-hover/title:text-amber-300 font-extrabold text-sm sm:text-base tracking-widest block uppercase mt-1 transition-colors">
+                                        IMITADOR OFICIAL
+                                    </span>
+                                </a>
 
                                 <!-- Description -->
                                 <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mt-2.5">
@@ -440,17 +445,16 @@
                                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                                 </a>
 
-                                <!-- Botón MÁS FOTOS Y VIDEOS (Agrandado e interactivo con TikTok oficial) -->
-                                <a href="https://www.tiktok.com/@agencia_cusco?is_from_webapp=1&sender_device=pc" target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="group/tiktok px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-[#010101] hover:bg-[#121217] text-white border-2 border-pink-500/70 hover:border-cyan-400 text-xs sm:text-sm font-black uppercase tracking-wider flex items-center gap-2.5 shadow-lg shadow-pink-950/50 hover:shadow-[0_0_22px_rgba(254,44,85,0.45)] hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-300 cursor-pointer"
-                                    title="Ver videos y fotos oficiales en TikTok (@agencia_cusco)">
+                                <!-- Botón MÁS FOTOS Y VIDEOS (Indexa directamente a malumaimitador.html) -->
+                                <a href="malumaimitador.html"
+                                    class="group/tiktok px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 border-2 border-amber-300 text-xs sm:text-sm font-black uppercase tracking-wider flex items-center gap-2.5 shadow-lg shadow-amber-950/50 hover:shadow-[0_0_22px_rgba(251,191,36,0.6)] hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-300 cursor-pointer"
+                                    title="Ver presentaciones, videos y fotos oficiales en malumaimitador.html">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
-                                        class="text-[#fe2c55] group-hover/tiktok:text-[#25f4ee] transition-colors flex-shrink-0">
+                                        class="text-slate-950 group-hover/tiktok:scale-110 transition-transform flex-shrink-0">
                                         <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.86.12V9.4a6.33 6.33 0 0 0-.86-.06A6.34 6.34 0 0 0 3.1 15.68a6.34 6.34 0 0 0 10.79 4.49 6.27 6.27 0 0 0 1.9-4.5V8.55a8.28 8.28 0 0 0 5.2 1.83V6.93a4.84 4.84 0 0 1-1.4-.24z" />
                                     </svg>
                                     <span class="tracking-wide">MÁS FOTOS Y VIDEOS</span>
-                                    <i data-lucide="play" class="w-3.5 h-3.5 fill-cyan-400 text-cyan-400 group-hover/tiktok:scale-125 transition-transform flex-shrink-0"></i>
+                                    <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-slate-950 group-hover/tiktok:translate-x-1 transition-transform flex-shrink-0"></i>
                                 </a>
                             </div>
                         </div>
