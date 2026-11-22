@@ -858,22 +858,25 @@
         /* ================= RESPONSIVE MÓVIL / CELULAR ================= */
         @media (max-width: 900px) {
             .top-bar {
-                padding: 14px 16px;
+                padding: 12px 14px;
             }
 
             .top-left-stack {
+                flex-direction: row;
+                align-items: center;
                 gap: 8px;
+                flex-wrap: wrap;
             }
 
             .btn-back {
-                padding: 8px 14px;
-                font-size: 0.78rem;
-                background: rgba(10, 10, 14, 0.9);
+                padding: 7px 12px;
+                font-size: 0.74rem;
+                background: rgba(10, 10, 14, 0.92);
             }
 
             .btn-edit-gallery {
-                padding: 8px 14px;
-                font-size: 0.75rem;
+                padding: 7px 12px;
+                font-size: 0.74rem;
             }
 
             /* HERO SECTION OPTIMIZADO PARA MÓVIL: FONDO AGRANDADO Y VISUALIZACIÓN CORREGIDA */
@@ -1202,19 +1205,27 @@ GRANT ALL ON TABLE public.galeria_carrusles TO service_role;</pre>
         const defaultMediaData = {
             presentaciones: [
                 "assets/maluma_gallery/MALUMA 28 DICIEMBRE 2026.jpg",
-                "https://ik.imagekit.io/AGENCIANOVA/EVENTOS%20Y%20SHOWS/053ca359-7719-4270-be5d-561b6e3ffc53.jpg",
                 "assets/maluma_gallery/MALUMA 27 DICIEMBRE 2026.jpg",
-                "https://ik.imagekit.io/AGENCIANOVA/EVENTOS%20Y%20SHOWS/FOTO%20M.jpeg",
                 "assets/maluma_gallery/MALUMA 21 NOVIEMBRE 2026.jpg",
-                "assets/maluma_gallery/MALUMA 31 OCTUBRE 2026.jpg"
+                "assets/maluma_gallery/MALUMA 31 OCTUBRE 2026.jpg",
+                "assets/maluma_gallery/MALUMA 17 OCTUBRE 2026.jpg",
+                "assets/maluma_gallery/MALUMA 16 OCTUBRE 2026.jpg",
+                "assets/maluma_gallery/MALUMA 10 OCTUBRE 2026.jpg",
+                "assets/maluma_gallery/MALUMA 26 SETIEMBRE 2026.jpg",
+                "assets/maluma_gallery/MALUMA 19 SETIEMBRE 2026.jpg",
+                "https://ik.imagekit.io/AGENCIANOVA/EVENTOS%20Y%20SHOWS/053ca359-7719-4270-be5d-561b6e3ffc53.jpg",
+                "https://ik.imagekit.io/AGENCIANOVA/EVENTOS%20Y%20SHOWS/FOTO%20M.jpeg"
             ],
             eventos: [
                 "assets/maluma-show-estelar.jpg",
                 "https://ik.imagekit.io/AGENCIANOVA/EVENTOS%20Y%20SHOWS/FOTO%20M.jpeg",
-                "assets/maluma_gallery/MALUMA 17 OCTUBRE 2026.jpg",
-                "https://ik.imagekit.io/AGENCIANOVA/EVENTOS%20Y%20SHOWS/053ca359-7719-4270-be5d-561b6e3ffc53.jpg",
                 "assets/maluma-concert.jpg",
-                "assets/maluma_gallery/MALUMA 16 OCTUBRE 2026.jpg"
+                "https://ik.imagekit.io/AGENCIANOVA/EVENTOS%20Y%20SHOWS/053ca359-7719-4270-be5d-561b6e3ffc53.jpg",
+                "assets/maluma-concierto.jpg",
+                "assets/maluma-imitador-yosoy.jpg",
+                "assets/maluma-yosoy.jpg",
+                "assets/maluma-8NiwCMgV3Po.jpg",
+                "assets/maluma-6ATOCk09Y_M.jpg"
             ],
             videos: [
                 "https://www.youtube.com/watch?v=t_jHrUE5IOk",
@@ -1236,10 +1247,14 @@ GRANT ALL ON TABLE public.galeria_carrusles TO service_role;</pre>
                 const parsed = JSON.parse(raw);
                 if (!parsed || typeof parsed !== 'object') return fallback;
 
+                const valPres = sanitizeMediaList(parsed.presentaciones, fallback.presentaciones);
+                const valEv = sanitizeMediaList(parsed.eventos, fallback.eventos);
+                const valVid = sanitizeMediaList(parsed.videos, fallback.videos);
+
                 return {
-                    presentaciones: sanitizeMediaList(parsed.presentaciones, fallback.presentaciones),
-                    eventos: sanitizeMediaList(parsed.eventos, fallback.eventos),
-                    videos: sanitizeMediaList(parsed.videos, fallback.videos)
+                    presentaciones: (valPres.length >= fallback.presentaciones.length) ? valPres : fallback.presentaciones,
+                    eventos: (valEv.length >= fallback.eventos.length) ? valEv : fallback.eventos,
+                    videos: (valVid.length >= fallback.videos.length) ? valVid : fallback.videos
                 };
             } catch (err) {
                 console.warn('Error leyendo localStorage, restaurando datos por defecto:', err);
