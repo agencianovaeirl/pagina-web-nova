@@ -264,6 +264,15 @@
       background: #38bdf8;
       cursor: move;
     }
+    .handle-delete {
+      width: 16px;
+      height: 16px;
+      background: #ef4444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
 
     /* Pane de carreteras acentuadas para Modo Híbrido (sin POIs ni textos de lugares) */
     .leaflet-roadsPane-pane {
@@ -488,21 +497,21 @@
     </div>
   </div>
 
-  <!-- 6. CUADRO MODO EDITOR (PANEL LATERAL IZQUIERDO - ACCESO DIRECTO SIN CLAVE) -->
-  <aside id="editorDrawer" class="hidden fixed top-3.5 bottom-20 left-3.5 z-[620] w-[355px] max-w-[calc(100vw-28px)] glass-panel rounded-3xl flex flex-col overflow-hidden">
-    <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+  <!-- 6. CUADRO MODO EDITOR (PANEL LATERAL IZQUIERDO - CONSOLIDADO) -->
+  <aside id="editorDrawer" class="hidden fixed top-3.5 bottom-20 left-3.5 z-[620] w-[380px] max-w-[calc(100vw-28px)] glass-panel rounded-3xl flex flex-col overflow-hidden shadow-2xl border border-white/15">
+    <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between bg-slate-950/40">
       <div class="flex items-center gap-2">
-        <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-        <h2 class="text-xs font-extrabold uppercase tracking-wider text-white">Cuadro Modo Editor</h2>
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+        <h2 class="text-xs font-black uppercase tracking-wider text-white">Cuadro Modo Editor</h2>
       </div>
       <button onclick="toggleEditor()" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition" title="Cerrar Editor">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     </div>
 
-    <!-- Pestañas del Editor -->
-    <div class="grid grid-cols-3 gap-1 p-2 border-b border-white/10 bg-slate-950/40 text-[10px] font-bold">
-      <button onclick="switchEditorTab(1)" id="tabBtn1" class="py-2 px-1 rounded-xl bg-amber-400 text-slate-950 transition text-center">1. Proyecto</button>
+    <!-- Pestañas del Editor Consolidado -->
+    <div class="grid grid-cols-3 gap-1 p-2 border-b border-white/10 bg-slate-950/60 text-[10.5px] font-bold">
+      <button onclick="switchEditorTab(1)" id="tabBtn1" class="py-2 px-1 rounded-xl bg-amber-400 text-slate-950 transition text-center shadow">1. Proyecto</button>
       <button onclick="switchEditorTab(2)" id="tabBtn2" class="py-2 px-1 rounded-xl text-slate-300 hover:bg-white/10 transition text-center">2. Polígonos</button>
       <button onclick="switchEditorTab(3)" id="tabBtn3" class="py-2 px-1 rounded-xl text-slate-300 hover:bg-white/10 transition text-center">3. Texto y Línea</button>
     </div>
@@ -510,164 +519,84 @@
     <!-- Contenido Scrolleable -->
     <div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-4">
 
-      <!-- PESTAÑA 1: PROYECTO Y CALCO -->
-      <div id="editorTab1" class="space-y-4">
+      <!-- PESTAÑA 1: PROYECTO, GPS Y DETECCIÓN DEL PLANO -->
+      <div id="editorTab1" class="space-y-3.5">
+        <!-- Selector y Guardado de Proyecto -->
         <div class="space-y-2">
           <div class="flex items-center justify-between gap-2">
             <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Proyecto Activo</label>
             <div class="flex items-center gap-2">
-              <button onclick="createNewProject()" class="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 transition">+ Nuevo Proyecto</button>
+              <button onclick="createNewProject()" class="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 transition">+ Nuevo</button>
               <button onclick="saveCurrentProjectNow()" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-bold transition">Guardar</button>
             </div>
           </div>
           <select id="editorProjectSelect" onchange="switchProject(this.value, true)" class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400"></select>
         </div>
 
+        <!-- Datos Base del Proyecto y GPS -->
         <div class="space-y-2.5 pt-2 border-t border-white/10">
           <div>
-            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Nombre del Proyecto</label>
+            <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Nombre del Proyecto</label>
             <input id="inpProjectName" type="text" class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400" placeholder="Ej. Proyecto Fortunato" />
           </div>
 
-
           <div>
-            <label class="block text-[11px] font-bold text-sky-300 mb-1">UBICACION GPS (Latitud, Longitud)</label>
+            <label class="block text-[10.5px] font-bold text-sky-300 mb-1">UBICACIÓN GPS (Latitud, Longitud)</label>
             <input id="inpGpsLocation" type="text" class="w-full bg-slate-900/90 border border-sky-400/40 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-400" placeholder="-13.421719, -72.089713" />
           </div>
 
-          <button onclick="applyProjectFormAndFly()" class="w-full py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-sky-500/20">
-            Aplicar y Volar a Ubicación
+          <button onclick="applyProjectFormAndFly()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-emerald-400 hover:from-sky-400 hover:to-emerald-300 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-sky-500/25 flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+            <span>Aplicar y Volar a Ubicación</span>
           </button>
+        </div>
 
-          <!-- MÓDULO DETECTAR LOTES CON PESTAÑAS: DETECTAR LOTES Y TEXTO/LÍNEA -->
-          <div class="p-3 rounded-2xl bg-slate-900/90 border border-amber-400/30 shadow-lg space-y-2.5">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-black uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                MÓDULO DE PLANO Y LOTES
-              </span>
-              <span class="text-[9px] px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 font-bold">2 Pestañas</span>
-            </div>
+        <!-- MÓDULO CONSOLIDADO DE PLANO Y DETECCIÓN AUTOMÁTICA -->
+        <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-amber-400/30 space-y-2.5 shadow-lg">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <span>Plano y Detección de Polígonos</span>
+            </h3>
+            <span class="text-[9.5px] font-bold text-amber-300 px-2 py-0.5 rounded-full bg-amber-400/15">Consolidado</span>
+          </div>
 
-            <!-- Pestañas del Módulo -->
-            <div class="grid grid-cols-2 gap-1 p-1 bg-slate-950/80 rounded-xl border border-white/10 text-[10.5px] font-bold">
-              <button type="button" id="subTabBtnDetect" onclick="switchDetectSubTab('detect')" class="py-1.5 px-1.5 rounded-lg bg-gradient-to-r from-amber-400 to-sky-400 text-slate-950 font-black shadow transition flex items-center justify-center gap-1 text-center">
-                <span>⚡ DETECTAR LOTES</span>
+          <div>
+            <label class="block text-[10px] text-slate-400 mb-1">Imagen del Plano (URL o Archivo)</label>
+            <div class="flex gap-1.5">
+              <input id="inpPlanUrl" type="url" placeholder="https://... URL del plano" class="flex-1 bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
+              <button onclick="document.getElementById('inpDrawerPlanFile').click()" type="button" class="px-2.5 py-1.5 bg-white/10 hover:bg-white/15 border border-white/15 text-slate-200 text-xs font-bold rounded-xl transition flex items-center gap-1" title="Subir imagen desde equipo">
+                📁 Subir
               </button>
-              <button type="button" id="subTabBtnTextLine" onclick="switchDetectSubTab('textline')" class="py-1.5 px-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition flex items-center justify-center gap-1 text-center">
-                <span>✏️ TEXTO Y LÍNEA</span>
-              </button>
+              <input type="file" id="inpDrawerPlanFile" accept="image/*" class="hidden" onchange="handleDrawerPlanUpload(event)" />
             </div>
+          </div>
 
-            <!-- Pestaña 1: DETECTAR LOTES -->
-            <div id="subPanelDetect" class="space-y-2 pt-1">
-              <p class="text-[10px] text-slate-400 leading-tight">
-                Detecta polígonos automáticamente desde la imagen del plano, une lados contiguos sin huecos y vincula lotes.
-              </p>
-              <button onclick="abrirModuloDetectarLotes('lotes')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-sky-400 to-emerald-400 hover:from-amber-300 hover:to-emerald-300 text-slate-950 text-xs font-black uppercase tracking-wider transition shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                <span>ABRIR DETECTOR DE LOTES</span>
-              </button>
-            </div>
-
-            <!-- Pestaña 2: TEXTO Y LÍNEA (AGREGAR, EDITAR, BORRAR) -->
-            <div id="subPanelTextLine" class="hidden space-y-3 pt-1">
-              <!-- RÓTULOS DE TEXTO -->
-              <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/10 space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="text-[11px] font-bold text-sky-300 flex items-center gap-1">
-                    ✏️ TEXTO EN EL PLANO
-                  </span>
-                  <span id="subTabBadgeTexts" class="text-[9.5px] px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 font-bold">0 textos</span>
-                </div>
-                <div>
-                  <input id="subInpTextContent" type="text" placeholder="Ej. Manzana A / Calle 1" class="w-full bg-slate-900 border border-white/15 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-400" />
-                </div>
-                <div class="grid grid-cols-2 gap-1.5">
-                  <div>
-                    <label class="text-[9.5px] text-slate-400 block mb-0.5">Tamaño (px)</label>
-                    <input id="subInpTextSize" type="number" value="16" min="8" max="72" class="w-full bg-slate-900 border border-white/15 rounded-lg px-2 py-1 text-xs text-white" />
-                  </div>
-                  <div>
-                    <label class="text-[9.5px] text-slate-400 block mb-0.5">Color</label>
-                    <select id="subSelTextColor" class="w-full bg-slate-900 border border-white/15 rounded-lg px-2 py-1 text-xs text-white">
-                      <option value="#ffffff" selected>Blanco</option>
-                      <option value="#fbbf24">Amarillo</option>
-                      <option value="#38bdf8">Cian</option>
-                      <option value="#10b981">Verde</option>
-                      <option value="#f43f5e">Rojo</option>
-                    </select>
-                  </div>
-                </div>
-                <!-- BOTONES ACCIÓN TEXTO: AGREGAR, EDITAR, BORRAR -->
-                <div class="grid grid-cols-3 gap-1 pt-0.5">
-                  <button type="button" onclick="subTabAddText()" class="py-1.5 rounded-lg bg-emerald-500/25 hover:bg-emerald-500/35 border border-emerald-400/40 text-emerald-300 text-[10px] font-bold transition flex items-center justify-center gap-1" title="Agregar nuevo texto">
-                    ➕ Agregar
-                  </button>
-                  <button type="button" onclick="subTabEditText()" class="py-1.5 rounded-lg bg-amber-500/25 hover:bg-amber-500/35 border border-amber-400/40 text-amber-300 text-[10px] font-bold transition flex items-center justify-center gap-1" title="Editar texto seleccionado">
-                    ✏️ Editar
-                  </button>
-                  <button type="button" onclick="subTabDeleteText()" class="py-1.5 rounded-lg bg-red-500/25 hover:bg-red-500/35 border border-red-400/40 text-red-300 text-[10px] font-bold transition flex items-center justify-center gap-1" title="Borrar texto seleccionado">
-                    🗑️ Borrar
-                  </button>
-                </div>
+          <div class="grid grid-cols-2 gap-2 pt-1 text-[10px] text-slate-300">
+            <div>
+              <div class="flex justify-between mb-0.5">
+                <span>Sensibilidad</span>
+                <strong id="lblThresholdDrawer" class="text-sky-300">185</strong>
               </div>
-
-              <!-- LÍNEAS Y DELIMITACIONES -->
-              <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/10 space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="text-[11px] font-bold text-emerald-300 flex items-center gap-1">
-                    📏 LÍNEAS Y TRAZOS
-                  </span>
-                  <span id="subTabBadgeLines" class="text-[9.5px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">0 líneas</span>
-                </div>
-                <div class="grid grid-cols-3 gap-1">
-                  <div>
-                    <label class="text-[9px] text-slate-400 block mb-0.5">Color</label>
-                    <select id="subSelLineColor" class="w-full bg-slate-900 border border-white/15 rounded-lg px-1.5 py-1 text-[11px] text-white">
-                      <option value="#38bdf8" selected>Cian</option>
-                      <option value="#fbbf24">Amarillo</option>
-                      <option value="#10b981">Verde</option>
-                      <option value="#ffffff">Blanco</option>
-                      <option value="#ef4444">Rojo</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="text-[9px] text-slate-400 block mb-0.5">Grosor</label>
-                    <select id="subSelLineWidth" class="w-full bg-slate-900 border border-white/15 rounded-lg px-1.5 py-1 text-[11px] text-white">
-                      <option value="1.5">1.5px</option>
-                      <option value="2.5" selected>2.5px</option>
-                      <option value="4">4px</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="text-[9px] text-slate-400 block mb-0.5">Estilo</label>
-                    <select id="subSelLineDash" class="w-full bg-slate-900 border border-white/15 rounded-lg px-1.5 py-1 text-[11px] text-white">
-                      <option value="solid" selected>Continua</option>
-                      <option value="dashed">Puntos</option>
-                    </select>
-                  </div>
-                </div>
-                <!-- BOTONES ACCIÓN LÍNEA: AGREGAR (TRAZAR), EDITAR, BORRAR -->
-                <div class="grid grid-cols-3 gap-1 pt-0.5">
-                  <button type="button" onclick="subTabStartLine()" class="py-1.5 rounded-lg bg-sky-500/25 hover:bg-sky-500/35 border border-sky-400/40 text-sky-300 text-[10px] font-bold transition flex items-center justify-center gap-1" title="Trazar nueva línea en el mapa">
-                    ➕ Trazar
-                  </button>
-                  <button type="button" onclick="subTabEditLine()" class="py-1.5 rounded-lg bg-amber-500/25 hover:bg-amber-500/35 border border-amber-400/40 text-amber-300 text-[10px] font-bold transition flex items-center justify-center gap-1" title="Editar línea seleccionada">
-                    ✏️ Editar
-                  </button>
-                  <button type="button" onclick="subTabDeleteLine()" class="py-1.5 rounded-lg bg-red-500/25 hover:bg-red-500/35 border border-red-400/40 text-red-300 text-[10px] font-bold transition flex items-center justify-center gap-1" title="Borrar línea seleccionada">
-                    🗑️ Borrar
-                  </button>
-                </div>
-              </div>
-
-              <!-- BOTÓN PARA TRAZAR EN PLANO GRANDE -->
-              <button onclick="abrirModuloDetectarLotes('textLines')" class="w-full py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-slate-200 text-[11px] font-bold transition flex items-center justify-center gap-1.5">
-                <svg class="w-3.5 h-3.5 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-                <span>Trazar en Plano de Lotización Completo</span>
-              </button>
+              <input type="range" id="rngThresholdDrawer" min="80" max="240" value="185" oninput="document.getElementById('lblThresholdDrawer').textContent=this.value" class="w-full accent-sky-400 cursor-pointer" />
             </div>
+            <div>
+              <div class="flex justify-between mb-0.5">
+                <span>Área Mínima</span>
+                <strong id="lblMinAreaDrawer" class="text-sky-300">350px</strong>
+              </div>
+              <input type="range" id="rngMinAreaDrawer" min="80" max="3000" step="20" value="350" oninput="document.getElementById('lblMinAreaDrawer').textContent=this.value+'px'" class="w-full accent-sky-400 cursor-pointer" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button onclick="detectLotsDirectlyFromDrawer()" class="py-2 px-2 rounded-xl bg-gradient-to-r from-amber-400 to-sky-400 hover:from-amber-300 hover:to-sky-300 text-slate-950 text-xs font-black uppercase tracking-wider transition shadow flex items-center justify-center gap-1.5">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <span>Detectar Lotes</span>
+            </button>
+            <button onclick="pegarLadosContiguosDrawer()" class="py-2 px-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-bold transition flex items-center justify-center gap-1.5" title="Unir bordes de lotes contiguos">
+              <span>🧲 Pegar Lados</span>
+            </button>
           </div>
         </div>
 
@@ -676,7 +605,7 @@
           <div class="flex items-center justify-between">
             <div>
               <h3 class="text-xs font-bold text-white">Calco Guía Privado</h3>
-              <p class="text-[10px] text-slate-400">Solo visible en Modo Editor (oculto en mapa público)</p>
+              <p class="text-[10px] text-slate-400">Alinear plano sobre satélite</p>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" id="chkShowCalco" onchange="toggleCalcoVisibility(this.checked)" class="sr-only peer" />
@@ -686,20 +615,14 @@
 
           <div class="space-y-1">
             <div class="flex justify-between text-[10.5px] text-slate-300">
-              <span>Opacidad del Calco</span>
+              <span>Opacidad</span>
               <span id="calcoOpacityVal" class="font-bold text-sky-300">65%</span>
             </div>
             <input id="rngCalcoOpacity" type="range" min="10" max="100" value="65" oninput="updateCalcoOpacity(this.value)" class="w-full accent-sky-400 cursor-pointer" />
           </div>
 
-          <div class="text-[10px] text-slate-400 space-y-1 bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
-            <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white inline-block"></span> Centro Verde: Arrastrar y mover el calco</div>
-            <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 border border-white inline-block"></span> 4 Esquinas Ámbar: Redimensionar calco</div>
-            <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400 border border-white inline-block"></span> 4 Puntos Cian Exteriores: Rotar calco</div>
-          </div>
-
           <button onclick="resetCalcoToCenter()" class="w-full py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-[11px] font-semibold text-slate-200 transition">
-            Recentrar Calco al GPS del Proyecto
+            Recentrar Calco al GPS
           </button>
         </div>
       </div>
@@ -707,72 +630,96 @@
       <!-- PESTAÑA 2: POLÍGONOS LOTES -->
       <div id="editorTab2" class="hidden space-y-4">
         <!-- Botones CREAR POLIGONO y DETECTAR LOTES -->
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="startDrawingPolygon()" class="py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-emerald-400 hover:from-sky-400 hover:to-emerald-300 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1.5 transition">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 22 8.5 18 21 6 21 2 8.5 12 2"></polygon></svg>
-            <span>CREAR</span>
+        <div class="grid grid-cols-3 gap-1.5">
+          <button onclick="startDrawingPolygon()" class="py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-emerald-400 hover:from-sky-400 hover:to-emerald-300 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1 transition">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 22 8.5 18 21 6 21 2 8.5 12 2"/></svg>
+            <span>➕ Crear</span>
           </button>
-          <button onclick="abrirModuloDetectarLotes()" class="py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-sky-400 hover:from-amber-300 hover:to-sky-300 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1.5 transition">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-            <span>DETECTAR</span>
+          <button onclick="detectLotsDirectlyFromDrawer()" class="py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-sky-400 hover:from-amber-300 hover:to-sky-300 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1 transition">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span>⚡ Detectar</span>
+          </button>
+          <button onclick="pegarLadosContiguosDrawer()" class="py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-bold transition flex items-center justify-center gap-1" title="Unir bordes de polígonos contiguos">
+            <span>🧲 Pegar</span>
           </button>
         </div>
 
-        <!-- MOVER TODA LA LOTIZACION (oculto visualmente, comandos intactos) -->
-        <div class="hidden p-3.5 rounded-2xl bg-slate-900/75 border border-amber-400/25 space-y-3">
+        <!-- INSPECTOR DE DATOS DEL POLÍGONO SELECCIONADO (DATOS EN EL INTERIOR) -->
+        <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-white/10 space-y-2.5 shadow-lg">
           <div class="flex items-center justify-between">
-            <h3 class="text-[11px] font-extrabold uppercase tracking-wider text-amber-300">MOVER TODA LA LOTIZACION</h3>
-            <label class="flex items-center gap-1.5 text-[10px] font-semibold text-slate-300 cursor-pointer">
-              <input type="checkbox" id="chkGroupHandles" checked onchange="rebuildEditorHandles()" class="accent-amber-400 rounded" />
-              Nodos en Mapa
-            </label>
+            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span>🏷️ Datos Interiores del Lote</span>
+            </h3>
+            <span id="editingLotBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30">Ninguno</span>
           </div>
 
-          <!-- Movimiento -->
-          <div class="space-y-1">
-            <div class="text-[10px] font-bold text-emerald-300 uppercase">Movimiento (N / S / E / O)</div>
-            <div class="grid grid-cols-4 gap-1.5">
-              <button onclick="moveAllLots(0, 2)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-[11px] font-bold">↑ N</button>
-              <button onclick="moveAllLots(0, -2)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-[11px] font-bold">↓ S</button>
-              <button onclick="moveAllLots(-2, 0)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-[11px] font-bold">← O</button>
-              <button onclick="moveAllLots(2, 0)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-[11px] font-bold">→ E</button>
-            </div>
+          <div id="noLotSelectedHint" class="text-[10.5px] text-slate-400 italic bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+            Haz clic en un polígono del mapa o elígelo en la lista para ver y editar sus datos interiores, moverlo, redimensionarlo o rotarlo.
           </div>
 
-          <!-- Redimensionar -->
-          <div class="space-y-1">
-            <div class="text-[10px] font-bold text-amber-300 uppercase">Redimensionar</div>
-            <div class="grid grid-cols-4 gap-1.5">
-              <button onclick="scaleAllLots(0.95, 0.95)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-[10.5px] font-bold">-5%</button>
-              <button onclick="scaleAllLots(0.98, 0.98)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-[10.5px] font-bold">-2%</button>
-              <button onclick="scaleAllLots(1.02, 1.02)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-[10.5px] font-bold">+2%</button>
-              <button onclick="scaleAllLots(1.05, 1.05)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-[10.5px] font-bold">+5%</button>
+          <div id="lotDataForm" class="hidden space-y-2.5">
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] font-semibold text-slate-300 mb-0.5">Código / N° Lote</label>
+                <input id="inpLotCode" type="text" oninput="updateSelectedLotData()" class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" placeholder="Ej. Mz. A - L-01" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold text-slate-300 mb-0.5">Área (m²)</label>
+                <input id="inpLotArea" type="number" step="0.01" oninput="updateSelectedLotData()" class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
+              </div>
             </div>
-            <div class="grid grid-cols-2 gap-1.5 pt-1">
-              <button onclick="scaleAllLots(0.97, 1)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-[10.5px] font-bold">↔ -Ancho</button>
-              <button onclick="scaleAllLots(1.03, 1)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-[10.5px] font-bold">↔ +Ancho</button>
-              <button onclick="scaleAllLots(1, 0.97)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-[10.5px] font-bold">↕ -Alto</button>
-              <button onclick="scaleAllLots(1, 1.03)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-[10.5px] font-bold">↕ +Alto</button>
-            </div>
-          </div>
 
-          <!-- Rotación -->
-          <div class="space-y-1">
-            <div class="text-[10px] font-bold text-cyan-300 uppercase">Rotación</div>
-            <div class="grid grid-cols-4 gap-1.5">
-              <button onclick="rotateAllLots(-5)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-[11px] font-bold">↺ -5°</button>
-              <button onclick="rotateAllLots(-1)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-[11px] font-bold">↺ -1°</button>
-              <button onclick="rotateAllLots(1)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-[11px] font-bold">↻ +1°</button>
-              <button onclick="rotateAllLots(5)" class="py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-[11px] font-bold">↻ +5°</button>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] font-semibold text-slate-300 mb-0.5">Precio (S/.)</label>
+                <input id="inpLotPrice" type="text" oninput="updateSelectedLotData()" class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" placeholder="Ej. 25000" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold text-slate-300 mb-0.5">Estado</label>
+                <select id="inpLotStatus" onchange="updateSelectedLotData()" class="w-full bg-slate-950 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400">
+                  <option value="Disponible">Disponible</option>
+                  <option value="Reservado">Reservado</option>
+                  <option value="Vendido">Vendido</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Ayuda de Puntos Interactivos del Polígono -->
+            <div class="text-[9.5px] text-slate-400 bg-slate-950/80 p-2 rounded-xl border border-white/5 space-y-1">
+              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white inline-block"></span> <strong>Verde Central:</strong> Arrastrar y mover polígono</div>
+              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 border border-white inline-block"></span> <strong>4 Esquinas Ámbar:</strong> Redimensionar polígono</div>
+              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400 border border-white inline-block"></span> <strong>Punto Cian Superior:</strong> Rotar polígono</div>
+              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400 border border-white inline-block"></span> <strong>Puntos Celestes:</strong> Editar vértices (clic borde añade)</div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button onclick="saveSelectedLotNow()" class="py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
+                💾 Guardar
+              </button>
+              <button onclick="deleteSelectedLot()" class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
+                🗑️ Eliminar Polígono
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Acciones sobre Lote Seleccionado -->
-        <div>
-          <button onclick="deleteSelectedLot()" class="w-full py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-200 text-[11px] font-bold transition">
-            Eliminar Lote
-          </button>
+        <!-- Mover toda la lotización -->
+        <div class="p-3 rounded-2xl bg-slate-900/75 border border-white/10 space-y-2">
+          <div class="flex items-center justify-between">
+            <h3 class="text-[10px] font-extrabold uppercase tracking-wider text-slate-300">Transformar Toda la Lotización</h3>
+          </div>
+          <div class="grid grid-cols-4 gap-1 text-[10px] font-bold">
+            <button onclick="moveAllLots(0, 2)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200">↑ N</button>
+            <button onclick="moveAllLots(0, -2)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200">↓ S</button>
+            <button onclick="moveAllLots(-2, 0)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200">← O</button>
+            <button onclick="moveAllLots(2, 0)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200">→ E</button>
+          </div>
+          <div class="grid grid-cols-4 gap-1 text-[10px] font-bold pt-0.5">
+            <button onclick="scaleAllLots(0.95, 0.95)" class="py-1 rounded-lg bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-amber-300">-5%</button>
+            <button onclick="scaleAllLots(1.05, 1.05)" class="py-1 rounded-lg bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-amber-300">+5%</button>
+            <button onclick="rotateAllLots(-3)" class="py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-cyan-300">↺ -3°</button>
+            <button onclick="rotateAllLots(3)" class="py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-cyan-300">↻ +3°</button>
+          </div>
         </div>
 
         <!-- Lista de Lotes para Edición de Vértices -->
@@ -781,7 +728,121 @@
             <h3 class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Lotes del Proyecto</h3>
             <span class="text-[10px] text-sky-300">Clic para editar vértices</span>
           </div>
-          <div id="editorLotsList" class="space-y-1.5"></div>
+          <div id="editorLotsList" class="max-h-48 overflow-y-auto custom-scroll space-y-1.5"></div>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 3: TEXTO Y LÍNEA -->
+      <div id="editorTab3" class="hidden space-y-4">
+        <!-- Sección Textos en el Mapa -->
+        <div class="p-3.5 rounded-2xl bg-slate-900/75 border border-white/10 space-y-3 shadow-lg">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span>✏️ Textos y Rótulos Adicionales</span>
+            </h3>
+            <span id="editorTextCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">0</span>
+          </div>
+
+          <div class="space-y-2">
+            <div>
+              <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Contenido del Texto</label>
+              <input id="inpEditorTextContent" type="text" placeholder="Ej. Manzana A / Calle Principal" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Tamaño (px)</label>
+                <input id="inpEditorTextSize" type="number" value="16" min="8" max="72" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
+              </div>
+              <div>
+                <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Color</label>
+                <select id="selEditorTextColor" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400">
+                  <option value="#ffffff" selected>Blanco</option>
+                  <option value="#fbbf24">Amarillo</option>
+                  <option value="#38bdf8">Cian</option>
+                  <option value="#10b981">Verde</option>
+                  <option value="#f43f5e">Rojo</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Puntos interactivos del texto -->
+          <div class="text-[9px] text-slate-400 bg-slate-950/70 p-2 rounded-xl border border-white/5 space-y-0.5">
+            <div>🟢 Mover texto · 🟡 Redimensionar tamaño · 🔵 Rotar · 🔴 Borrar</div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-1.5 pt-1">
+            <button onclick="addTextToMap()" class="py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+              ➕ Agregar
+            </button>
+            <button onclick="editSelectedText()" class="py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+              ✏️ Modificar
+            </button>
+            <button onclick="deleteSelectedText()" class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+              🗑️ Borrar
+            </button>
+          </div>
+
+          <!-- Lista de textos colocados -->
+          <div id="editorTextsList" class="max-h-28 overflow-y-auto custom-scroll space-y-1 pt-1 text-[11px]"></div>
+        </div>
+
+        <!-- Sección Líneas y Trazos en el Mapa -->
+        <div class="p-3.5 rounded-2xl bg-slate-900/75 border border-white/10 space-y-3 shadow-lg">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span>📏 Líneas y Delimitaciones Adicionales</span>
+            </h3>
+            <span id="editorLineCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">0</span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-1.5">
+            <div>
+              <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Color</label>
+              <select id="selEditorLineColor" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
+                <option value="#38bdf8" selected>Cian</option>
+                <option value="#fbbf24">Amarillo</option>
+                <option value="#10b981">Verde</option>
+                <option value="#ffffff">Blanco</option>
+                <option value="#ef4444">Rojo</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Grosor</label>
+              <select id="selEditorLineWidth" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
+                <option value="1.5">1.5 px</option>
+                <option value="2.5" selected>2.5 px</option>
+                <option value="4">4 px</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Estilo</label>
+              <select id="selEditorLineDash" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
+                <option value="solid" selected>Continua</option>
+                <option value="dashed">Punteada</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Puntos interactivos de la línea -->
+          <div class="text-[9px] text-slate-400 bg-slate-950/70 p-2 rounded-xl border border-white/5 space-y-0.5">
+            <div>🔷 Extremos vértices · 🟢 Mover línea · 🟡 Longitud · 🔵 Rotar · 🔴 Borrar</div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-1.5 pt-1">
+            <button onclick="startDrawingLineOnMap()" id="btnStartDrawLine" class="py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+              ➕ Trazar
+            </button>
+            <button onclick="editSelectedLine()" class="py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+              ✏️ Modificar
+            </button>
+            <button onclick="deleteSelectedLine()" class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+              🗑️ Borrar
+            </button>
+          </div>
+
+          <!-- Lista de líneas trazadas -->
+          <div id="editorLinesList" class="max-h-28 overflow-y-auto custom-scroll space-y-1 pt-1 text-[11px]"></div>
         </div>
       </div>
 
@@ -908,116 +969,6 @@ DROP POLICY IF EXISTS "Lectura pública de propiedades" ON public.nova_propiedad
 DROP POLICY IF EXISTS "Escritura autorizada de propiedades" ON public.nova_propiedades;
 CREATE POLICY "Lectura pública de propiedades" ON public.nova_propiedades FOR SELECT USING (true);
 CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades FOR ALL USING (true) WITH CHECK (true);</textarea>
-        </div>
-      </div>
-
-      <!-- PESTAÑA 3: TEXTO Y LÍNEA -->
-      <div id="editorTab3" class="hidden space-y-4">
-        <!-- Botón rápido al convertidor/detector con pestaña de texto y líneas -->
-        <button onclick="abrirModuloDetectarLotes('textLines')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-sky-400 to-emerald-400 hover:from-amber-300 hover:to-emerald-300 text-slate-950 text-xs font-black uppercase tracking-wider transition shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-          <span>DETECTAR LOTES / TEXTO Y LÍNEAS</span>
-        </button>
-
-        <!-- Sección Textos en el Mapa -->
-        <div class="p-3.5 rounded-2xl bg-slate-900/75 border border-white/10 space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
-              <span>✏️ Textos y Rótulos</span>
-            </h3>
-            <span id="editorTextCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">0</span>
-          </div>
-
-          <div class="space-y-2">
-            <div>
-              <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Contenido</label>
-              <input id="inpEditorTextContent" type="text" placeholder="Ej. Manzana A / Calle Principal" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Tamaño (px)</label>
-                <input id="inpEditorTextSize" type="number" value="15" min="8" max="60" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
-              </div>
-              <div>
-                <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Color</label>
-                <select id="selEditorTextColor" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400">
-                  <option value="#ffffff" selected>Blanco</option>
-                  <option value="#fbbf24">Amarillo</option>
-                  <option value="#38bdf8">Cian</option>
-                  <option value="#10b981">Verde</option>
-                  <option value="#f43f5e">Rojo</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-3 gap-1.5 pt-1">
-            <button onclick="addTextToMap()" class="py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
-              ➕ Agregar
-            </button>
-            <button onclick="editSelectedText()" class="py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
-              ✏️ Editar
-            </button>
-            <button onclick="deleteSelectedText()" class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
-              🗑️ Borrar
-            </button>
-          </div>
-
-          <!-- Lista de textos colocados -->
-          <div id="editorTextsList" class="max-h-28 overflow-y-auto custom-scroll space-y-1 pt-1 text-[11px]"></div>
-        </div>
-
-        <!-- Sección Líneas y Trazos en el Mapa -->
-        <div class="p-3.5 rounded-2xl bg-slate-900/75 border border-white/10 space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
-              <span>📏 Líneas y Delimitaciones</span>
-            </h3>
-            <span id="editorLineCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">0</span>
-          </div>
-
-          <div class="grid grid-cols-3 gap-1.5">
-            <div>
-              <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Color</label>
-              <select id="selEditorLineColor" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
-                <option value="#38bdf8" selected>Cian</option>
-                <option value="#fbbf24">Amarillo</option>
-                <option value="#10b981">Verde</option>
-                <option value="#ffffff">Blanco</option>
-                <option value="#ef4444">Rojo</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Grosor</label>
-              <select id="selEditorLineWidth" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
-                <option value="1.5">1.5 px</option>
-                <option value="2.5" selected>2.5 px</option>
-                <option value="4">4 px</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Estilo</label>
-              <select id="selEditorLineDash" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
-                <option value="solid" selected>Continua</option>
-                <option value="dashed">Punteada</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-3 gap-1.5 pt-1">
-            <button onclick="startDrawingLineOnMap()" id="btnStartDrawLine" class="py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
-              ➕ Trazar
-            </button>
-            <button onclick="editSelectedLine()" class="py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
-              ✏️ Editar
-            </button>
-            <button onclick="deleteSelectedLine()" class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
-              🗑️ Borrar
-            </button>
-          </div>
-
-          <!-- Lista de líneas trazadas -->
-          <div id="editorLinesList" class="max-h-28 overflow-y-auto custom-scroll space-y-1 pt-1 text-[11px]"></div>
         </div>
       </div>
     </div>
@@ -1735,7 +1686,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           const isSel = t.id === selectedCustomTextId;
           const txtIcon = L.divIcon({
             className: 'custom-map-text-icon',
-            html: `<div style="color:${t.color || '#ffffff'}; font-size:${t.size || 15}px; font-weight:900; text-shadow:0 1px 3px #000, 0 0 6px #000; padding:2px 4px; border-radius:4px; ${isSel ? 'border:1.5px dashed #f59e0b; background:rgba(0,0,0,0.6);' : ''} cursor:pointer; user-select:none; white-space:nowrap;">${escapeHtml(t.text || '')}</div>`,
+            html: `<div style="color:${t.color || '#ffffff'}; font-size:${t.size || 15}px; font-weight:900; text-shadow:0 1px 3px #000, 0 0 6px #000; padding:2px 4px; border-radius:4px; ${isSel ? 'border:1.5px dashed #f59e0b; background:rgba(0,0,0,0.6);' : ''} cursor:pointer; user-select:none; white-space:nowrap; transform: rotate(${t.rotation || 0}deg); transform-origin: center center;">${escapeHtml(t.text || '')}</div>`,
             iconSize: [0, 0]
           });
           const marker = L.marker([t.lat, t.lng], { icon: txtIcon, interactive: isEditorOpen });
@@ -1811,10 +1762,13 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
     function toggleLotSelection(lotId) {
       if (autoPilotActive) stopAutoPilot();
+      selectedCustomTextId = null;
+      selectedCustomLineId = null;
       if (selectedLotId === lotId && !isEditorOpen) {
         selectedLotId = null;
       } else {
         selectedLotId = lotId;
+        if (isEditorOpen && activeEditorTab !== 2) switchEditorTab(2);
       }
       renderAllProjectsAndLots();
       syncLotDataForm();
@@ -2336,6 +2290,199 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       saveToSupabase();
     }
 
+    function calculateCoordsAreaM2(coords) {
+      if (!coords || coords.length < 3) return 0;
+      const ref = coords[0];
+      let area = 0;
+      const n = coords.length;
+      for (let i = 0; i < n; i++) {
+        const j = (i + 1) % n;
+        const p1 = latLngToOffsetMeters(ref.lat, ref.lng, coords[i].lat, coords[i].lng);
+        const p2 = latLngToOffsetMeters(ref.lat, ref.lng, coords[j].lat, coords[j].lng);
+        area += (p1.east * p2.north) - (p2.east * p1.north);
+      }
+      return Math.abs(area) / 2;
+    }
+
+    function getPolygonBoundsCenter(coords) {
+      if (!coords || !coords.length) return null;
+      const ref = coords[0];
+      let minE = Infinity, maxE = -Infinity, minN = Infinity, maxN = -Infinity;
+      coords.forEach(c => {
+        const off = latLngToOffsetMeters(ref.lat, ref.lng, c.lat, c.lng);
+        if (off.east < minE) minE = off.east;
+        if (off.east > maxE) maxE = off.east;
+        if (off.north < minN) minN = off.north;
+        if (off.north > maxN) maxN = off.north;
+      });
+      const cx = (minE + maxE) / 2;
+      const cy = (minN + maxN) / 2;
+      const center = offsetMetersToLatLng(ref.lat, ref.lng, cx, cy);
+      return {
+        center,
+        halfW: Math.max(2.5, (maxE - minE) / 2),
+        halfH: Math.max(2.5, (maxN - minN) / 2)
+      };
+    }
+
+    function handleDrawerPlanUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target.result;
+        if (currentProject) {
+          currentProject.plano_url = dataUrl;
+          const inp = document.getElementById('inpPlanUrl');
+          if (inp) inp.value = dataUrl.substring(0, 48) + '... (Imagen cargada)';
+          saveProjectsLocal();
+          if (showCalco) renderCalcoOverlay();
+          showToast('Plano cargado exitosamente. Ya puedes presionar "⚡ Detectar Lotes".');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function detectLotsDirectlyFromDrawer() {
+      if (!currentProject) {
+        showToast('Selecciona un proyecto primero.');
+        return;
+      }
+      const planUrl = document.getElementById('inpPlanUrl')?.value.trim() || currentProject.plano_url;
+      if (!planUrl) {
+        showToast('Ingresa la URL o sube una imagen del plano en la Pestaña 1.');
+        switchEditorTab(1);
+        return;
+      }
+
+      const umbral = Number(document.getElementById('rngThresholdDrawer')?.value || 185);
+      const minAreaPx = Number(document.getElementById('rngMinAreaDrawer')?.value || 350);
+
+      showToast('⚡ Procesando plano y detectando polígonos...');
+
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth || img.width;
+          canvas.height = img.naturalHeight || img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+          const detectFn = window.detectarPoligonosDesdeImageData;
+          if (!detectFn) {
+            showToast('El detector de polígonos no está listo.');
+            return;
+          }
+
+          const rawPolys = detectFn(imgData, {
+            umbral,
+            minAreaPx,
+            grosorBorde: 0,
+            simplificacion: 2.5
+          });
+
+          if (!rawPolys || !rawPolys.length) {
+            showToast('No se detectaron polígonos. Prueba ajustando el umbral de sensibilidad.');
+            return;
+          }
+
+          const refLat = currentProject.lat;
+          const refLng = currentProject.lng;
+          const imgW = canvas.width;
+          const imgH = canvas.height;
+          const calcoW = currentProject.calco_config?.widthM || 88;
+          const mPerPx = calcoW / imgW;
+          const rotDeg = currentProject.calco_config?.rotationDeg || 0;
+          const rad = (rotDeg * Math.PI) / 180;
+          const cosA = Math.cos(rad);
+          const sinA = Math.sin(rad);
+
+          const nuevosLotes = rawPolys.map((pts, idx) => {
+            const coords = pts.map(([px, py]) => {
+              const east = (px - imgW / 2) * mPerPx;
+              const north = -(py - imgH / 2) * mPerPx;
+              const rx = east * cosA - north * sinA;
+              const ry = east * sinA + north * cosA;
+              return offsetMetersToLatLng(refLat, refLng, rx, ry);
+            });
+            const areaM2 = Math.round(calculateCoordsAreaM2(coords));
+            const code = `Lote ${idx + 1}`;
+            return {
+              id: `lot-${Date.now()}-${idx + 1}`,
+              code,
+              area: areaM2 || 150,
+              price: Math.round((areaM2 || 150) * 160),
+              status: 'Disponible',
+              coords
+            };
+          });
+
+          currentProject.lotes = nuevosLotes;
+          currentProject.updated_at = new Date().toISOString();
+          saveProjectsLocal();
+          renderAllProjectsAndLots();
+          renderEditorLotsList();
+          switchEditorTab(2);
+          showToast(`⚡ ¡${nuevosLotes.length} polígonos detectados y colocados en el mapa!`);
+          saveToSupabase();
+        } catch (err) {
+          console.error(err);
+          showToast('Error al procesar el plano: ' + (err.message || 'Error de imagen'));
+        }
+      };
+      img.onerror = () => {
+        showToast('No se pudo cargar la imagen del plano. Revisa la URL o sube el archivo.');
+      };
+      img.src = planUrl;
+    }
+
+    function pegarLadosContiguosDrawer() {
+      if (!currentProject || !Array.isArray(currentProject.lotes) || currentProject.lotes.length < 2) {
+        showToast('Se requieren al menos 2 polígonos para pegar sus lados.');
+        return;
+      }
+      const refLat = currentProject.lat;
+      const refLng = currentProject.lng;
+
+      const rawPolys = currentProject.lotes.map(l => {
+        return (l.coords || []).map(c => {
+          const off = latLngToOffsetMeters(refLat, refLng, c.lat, c.lng);
+          return [off.east, off.north];
+        });
+      });
+
+      const snapFn = window.snapAdjacentPolygons;
+      if (!snapFn) {
+        showToast('Función de unión no disponible.');
+        return;
+      }
+
+      const snapped = snapFn(rawPolys, 1.8);
+      snapped.forEach((pts, idx) => {
+        if (currentProject.lotes[idx]) {
+          currentProject.lotes[idx].coords = pts.map(([east, north]) => offsetMetersToLatLng(refLat, refLng, east, north));
+          currentProject.lotes[idx].area = Math.round(calculateCoordsAreaM2(currentProject.lotes[idx].coords));
+        }
+      });
+
+      currentProject.updated_at = new Date().toISOString();
+      saveProjectsLocal();
+      renderAllProjectsAndLots();
+      syncLotDataForm();
+      showToast('🧲 Lados de polígonos contiguos perfectamente pegados y unificados sin huecos.');
+    }
+
+    function saveSelectedLotNow() {
+      if (!currentProject || !selectedLotId) return;
+      updateSelectedLotData();
+      saveProjectsLocal();
+      saveToSupabase();
+      showToast('Datos del lote guardados correctamente.');
+    }
+
     function applyProjectFormAndFly() {
       if (!currentProject) return;
       const nombre = document.getElementById('inpProjectName').value.trim();
@@ -2365,10 +2512,26 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         currentProject.calco_config.lng = newLng;
       }
 
-      if ((Math.abs(dLat) > 1e-7 || Math.abs(dLng) > 1e-7) && Array.isArray(currentProject.lotes)) {
-        currentProject.lotes.forEach(l => {
-          l.coords = (l.coords || []).map(pt => ({ lat: pt.lat + dLat, lng: pt.lng + dLng }));
-        });
+      if ((Math.abs(dLat) > 1e-7 || Math.abs(dLng) > 1e-7)) {
+        if (Array.isArray(currentProject.lotes)) {
+          currentProject.lotes.forEach(l => {
+            l.coords = (l.coords || []).map(pt => ({ lat: pt.lat + dLat, lng: pt.lng + dLng }));
+          });
+        }
+        if (Array.isArray(currentProject.custom_texts)) {
+          currentProject.custom_texts.forEach(t => {
+            if (typeof t.lat === 'number') t.lat += dLat;
+            if (typeof t.lng === 'number') t.lng += dLng;
+          });
+        }
+        if (Array.isArray(currentProject.custom_lines)) {
+          currentProject.custom_lines.forEach(l => {
+            if (typeof l.lat1 === 'number') l.lat1 += dLat;
+            if (typeof l.lat2 === 'number') l.lat2 += dLat;
+            if (typeof l.lng1 === 'number') l.lng1 += dLng;
+            if (typeof l.lng2 === 'number') l.lng2 += dLng;
+          });
+        }
       }
 
       currentProject.updated_at = new Date().toISOString();
@@ -2377,14 +2540,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       renderAllProjectsAndLots();
       if (isEditorOpen && showCalco) renderCalcoOverlay();
       flyToProject(currentProject);
-      showToast('Proyecto centrado en GPS. Abriendo módulo convertidor de plano...');
-
-      if (window.LotizadorImagenModulo) {
-        window.LotizadorImagenModulo.abrir({
-          initialImageUrl: currentProject.plano_url || '',
-          onExport: (payload) => integrarPoligonosDesdeModulo(payload)
-        });
-      }
+      saveToSupabase();
+      showToast('Proyecto y coordenadas actualizados. Cámara centrada en GPS.');
     }
 
     function integrarPoligonosDesdeModulo(payload) {
@@ -2562,11 +2719,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         text: textVal,
         size: sizeVal,
         color: colorVal,
+        rotation: 0,
         lat: center.lat,
         lng: center.lng
       });
 
       selectedCustomTextId = newId;
+      selectedLotId = null;
+      selectedCustomLineId = null;
       currentProject.updated_at = new Date().toISOString();
       saveProjectsLocal();
       renderAllProjectsAndLots();
@@ -2576,6 +2736,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
     function selectCustomText(id) {
       selectedCustomTextId = id;
+      selectedLotId = null;
+      selectedCustomLineId = null;
+      if (isEditorOpen && activeEditorTab !== 3) switchEditorTab(3);
       const t = (currentProject?.custom_texts || []).find(x => x.id === id);
       if (t) {
         const cInp = document.getElementById('inpEditorTextContent');
@@ -2685,6 +2848,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
     function selectCustomLine(id) {
       selectedCustomLineId = id;
+      selectedLotId = null;
+      selectedCustomTextId = null;
+      if (isEditorOpen && activeEditorTab !== 3) switchEditorTab(3);
       const l = (currentProject?.custom_lines || []).find(x => x.id === id);
       if (l) {
         const colSel = document.getElementById('selEditorLineColor');
@@ -2970,7 +3136,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       if (type === 'move') {
         return L.divIcon({
           className: 'handle-icon',
-          html: `<div class="handle-dot handle-move"><svg class="w-3 h-3 text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg></div>`,
+          html: `<div class="handle-dot handle-move" title="Arrastrar posición"><svg class="w-3 h-3 text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 9l-3 3 3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg></div>`,
           iconSize: [22, 22],
           iconAnchor: [11, 11]
         });
@@ -2978,7 +3144,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       if (type === 'resize') {
         return L.divIcon({
           className: 'handle-icon',
-          html: `<div class="handle-dot handle-resize"></div>`,
+          html: `<div class="handle-dot handle-resize" title="Redimensionar"></div>`,
           iconSize: [14, 14],
           iconAnchor: [7, 7]
         });
@@ -2986,14 +3152,22 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       if (type === 'rotate') {
         return L.divIcon({
           className: 'handle-icon',
-          html: `<div class="handle-dot handle-rotate"><svg class="w-2.5 h-2.5 text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div>`,
+          html: `<div class="handle-dot handle-rotate" title="Rotar"><svg class="w-2.5 h-2.5 text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div>`,
           iconSize: [15, 15],
           iconAnchor: [7.5, 7.5]
         });
       }
+      if (type === 'delete') {
+        return L.divIcon({
+          className: 'handle-icon',
+          html: `<div class="handle-dot handle-delete" title="Eliminar"><svg class="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>`,
+          iconSize: [16, 16],
+          iconAnchor: [8, 8]
+        });
+      }
       return L.divIcon({
         className: 'handle-icon',
-        html: `<div class="handle-dot handle-vertex"></div>`,
+        html: `<div class="handle-dot handle-vertex" title="Vértice (arrastrar o clic derecho para borrar)"></div>`,
         iconSize: [13, 13],
         iconAnchor: [6.5, 6.5]
       });
@@ -3009,15 +3183,52 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         addCalcoHandles();
       }
 
-      // B. Nodos de Vértices + Nodo Verde Central de Movimiento del Lote Seleccionado (Pestaña 2 o 3)
+      // B. Nodos Interactivos del Polígono Seleccionado (Mover, Redimensionar 4 esquinas, Rotar, Vértices y Eliminar)
       if (selectedLotId) {
         const lot = (currentProject.lotes || []).find(l => l.id === selectedLotId);
         if (lot && lot.coords && lot.coords.length >= 3) {
-          // Borde interactivo para agregar un vértice al hacer clic en cualquier arista
+          const box = getPolygonBoundsCenter(lot.coords);
+
+          // 1. Vértices del polígono (celeste 'vertex')
+          lot.coords.forEach((pt, idx) => {
+            const m = L.marker([pt.lat, pt.lng], {
+              icon: createHandleIcon('vertex'),
+              draggable: true,
+              zIndexOffset: 920
+            });
+            m.on('drag', (e) => {
+              const ll = e.target.getLatLng();
+              lot.coords[idx] = { lat: ll.lat, lng: ll.lng };
+              lot.area = Math.round(calculateCoordsAreaM2(lot.coords));
+              const areaInp = document.getElementById('inpLotArea');
+              if (areaInp) areaInp.value = lot.area;
+              renderPolygonsLightweight();
+            });
+            m.on('dragend', () => {
+              saveProjectsLocal();
+              renderAllProjectsAndLots();
+            });
+            m.on('contextmenu', (e) => {
+              L.DomEvent.stop(e);
+              if (lot.coords.length <= 3) {
+                showToast('Un polígono requiere al menos 3 vértices.');
+                return;
+              }
+              lot.coords.splice(idx, 1);
+              lot.area = Math.round(calculateCoordsAreaM2(lot.coords));
+              saveProjectsLocal();
+              renderAllProjectsAndLots();
+              syncLotDataForm();
+              showToast('Vértice eliminado.');
+            });
+            editorHandlesGroup.addLayer(m);
+          });
+
+          // 2. Borde interactivo para agregar vértice al hacer clic en cualquier arista
           const ringPts = [...lot.coords.map(c => [c.lat, c.lng]), [lot.coords[0].lat, lot.coords[0].lng]];
           const edgeHitLine = L.polyline(ringPts, {
             color: '#38bdf8',
-            weight: 10,
+            weight: 12,
             opacity: 0.01,
             interactive: true
           });
@@ -3043,67 +3254,412 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
               }
             }
             lot.coords.splice(bestIdx, 0, { lat: clickLat, lng: clickLng });
+            lot.area = Math.round(calculateCoordsAreaM2(lot.coords));
             saveProjectsLocal();
             renderAllProjectsAndLots();
+            syncLotDataForm();
             showToast('Vértice agregado en el borde del polígono.');
           });
           editorHandlesGroup.addLayer(edgeHitLine);
 
-          lot.coords.forEach((pt, idx) => {
-            const m = L.marker([pt.lat, pt.lng], {
-              icon: createHandleIcon('vertex'),
+          if (box) {
+            // Marco guía punteado
+            const c1 = offsetMetersToLatLng(box.center.lat, box.center.lng, -box.halfW, box.halfH);
+            const c2 = offsetMetersToLatLng(box.center.lat, box.center.lng, box.halfW, box.halfH);
+            const c3 = offsetMetersToLatLng(box.center.lat, box.center.lng, box.halfW, -box.halfH);
+            const c4 = offsetMetersToLatLng(box.center.lat, box.center.lng, -box.halfW, -box.halfH);
+            L.polygon([[c1.lat, c1.lng], [c2.lat, c2.lng], [c3.lat, c3.lng], [c4.lat, c4.lng]], {
+              color: '#38bdf8',
+              weight: 1.2,
+              dashArray: '4,4',
+              fill: false,
+              interactive: false
+            }).addTo(editorHandlesGroup);
+
+            // 3. Nodo central verde para MOVER el polígono completo
+            let prevLotLL = null;
+            const moveLotM = L.marker([box.center.lat, box.center.lng], {
+              icon: createHandleIcon('move'),
               draggable: true,
-              zIndexOffset: 900
+              zIndexOffset: 950
             });
-            m.on('drag', (e) => {
-              const ll = e.target.getLatLng();
-              lot.coords[idx] = { lat: ll.lat, lng: ll.lng };
+            moveLotM.on('dragstart', (e) => { prevLotLL = e.target.getLatLng(); });
+            moveLotM.on('drag', (e) => {
+              const cur = e.target.getLatLng();
+              const dLat = cur.lat - prevLotLL.lat;
+              const dLng = cur.lng - prevLotLL.lng;
+              prevLotLL = cur;
+              lot.coords = lot.coords.map(c => ({ lat: c.lat + dLat, lng: c.lng + dLng }));
               renderPolygonsLightweight();
             });
-            m.on('dragend', () => {
+            moveLotM.on('dragend', () => {
               saveProjectsLocal();
               renderAllProjectsAndLots();
             });
-            m.on('contextmenu', (e) => {
-              L.DomEvent.stop(e);
-              if (lot.coords.length <= 3) {
-                showToast('Un polígono requiere al menos 3 vértices.');
-                return;
-              }
-              lot.coords.splice(idx, 1);
-              saveProjectsLocal();
-              renderAllProjectsAndLots();
-              showToast('Vértice eliminado.');
-            });
-            editorHandlesGroup.addLayer(m);
-          });
+            editorHandlesGroup.addLayer(moveLotM);
 
-          // Nodo central verde para arrastrar el lote seleccionado completo
-          const cen = getPolygonCentroid(lot.coords);
-          let prevLotLL = null;
-          const moveLotM = L.marker([cen.lat, cen.lng], {
-            icon: createHandleIcon('move'),
-            draggable: true,
-            zIndexOffset: 920
-          });
-          moveLotM.on('dragstart', (e) => { prevLotLL = e.target.getLatLng(); });
-          moveLotM.on('drag', (e) => {
-            const cur = e.target.getLatLng();
-            const dLat = cur.lat - prevLotLL.lat;
-            const dLng = cur.lng - prevLotLL.lng;
-            prevLotLL = cur;
-            lot.coords = lot.coords.map(c => ({ lat: c.lat + dLat, lng: c.lng + dLng }));
-            renderPolygonsLightweight();
-          });
-          moveLotM.on('dragend', () => {
-            saveProjectsLocal();
-            renderAllProjectsAndLots();
-          });
-          editorHandlesGroup.addLayer(moveLotM);
+            // 4. 4 Esquinas ámbar para REDIMENSIONAR el polígono
+            const signs = [[-1, 1], [1, 1], [1, -1], [-1, -1]];
+            signs.forEach(([sx, sy]) => {
+              const p = offsetMetersToLatLng(box.center.lat, box.center.lng, sx * box.halfW, sy * box.halfH);
+              let snapCoords = null;
+              const rm = L.marker([p.lat, p.lng], {
+                icon: createHandleIcon('resize'),
+                draggable: true,
+                zIndexOffset: 940
+              });
+              rm.on('dragstart', () => {
+                snapCoords = lot.coords.map(c => ({ ...c }));
+              });
+              rm.on('drag', (e) => {
+                if (!snapCoords) return;
+                const ll = e.target.getLatLng();
+                const off = latLngToOffsetMeters(box.center.lat, box.center.lng, ll.lat, ll.lng);
+                const scaleX = Math.max(0.2, Math.abs(off.east) / box.halfW);
+                const scaleY = Math.max(0.2, Math.abs(off.north) / box.halfH);
+                lot.coords = scaleCoordsAroundCenter(snapCoords, box.center, scaleX, scaleY);
+                renderPolygonsLightweight();
+              });
+              rm.on('dragend', () => {
+                lot.area = Math.round(calculateCoordsAreaM2(lot.coords));
+                saveProjectsLocal();
+                renderAllProjectsAndLots();
+                syncLotDataForm();
+              });
+              editorHandlesGroup.addLayer(rm);
+            });
+
+            // 5. Nodo cian superior para ROTAR el polígono
+            const rotDist = box.halfH + Math.max(3.5, box.halfH * 0.25);
+            const rotPos = offsetMetersToLatLng(box.center.lat, box.center.lng, 0, rotDist);
+            L.polyline([[box.center.lat, box.center.lng], [rotPos.lat, rotPos.lng]], {
+              color: '#38bdf8',
+              weight: 1.5,
+              dashArray: '3,3',
+              interactive: false
+            }).addTo(editorHandlesGroup);
+
+            let snapRotCoords = null;
+            let startAng = 0;
+            const rotM = L.marker([rotPos.lat, rotPos.lng], {
+              icon: createHandleIcon('rotate'),
+              draggable: true,
+              zIndexOffset: 960
+            });
+            rotM.on('dragstart', (e) => {
+              snapRotCoords = lot.coords.map(c => ({ ...c }));
+              const ll = e.target.getLatLng();
+              const off = latLngToOffsetMeters(box.center.lat, box.center.lng, ll.lat, ll.lng);
+              startAng = Math.atan2(off.east, off.north) * (180 / Math.PI);
+            });
+            rotM.on('drag', (e) => {
+              if (!snapRotCoords) return;
+              const ll = e.target.getLatLng();
+              const off = latLngToOffsetMeters(box.center.lat, box.center.lng, ll.lat, ll.lng);
+              const curAng = Math.atan2(off.east, off.north) * (180 / Math.PI);
+              const deltaDeg = curAng - startAng;
+              lot.coords = rotateCoordsAroundCenter(snapRotCoords, box.center, deltaDeg);
+              renderPolygonsLightweight();
+            });
+            rotM.on('dragend', () => {
+              saveProjectsLocal();
+              renderAllProjectsAndLots();
+            });
+            editorHandlesGroup.addLayer(rotM);
+
+            // 6. Nodo rojo de ELIMINAR polígono (esquina superior derecha exterior)
+            const delPos = offsetMetersToLatLng(box.center.lat, box.center.lng, box.halfW + 3, box.halfH + 3);
+            const delM = L.marker([delPos.lat, delPos.lng], {
+              icon: createHandleIcon('delete'),
+              interactive: true,
+              zIndexOffset: 970
+            });
+            delM.on('click', (e) => {
+              L.DomEvent.stopPropagation(e);
+              deleteSelectedLot();
+            });
+            editorHandlesGroup.addLayer(delM);
+          }
         }
       }
 
-      // C. Nodos de MOVER TODA LA LOTIZACION (Pestaña 2 con checkbox activo)
+      // C. Nodos Interactivos del Texto Adicional Seleccionado (Mover, Redimensionar tamaño, Rotar y Borrar)
+      if (selectedCustomTextId) {
+        const t = (currentProject.custom_texts || []).find(x => x.id === selectedCustomTextId);
+        if (t && typeof t.lat === 'number' && typeof t.lng === 'number') {
+          const textSize = t.size || 15;
+          const textRot = t.rotation || 0;
+          const textLen = (t.text || 'Texto').length;
+          const widthM = Math.max(3, (textLen * textSize * 0.12));
+          const heightM = Math.max(2, textSize * 0.2);
+
+          // 1. Nodo Verde Central para MOVER el texto
+          let prevTxtLL = null;
+          const moveTxtM = L.marker([t.lat, t.lng], {
+            icon: createHandleIcon('move'),
+            draggable: true,
+            zIndexOffset: 960
+          });
+          moveTxtM.on('dragstart', (e) => { prevTxtLL = e.target.getLatLng(); });
+          moveTxtM.on('drag', (e) => {
+            const cur = e.target.getLatLng();
+            t.lat = cur.lat;
+            t.lng = cur.lng;
+            renderAllProjectsAndLots();
+          });
+          moveTxtM.on('dragend', () => {
+            saveProjectsLocal();
+            renderAllProjectsAndLots();
+          });
+          editorHandlesGroup.addLayer(moveTxtM);
+
+          // 2. Nodo Ámbar de REDIMENSIONAR tamaño de fuente
+          const rad = (textRot * Math.PI) / 180;
+          const rPos = offsetMetersToLatLng(t.lat, t.lng, (widthM + 1.5) * Math.cos(rad), (widthM + 1.5) * -Math.sin(rad));
+          const resTxtM = L.marker([rPos.lat, rPos.lng], {
+            icon: createHandleIcon('resize'),
+            draggable: true,
+            zIndexOffset: 950
+          });
+          let startDist = 0;
+          let startSize = textSize;
+          resTxtM.on('dragstart', (e) => {
+            const ll = e.target.getLatLng();
+            const off = latLngToOffsetMeters(t.lat, t.lng, ll.lat, ll.lng);
+            startDist = Math.hypot(off.east, off.north);
+            startSize = t.size || 15;
+          });
+          resTxtM.on('drag', (e) => {
+            const ll = e.target.getLatLng();
+            const off = latLngToOffsetMeters(t.lat, t.lng, ll.lat, ll.lng);
+            const curDist = Math.hypot(off.east, off.north);
+            if (startDist > 0.5) {
+              const newSize = Math.max(9, Math.min(72, Math.round(startSize * (curDist / startDist))));
+              t.size = newSize;
+              const sizeInp = document.getElementById('inpEditorTextSize');
+              if (sizeInp) sizeInp.value = newSize;
+              renderAllProjectsAndLots();
+            }
+          });
+          resTxtM.on('dragend', () => {
+            saveProjectsLocal();
+            rebuildEditorHandles();
+          });
+          editorHandlesGroup.addLayer(resTxtM);
+
+          // 3. Nodo Cian de ROTAR el texto
+          const rotPos = offsetMetersToLatLng(t.lat, t.lng, (heightM + 2) * Math.sin(rad), (heightM + 2) * Math.cos(rad));
+          L.polyline([[t.lat, t.lng], [rotPos.lat, rotPos.lng]], {
+            color: '#38bdf8',
+            weight: 1.2,
+            dashArray: '3,3',
+            interactive: false
+          }).addTo(editorHandlesGroup);
+
+          const rotTxtM = L.marker([rotPos.lat, rotPos.lng], {
+            icon: createHandleIcon('rotate'),
+            draggable: true,
+            zIndexOffset: 955
+          });
+          let startTxtAng = 0;
+          let startRot = textRot;
+          rotTxtM.on('dragstart', (e) => {
+            const ll = e.target.getLatLng();
+            const off = latLngToOffsetMeters(t.lat, t.lng, ll.lat, ll.lng);
+            startTxtAng = Math.atan2(off.east, off.north) * (180 / Math.PI);
+            startRot = t.rotation || 0;
+          });
+          rotTxtM.on('drag', (e) => {
+            const ll = e.target.getLatLng();
+            const off = latLngToOffsetMeters(t.lat, t.lng, ll.lat, ll.lng);
+            const curAng = Math.atan2(off.east, off.north) * (180 / Math.PI);
+            t.rotation = Math.round((startRot + (curAng - startTxtAng)) % 360);
+            renderAllProjectsAndLots();
+          });
+          rotTxtM.on('dragend', () => {
+            saveProjectsLocal();
+            rebuildEditorHandles();
+          });
+          editorHandlesGroup.addLayer(rotTxtM);
+
+          // 4. Nodo Rojo de ELIMINAR texto
+          const delPos = offsetMetersToLatLng(t.lat, t.lng, widthM + 2, heightM + 2);
+          const delTxtM = L.marker([delPos.lat, delPos.lng], {
+            icon: createHandleIcon('delete'),
+            interactive: true,
+            zIndexOffset: 970
+          });
+          delTxtM.on('click', (e) => {
+            L.DomEvent.stopPropagation(e);
+            deleteSelectedText(t.id);
+          });
+          editorHandlesGroup.addLayer(delTxtM);
+        }
+      }
+
+      // D. Nodos Interactivos de la Línea Adicional Seleccionada (2 Extremos, Mover centro, Redimensionar, Rotar y Borrar)
+      if (selectedCustomLineId) {
+        const l = (currentProject.custom_lines || []).find(x => x.id === selectedCustomLineId);
+        if (l && typeof l.lat1 === 'number' && typeof l.lat2 === 'number') {
+          const midLat = (l.lat1 + l.lat2) / 2;
+          const midLng = (l.lng1 + l.lng2) / 2;
+
+          // 1. Extremos Vértices de la línea (celeste 'vertex')
+          const ep1 = L.marker([l.lat1, l.lng1], {
+            icon: createHandleIcon('vertex'),
+            draggable: true,
+            zIndexOffset: 940
+          });
+          ep1.on('drag', (e) => {
+            const cur = e.target.getLatLng();
+            l.lat1 = cur.lat;
+            l.lng1 = cur.lng;
+            renderAllProjectsAndLots();
+          });
+          ep1.on('dragend', () => {
+            saveProjectsLocal();
+            rebuildEditorHandles();
+          });
+          editorHandlesGroup.addLayer(ep1);
+
+          const ep2 = L.marker([l.lat2, l.lng2], {
+            icon: createHandleIcon('vertex'),
+            draggable: true,
+            zIndexOffset: 940
+          });
+          ep2.on('drag', (e) => {
+            const cur = e.target.getLatLng();
+            l.lat2 = cur.lat;
+            l.lng2 = cur.lng;
+            renderAllProjectsAndLots();
+          });
+          ep2.on('dragend', () => {
+            saveProjectsLocal();
+            rebuildEditorHandles();
+          });
+          editorHandlesGroup.addLayer(ep2);
+
+          // 2. Nodo Verde en el Punto Medio para MOVER la línea completa
+          let prevMidLL = null;
+          const moveLineM = L.marker([midLat, midLng], {
+            icon: createHandleIcon('move'),
+            draggable: true,
+            zIndexOffset: 960
+          });
+          moveLineM.on('dragstart', (e) => { prevMidLL = e.target.getLatLng(); });
+          moveLineM.on('drag', (e) => {
+            const cur = e.target.getLatLng();
+            const dLat = cur.lat - prevMidLL.lat;
+            const dLng = cur.lng - prevMidLL.lng;
+            prevMidLL = cur;
+            l.lat1 += dLat;
+            l.lat2 += dLat;
+            l.lng1 += dLng;
+            l.lng2 += dLng;
+            renderAllProjectsAndLots();
+          });
+          moveLineM.on('dragend', () => {
+            saveProjectsLocal();
+            renderAllProjectsAndLots();
+          });
+          editorHandlesGroup.addLayer(moveLineM);
+
+          // 3. Nodo Ámbar para REDIMENSIONAR la longitud de la línea
+          const off2 = latLngToOffsetMeters(midLat, midLng, l.lat2, l.lng2);
+          const lineHalfLen = Math.hypot(off2.east, off2.north) || 1;
+          const extDist = lineHalfLen + Math.max(2.5, lineHalfLen * 0.25);
+          const scaleHandlePos = offsetMetersToLatLng(midLat, midLng, (off2.east / lineHalfLen) * extDist, (off2.north / lineHalfLen) * extDist);
+
+          const resLineM = L.marker([scaleHandlePos.lat, scaleHandlePos.lng], {
+            icon: createHandleIcon('resize'),
+            draggable: true,
+            zIndexOffset: 950
+          });
+          let snapP1 = null, snapP2 = null;
+          resLineM.on('dragstart', () => {
+            snapP1 = { lat: l.lat1, lng: l.lng1 };
+            snapP2 = { lat: l.lat2, lng: l.lng2 };
+          });
+          resLineM.on('drag', (e) => {
+            if (!snapP1 || !snapP2) return;
+            const cur = e.target.getLatLng();
+            const off = latLngToOffsetMeters(midLat, midLng, cur.lat, cur.lng);
+            const curLen = Math.hypot(off.east, off.north);
+            const scale = Math.max(0.15, Math.min(10, curLen / extDist));
+            const o1 = latLngToOffsetMeters(midLat, midLng, snapP1.lat, snapP1.lng);
+            const o2 = latLngToOffsetMeters(midLat, midLng, snapP2.lat, snapP2.lng);
+            const p1 = offsetMetersToLatLng(midLat, midLng, o1.east * scale, o1.north * scale);
+            const p2 = offsetMetersToLatLng(midLat, midLng, o2.east * scale, o2.north * scale);
+            l.lat1 = p1.lat; l.lng1 = p1.lng;
+            l.lat2 = p2.lat; l.lng2 = p2.lng;
+            renderAllProjectsAndLots();
+          });
+          resLineM.on('dragend', () => {
+            saveProjectsLocal();
+            rebuildEditorHandles();
+          });
+          editorHandlesGroup.addLayer(resLineM);
+
+          // 4. Nodo Cian para ROTAR la línea alrededor de su centro
+          const perpEast = -off2.north;
+          const perpNorth = off2.east;
+          const perpLen = Math.hypot(perpEast, perpNorth) || 1;
+          const rotDist = Math.max(3, lineHalfLen * 0.5);
+          const rotHandlePos = offsetMetersToLatLng(midLat, midLng, (perpEast / perpLen) * rotDist, (perpNorth / perpLen) * rotDist);
+
+          L.polyline([[midLat, midLng], [rotHandlePos.lat, rotHandlePos.lng]], {
+            color: '#38bdf8',
+            weight: 1.2,
+            dashArray: '3,3',
+            interactive: false
+          }).addTo(editorHandlesGroup);
+
+          const rotLineM = L.marker([rotHandlePos.lat, rotHandlePos.lng], {
+            icon: createHandleIcon('rotate'),
+            draggable: true,
+            zIndexOffset: 955
+          });
+          let startLineAng = 0;
+          rotLineM.on('dragstart', (e) => {
+            snapP1 = { lat: l.lat1, lng: l.lng1 };
+            snapP2 = { lat: l.lat2, lng: l.lng2 };
+            const cur = e.target.getLatLng();
+            const off = latLngToOffsetMeters(midLat, midLng, cur.lat, cur.lng);
+            startLineAng = Math.atan2(off.east, off.north) * (180 / Math.PI);
+          });
+          rotLineM.on('drag', (e) => {
+            if (!snapP1 || !snapP2) return;
+            const cur = e.target.getLatLng();
+            const off = latLngToOffsetMeters(midLat, midLng, cur.lat, cur.lng);
+            const curAng = Math.atan2(off.east, off.north) * (180 / Math.PI);
+            const dDeg = curAng - startLineAng;
+            const rotCoords = rotateCoordsAroundCenter([snapP1, snapP2], { lat: midLat, lng: midLng }, dDeg);
+            l.lat1 = rotCoords[0].lat; l.lng1 = rotCoords[0].lng;
+            l.lat2 = rotCoords[1].lat; l.lng2 = rotCoords[1].lng;
+            renderAllProjectsAndLots();
+          });
+          rotLineM.on('dragend', () => {
+            saveProjectsLocal();
+            rebuildEditorHandles();
+          });
+          editorHandlesGroup.addLayer(rotLineM);
+
+          // 5. Nodo Rojo para ELIMINAR la línea
+          const delPos = offsetMetersToLatLng(midLat, midLng, (perpEast / perpLen) * -rotDist, (perpNorth / perpLen) * -rotDist);
+          const delLineM = L.marker([delPos.lat, delPos.lng], {
+            icon: createHandleIcon('delete'),
+            interactive: true,
+            zIndexOffset: 970
+          });
+          delLineM.on('click', (e) => {
+            L.DomEvent.stopPropagation(e);
+            deleteSelectedLine(l.id);
+          });
+          editorHandlesGroup.addLayer(delLineM);
+        }
+      }
+
+      // E. Nodos de MOVER TODA LA LOTIZACION (Pestaña 2 con checkbox activo)
       const showGroup = document.getElementById('chkGroupHandles')?.checked;
       if (activeEditorTab === 2 && showGroup && (currentProject.lotes || []).length > 0) {
         addLotGroupHandles();
@@ -6233,6 +6789,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       }
 
       const instancia = new LotizadorModal();
+      global.detectarPoligonosDesdeImageData = detectarPoligonosDesdeImageData;
+      global.snapAdjacentPolygons = snapAdjacentPolygons;
       global.LotizadorImagenModulo = {
         abrir(options) { instancia.abrir(options); },
         cerrar() { instancia.cerrar(); }
