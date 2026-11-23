@@ -1519,7 +1519,8 @@ CREATE POLICY "Escritura publica nova_propiedades" ON public.nova_propiedades FO
                 if (propertyMarkersGroup && leafletMapInstance) {
                     leafletMapInstance.fitBounds(propertyMarkersGroup.getBounds().pad(0.2));
                 }
-                document.getElementById('map-external-link').href = `https://maps.google.com/?q=-13.3039,-72.1158`;
+                const extLinkAll = document.getElementById('map-external-link');
+                if (extLinkAll) extLinkAll.href = `https://maps.google.com/?q=-13.3039,-72.1158`;
             };
             container.appendChild(btnAll);
 
@@ -1552,7 +1553,8 @@ CREATE POLICY "Escritura publica nova_propiedades" ON public.nova_propiedades FO
 
             // Actualizar enlace directo de Google Maps
             const coords = prop.coords || '-13.3039,-72.1158';
-            document.getElementById('map-external-link').href = `https://maps.google.com/?q=${coords}`;
+            const extLink = document.getElementById('map-external-link');
+            if (extLink) extLink.href = `https://maps.google.com/?q=${coords}`;
         }
 
         // MOTOR DEL CARRUSEL DE 3 FOTOS EN DETALLES
