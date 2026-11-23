@@ -538,10 +538,137 @@
           <button onclick="applyProjectFormAndFly()" class="w-full py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-sky-500/20">
             Aplicar y Volar a Ubicación
           </button>
-          <button onclick="abrirModuloDetectarLotes()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-sky-400 to-emerald-400 hover:from-amber-300 hover:to-emerald-300 text-slate-950 text-xs font-black uppercase tracking-wider transition shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-            <span>DETECTAR LOTES</span>
-          </button>
+
+          <!-- MÓDULO DETECTAR LOTES CON PESTAÑAS: DETECTAR LOTES Y TEXTO/LÍNEA -->
+          <div class="p-3 rounded-2xl bg-slate-900/90 border border-amber-400/30 shadow-lg space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                MÓDULO DE PLANO Y LOTES
+              </span>
+              <span class="text-[9px] px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 font-bold">2 Pestañas</span>
+            </div>
+
+            <!-- Pestañas del Módulo -->
+            <div class="grid grid-cols-2 gap-1 p-1 bg-slate-950/80 rounded-xl border border-white/10 text-[10.5px] font-bold">
+              <button type="button" id="subTabBtnDetect" onclick="switchDetectSubTab('detect')" class="py-1.5 px-1.5 rounded-lg bg-gradient-to-r from-amber-400 to-sky-400 text-slate-950 font-black shadow transition flex items-center justify-center gap-1 text-center">
+                <span>⚡ DETECTAR LOTES</span>
+              </button>
+              <button type="button" id="subTabBtnTextLine" onclick="switchDetectSubTab('textline')" class="py-1.5 px-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition flex items-center justify-center gap-1 text-center">
+                <span>✏️ TEXTO Y LÍNEA</span>
+              </button>
+            </div>
+
+            <!-- Pestaña 1: DETECTAR LOTES -->
+            <div id="subPanelDetect" class="space-y-2 pt-1">
+              <p class="text-[10px] text-slate-400 leading-tight">
+                Detecta polígonos automáticamente desde la imagen del plano, une lados contiguos sin huecos y vincula lotes.
+              </p>
+              <button onclick="abrirModuloDetectarLotes('lotes')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-sky-400 to-emerald-400 hover:from-amber-300 hover:to-emerald-300 text-slate-950 text-xs font-black uppercase tracking-wider transition shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                <span>ABRIR DETECTOR DE LOTES</span>
+              </button>
+            </div>
+
+            <!-- Pestaña 2: TEXTO Y LÍNEA (AGREGAR, EDITAR, BORRAR) -->
+            <div id="subPanelTextLine" class="hidden space-y-3 pt-1">
+              <!-- RÓTULOS DE TEXTO -->
+              <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/10 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-bold text-sky-300 flex items-center gap-1">
+                    ✏️ TEXTO EN EL PLANO
+                  </span>
+                  <span id="subTabBadgeTexts" class="text-[9.5px] px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 font-bold">0 textos</span>
+                </div>
+                <div>
+                  <input id="subInpTextContent" type="text" placeholder="Ej. Manzana A / Calle 1" class="w-full bg-slate-900 border border-white/15 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-400" />
+                </div>
+                <div class="grid grid-cols-2 gap-1.5">
+                  <div>
+                    <label class="text-[9.5px] text-slate-400 block mb-0.5">Tamaño (px)</label>
+                    <input id="subInpTextSize" type="number" value="16" min="8" max="72" class="w-full bg-slate-900 border border-white/15 rounded-lg px-2 py-1 text-xs text-white" />
+                  </div>
+                  <div>
+                    <label class="text-[9.5px] text-slate-400 block mb-0.5">Color</label>
+                    <select id="subSelTextColor" class="w-full bg-slate-900 border border-white/15 rounded-lg px-2 py-1 text-xs text-white">
+                      <option value="#ffffff" selected>Blanco</option>
+                      <option value="#fbbf24">Amarillo</option>
+                      <option value="#38bdf8">Cian</option>
+                      <option value="#10b981">Verde</option>
+                      <option value="#f43f5e">Rojo</option>
+                    </select>
+                  </div>
+                </div>
+                <!-- BOTONES ACCIÓN TEXTO: AGREGAR, EDITAR, BORRAR -->
+                <div class="grid grid-cols-3 gap-1 pt-0.5">
+                  <button type="button" onclick="subTabAddText()" class="py-1.5 rounded-lg bg-emerald-500/25 hover:bg-emerald-500/35 border border-emerald-400/40 text-emerald-300 text-[10px] font-bold transition flex items-center justify-center gap-1" title="Agregar nuevo texto">
+                    ➕ Agregar
+                  </button>
+                  <button type="button" onclick="subTabEditText()" class="py-1.5 rounded-lg bg-amber-500/25 hover:bg-amber-500/35 border border-amber-400/40 text-amber-300 text-[10px] font-bold transition flex items-center justify-center gap-1" title="Editar texto seleccionado">
+                    ✏️ Editar
+                  </button>
+                  <button type="button" onclick="subTabDeleteText()" class="py-1.5 rounded-lg bg-red-500/25 hover:bg-red-500/35 border border-red-400/40 text-red-300 text-[10px] font-bold transition flex items-center justify-center gap-1" title="Borrar texto seleccionado">
+                    🗑️ Borrar
+                  </button>
+                </div>
+              </div>
+
+              <!-- LÍNEAS Y DELIMITACIONES -->
+              <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/10 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-bold text-emerald-300 flex items-center gap-1">
+                    📏 LÍNEAS Y TRAZOS
+                  </span>
+                  <span id="subTabBadgeLines" class="text-[9.5px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">0 líneas</span>
+                </div>
+                <div class="grid grid-cols-3 gap-1">
+                  <div>
+                    <label class="text-[9px] text-slate-400 block mb-0.5">Color</label>
+                    <select id="subSelLineColor" class="w-full bg-slate-900 border border-white/15 rounded-lg px-1.5 py-1 text-[11px] text-white">
+                      <option value="#38bdf8" selected>Cian</option>
+                      <option value="#fbbf24">Amarillo</option>
+                      <option value="#10b981">Verde</option>
+                      <option value="#ffffff">Blanco</option>
+                      <option value="#ef4444">Rojo</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="text-[9px] text-slate-400 block mb-0.5">Grosor</label>
+                    <select id="subSelLineWidth" class="w-full bg-slate-900 border border-white/15 rounded-lg px-1.5 py-1 text-[11px] text-white">
+                      <option value="1.5">1.5px</option>
+                      <option value="2.5" selected>2.5px</option>
+                      <option value="4">4px</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="text-[9px] text-slate-400 block mb-0.5">Estilo</label>
+                    <select id="subSelLineDash" class="w-full bg-slate-900 border border-white/15 rounded-lg px-1.5 py-1 text-[11px] text-white">
+                      <option value="solid" selected>Continua</option>
+                      <option value="dashed">Puntos</option>
+                    </select>
+                  </div>
+                </div>
+                <!-- BOTONES ACCIÓN LÍNEA: AGREGAR (TRAZAR), EDITAR, BORRAR -->
+                <div class="grid grid-cols-3 gap-1 pt-0.5">
+                  <button type="button" onclick="subTabStartLine()" class="py-1.5 rounded-lg bg-sky-500/25 hover:bg-sky-500/35 border border-sky-400/40 text-sky-300 text-[10px] font-bold transition flex items-center justify-center gap-1" title="Trazar nueva línea en el mapa">
+                    ➕ Trazar
+                  </button>
+                  <button type="button" onclick="subTabEditLine()" class="py-1.5 rounded-lg bg-amber-500/25 hover:bg-amber-500/35 border border-amber-400/40 text-amber-300 text-[10px] font-bold transition flex items-center justify-center gap-1" title="Editar línea seleccionada">
+                    ✏️ Editar
+                  </button>
+                  <button type="button" onclick="subTabDeleteLine()" class="py-1.5 rounded-lg bg-red-500/25 hover:bg-red-500/35 border border-red-400/40 text-red-300 text-[10px] font-bold transition flex items-center justify-center gap-1" title="Borrar línea seleccionada">
+                    🗑️ Borrar
+                  </button>
+                </div>
+              </div>
+
+              <!-- BOTÓN PARA TRAZAR EN PLANO GRANDE -->
+              <button onclick="abrirModuloDetectarLotes('textLines')" class="w-full py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-slate-200 text-[11px] font-bold transition flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                <span>Trazar en Plano de Lotización Completo</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Calco Guía Privado -->
@@ -2159,6 +2286,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       }
       renderEditorTextsList();
       renderEditorLinesList();
+      syncSubTabCounts();
       if (!currentProject) return;
       document.getElementById('inpProjectName').value = currentProject.nombre || '';
       const planEl = document.getElementById('inpPlanUrl'); if (planEl) planEl.value = currentProject.plano_url || '';
@@ -2456,9 +2584,17 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         if (cInp) cInp.value = t.text || '';
         if (sInp) sInp.value = t.size || 15;
         if (colSel) colSel.value = t.color || '#ffffff';
+
+        const subInp = document.getElementById('subInpTextContent');
+        const subSize = document.getElementById('subInpTextSize');
+        const subCol = document.getElementById('subSelTextColor');
+        if (subInp) subInp.value = t.text || '';
+        if (subSize) subSize.value = t.size || 15;
+        if (subCol) subCol.value = t.color || '#ffffff';
       }
       renderAllProjectsAndLots();
       renderEditorTextsList();
+      syncSubTabCounts();
     }
 
     function editSelectedText() {
@@ -2557,9 +2693,17 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         if (colSel) colSel.value = l.color || '#38bdf8';
         if (wSel) wSel.value = String(l.width || 2.5);
         if (dSel) dSel.value = l.dash || 'solid';
+
+        const subCol = document.getElementById('subSelLineColor');
+        const subW = document.getElementById('subSelLineWidth');
+        const subDash = document.getElementById('subSelLineDash');
+        if (subCol) subCol.value = l.color || '#38bdf8';
+        if (subW) subW.value = String(l.width || 2.5);
+        if (subDash) subDash.value = l.dash || 'solid';
       }
       renderAllProjectsAndLots();
       renderEditorLinesList();
+      syncSubTabCounts();
     }
 
     function editSelectedLine() {
@@ -2577,6 +2721,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       saveProjectsLocal();
       renderAllProjectsAndLots();
       renderEditorLinesList();
+      syncSubTabCounts();
       showToast('Línea actualizada.');
     }
 
@@ -2592,7 +2737,126 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       saveProjectsLocal();
       renderAllProjectsAndLots();
       renderEditorLinesList();
+      syncSubTabCounts();
       showToast('Línea eliminada.');
+    }
+
+    // =========================================================================
+    // SUB-PESTAÑAS DEL BOTÓN "DETECTAR LOTES" (DETECTAR LOTES / TEXTO Y LÍNEA)
+    // =========================================================================
+    function switchDetectSubTab(tab) {
+      const btnDetect = document.getElementById('subTabBtnDetect');
+      const btnTextLine = document.getElementById('subTabBtnTextLine');
+      const panelDetect = document.getElementById('subPanelDetect');
+      const panelTextLine = document.getElementById('subPanelTextLine');
+
+      if (tab === 'detect') {
+        if (btnDetect) {
+          btnDetect.className = 'py-1.5 px-1.5 rounded-lg bg-gradient-to-r from-amber-400 to-sky-400 text-slate-950 font-black shadow transition flex items-center justify-center gap-1 text-center';
+        }
+        if (btnTextLine) {
+          btnTextLine.className = 'py-1.5 px-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition flex items-center justify-center gap-1 text-center';
+        }
+        if (panelDetect) panelDetect.classList.remove('hidden');
+        if (panelTextLine) panelTextLine.classList.add('hidden');
+      } else {
+        if (btnTextLine) {
+          btnTextLine.className = 'py-1.5 px-1.5 rounded-lg bg-gradient-to-r from-sky-400 to-emerald-400 text-slate-950 font-black shadow transition flex items-center justify-center gap-1 text-center';
+        }
+        if (btnDetect) {
+          btnDetect.className = 'py-1.5 px-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition flex items-center justify-center gap-1 text-center';
+        }
+        if (panelDetect) panelDetect.classList.add('hidden');
+        if (panelTextLine) panelTextLine.classList.remove('hidden');
+        syncSubTabCounts();
+      }
+    }
+
+    function syncSubTabCounts() {
+      const bTexts = document.getElementById('subTabBadgeTexts');
+      const bLines = document.getElementById('subTabBadgeLines');
+      const nTexts = (currentProject?.custom_texts || []).length;
+      const nLines = (currentProject?.custom_lines || []).length;
+      if (bTexts) bTexts.textContent = `${nTexts} ${nTexts === 1 ? 'texto' : 'textos'}`;
+      if (bLines) bLines.textContent = `${nLines} ${nLines === 1 ? 'línea' : 'líneas'}`;
+    }
+
+    function subTabAddText() {
+      const subInp = document.getElementById('subInpTextContent');
+      const subSize = document.getElementById('subInpTextSize');
+      const subCol = document.getElementById('subSelTextColor');
+
+      const mainInp = document.getElementById('inpEditorTextContent');
+      const mainSize = document.getElementById('inpEditorTextSize');
+      const mainCol = document.getElementById('selEditorTextColor');
+
+      if (mainInp && subInp) mainInp.value = subInp.value;
+      if (mainSize && subSize) mainSize.value = subSize.value;
+      if (mainCol && subCol) mainCol.value = subCol.value;
+
+      addTextToMap();
+      syncSubTabCounts();
+    }
+
+    function subTabEditText() {
+      const subInp = document.getElementById('subInpTextContent');
+      const subSize = document.getElementById('subInpTextSize');
+      const subCol = document.getElementById('subSelTextColor');
+
+      const mainInp = document.getElementById('inpEditorTextContent');
+      const mainSize = document.getElementById('inpEditorTextSize');
+      const mainCol = document.getElementById('selEditorTextColor');
+
+      if (mainInp && subInp && subInp.value) mainInp.value = subInp.value;
+      if (mainSize && subSize) mainSize.value = subSize.value;
+      if (mainCol && subCol) mainCol.value = subCol.value;
+
+      editSelectedText();
+      syncSubTabCounts();
+    }
+
+    function subTabDeleteText() {
+      deleteSelectedText();
+      syncSubTabCounts();
+    }
+
+    function subTabStartLine() {
+      const subCol = document.getElementById('subSelLineColor');
+      const subW = document.getElementById('subSelLineWidth');
+      const subDash = document.getElementById('subSelLineDash');
+
+      const mainCol = document.getElementById('selEditorLineColor');
+      const mainW = document.getElementById('selEditorLineWidth');
+      const mainDash = document.getElementById('selEditorLineDash');
+
+      if (mainCol && subCol) mainCol.value = subCol.value;
+      if (mainW && subW) mainW.value = subW.value;
+      if (mainDash && subDash) mainDash.value = subDash.value;
+
+      startDrawingLineOnMap();
+      syncSubTabCounts();
+    }
+
+    function subTabEditLine() {
+      const subCol = document.getElementById('subSelLineColor');
+      const subW = document.getElementById('subSelLineWidth');
+      const subDash = document.getElementById('subSelLineDash');
+
+      const mainCol = document.getElementById('selEditorLineColor');
+      const mainW = document.getElementById('selEditorLineWidth');
+      const mainDash = document.getElementById('selEditorLineDash');
+
+      if (mainCol && subCol) mainCol.value = subCol.value;
+      if (mainW && subW) mainW.value = subW.value;
+      if (mainDash && subDash) mainDash.value = subDash.value;
+
+      editSelectedLine();
+      syncSubTabCounts();
+    }
+
+    function subTabDeleteLine() {
+      deleteSelectedLine();
+      syncSubTabCounts();
     }
 
     // =========================================================================
@@ -4786,6 +5050,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         .btn-accent:hover:not(:disabled) { background: #34d399; }
         .btn-danger { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); color: #fca5a5; }
         .btn-active { background: rgba(56,189,248,0.25); border-color: #38bdf8; color: #7dd3fc; }
+        .btn-warning { background: rgba(245,158,11,0.25); border-color: #f59e0b; color: #fbbf24; }
+        .btn-warning:hover:not(:disabled) { background: rgba(245,158,11,0.4); }
         .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; background: #334155; color: #38bdf8; }
         .status-bar { font-size: 11.5px; color: #94a3b8; min-height: 18px; margin-top: 4px; }
         .footer {
@@ -4821,10 +5087,10 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
               </div>
 
               <aside class="sidebar">
-                <!-- PESTAÑAS: LOTES / POLÍGONOS VS TEXTO Y LÍNEAS -->
+                <!-- PESTAÑAS: DETECTAR LOTES VS TEXTO Y LÍNEA -->
                 <div class="lotizador-tabs">
-                  <button class="lotizador-tab-btn active" id="tabBtnLotes">📌 Lotes / Polígonos</button>
-                  <button class="lotizador-tab-btn" id="tabBtnTextLines">✏️ Texto y Líneas</button>
+                  <button class="lotizador-tab-btn active" id="tabBtnLotes">⚡ DETECTAR LOTES</button>
+                  <button class="lotizador-tab-btn" id="tabBtnTextLines">✏️ TEXTO Y LÍNEA (AGREGAR, EDITAR, BORRAR)</button>
                 </div>
 
                 <!-- PANEL 1: LOTES / POLÍGONOS -->
@@ -4907,8 +5173,10 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                       <h3 style="margin:0;">1. Textos en el Plano</h3>
                       <span class="badge" id="badgeTextCount">0 textos</span>
                     </div>
-                    <div class="row" style="margin-top:8px;">
-                      <button class="btn btn-primary" id="btnAddText" style="flex:1;">➕ Agregar Texto</button>
+                    <div class="row" style="margin-top:8px; gap:4px;">
+                      <button class="btn btn-primary" id="btnAddText" style="flex:1;" title="Colocar nuevo texto en el plano">➕ Agregar</button>
+                      <button class="btn btn-warning" id="btnEditText" style="flex:1;" disabled title="Editar texto seleccionado">✏️ Editar</button>
+                      <button class="btn btn-danger" id="btnDeleteText" style="flex:1;" disabled title="Borrar texto seleccionado">🗑️ Borrar</button>
                     </div>
                     <div id="textFormGroup" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;">
                       <label class="field">
@@ -4932,9 +5200,6 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                           </select>
                         </label>
                       </div>
-                      <div class="row">
-                        <button class="btn btn-danger" id="btnDeleteText" style="flex:1;" disabled>🗑️ Borrar Texto</button>
-                      </div>
                     </div>
                     <div style="font-size:10.5px;color:#94a3b8;margin-top:6px;">Textos colocados:</div>
                     <div class="item-list" id="textsList"></div>
@@ -4946,8 +5211,10 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                       <h3 style="margin:0;">2. Líneas y Trazos</h3>
                       <span class="badge" id="badgeLineCount">0 líneas</span>
                     </div>
-                    <div class="row" style="margin-top:8px;">
-                      <button class="btn btn-primary" id="btnAddLine" style="flex:1;">➕ Trazar Línea</button>
+                    <div class="row" style="margin-top:8px; gap:4px;">
+                      <button class="btn btn-primary" id="btnAddLine" style="flex:1;" title="Trazar nueva línea en el plano">➕ Trazar</button>
+                      <button class="btn btn-warning" id="btnEditLine" style="flex:1;" disabled title="Editar línea seleccionada">✏️ Editar</button>
+                      <button class="btn btn-danger" id="btnDeleteLine" style="flex:1;" disabled title="Borrar línea seleccionada">🗑️ Borrar</button>
                     </div>
                     <div id="lineFormGroup" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;">
                       <div class="row">
@@ -4978,9 +5245,6 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                           <option value="dashed">Línea Discontinua / Punteada</option>
                         </select>
                       </label>
-                      <div class="row">
-                        <button class="btn btn-danger" id="btnDeleteLine" style="flex:1;" disabled>🗑️ Borrar Línea</button>
-                      </div>
                     </div>
                     <div style="font-size:10.5px;color:#94a3b8;margin-top:6px;">Líneas trazadas:</div>
                     <div class="item-list" id="linesList"></div>
@@ -5117,6 +5381,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
           // Acciones de Texto
           this.$('btnAddText').addEventListener('click', () => this.iniciarAgregarTexto());
+          this.$('btnEditText').addEventListener('click', () => this.actualizarTextoSeleccionado());
           ['fldCustomText', 'fldTextSize', 'fldTextColor'].forEach((id) => {
             this.$(id).addEventListener('input', () => this.actualizarTextoSeleccionado());
           });
@@ -5124,6 +5389,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
           // Acciones de Línea
           this.$('btnAddLine').addEventListener('click', () => this.iniciarTrazarLinea());
+          this.$('btnEditLine').addEventListener('click', () => this.actualizarLineaSeleccionada());
           ['fldLineColor', 'fldLineWidth', 'fldLineStyle'].forEach((id) => {
             this.$(id).addEventListener('change', () => this.actualizarLineaSeleccionada());
           });
@@ -5196,6 +5462,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             this.$('fldCustomText').value = t.text;
             this.$('fldTextSize').value = t.size;
             this.$('fldTextColor').value = t.color;
+            this.$('btnEditText').disabled = false;
             this.$('btnDeleteText').disabled = false;
           }
           this.renderOverlay();
@@ -5217,6 +5484,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           if (!this.selectedTextId) return;
           this.customTexts = this.customTexts.filter(x => x.id !== this.selectedTextId);
           this.selectedTextId = null;
+          this.$('btnEditText').disabled = true;
           this.$('btnDeleteText').disabled = true;
           this.renderOverlay();
           this.renderTextLinesList();
@@ -5270,6 +5538,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             this.$('fldLineColor').value = l.color;
             this.$('fldLineWidth').value = l.width;
             this.$('fldLineStyle').value = l.dash;
+            this.$('btnEditLine').disabled = false;
             this.$('btnDeleteLine').disabled = false;
           }
           this.renderOverlay();
@@ -5291,6 +5560,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           if (!this.selectedLineId) return;
           this.customLines = this.customLines.filter(x => x.id !== this.selectedLineId);
           this.selectedLineId = null;
+          this.$('btnEditLine').disabled = true;
           this.$('btnDeleteLine').disabled = true;
           this.renderOverlay();
           this.renderTextLinesList();
@@ -5311,16 +5581,28 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                 const isSel = t.id === this.selectedTextId;
                 return `
                   <div class="item-row ${isSel ? 'selected' : ''}" data-item-text="${t.id}">
-                    <span style="font-weight:700;color:${t.color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;">${escapeHtml(t.text)} (${t.size}px)</span>
-                    <button type="button" data-del-text="${t.id}" title="Eliminar texto">✕</button>
+                    <span style="font-weight:700;color:${t.color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;">${escapeHtml(t.text)} (${t.size}px)</span>
+                    <div style="display:flex;gap:4px;align-items:center;">
+                      <button type="button" data-edit-text="${t.id}" title="Editar este texto" style="background:rgba(245,158,11,0.25);color:#fbbf24;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✏️</button>
+                      <button type="button" data-del-text="${t.id}" title="Eliminar este texto" style="background:rgba(239,68,68,0.25);color:#fca5a5;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✕</button>
+                    </div>
                   </div>
                 `;
               }).join('');
 
               tBody.querySelectorAll('[data-item-text]').forEach(el => {
                 el.addEventListener('click', (e) => {
-                  if (e.target.closest('[data-del-text]')) return;
+                  if (e.target.closest('[data-del-text]') || e.target.closest('[data-edit-text]')) return;
                   this.seleccionarTexto(el.getAttribute('data-item-text'));
+                });
+              });
+
+              tBody.querySelectorAll('[data-edit-text]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  this.seleccionarTexto(btn.getAttribute('data-edit-text'));
+                  const fld = this.$('fldCustomText');
+                  if (fld) { fld.focus(); fld.select(); }
                 });
               });
 
@@ -5344,16 +5626,26 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                 const isSel = l.id === this.selectedLineId;
                 return `
                   <div class="item-row ${isSel ? 'selected' : ''}" data-item-line="${l.id}">
-                    <span style="font-weight:700;color:${l.color};">Línea #${i + 1} (${l.width}px · ${l.dash === 'dashed' ? 'Punteada' : 'Sólida'})</span>
-                    <button type="button" data-del-line="${l.id}" title="Eliminar línea">✕</button>
+                    <span style="font-weight:700;color:${l.color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;">Línea #${i + 1} (${l.width}px · ${l.dash === 'dashed' ? 'Puntos' : 'Sólida'})</span>
+                    <div style="display:flex;gap:4px;align-items:center;">
+                      <button type="button" data-edit-line="${l.id}" title="Editar esta línea" style="background:rgba(245,158,11,0.25);color:#fbbf24;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✏️</button>
+                      <button type="button" data-del-line="${l.id}" title="Eliminar esta línea" style="background:rgba(239,68,68,0.25);color:#fca5a5;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✕</button>
+                    </div>
                   </div>
                 `;
               }).join('');
 
               lBody.querySelectorAll('[data-item-line]').forEach(el => {
                 el.addEventListener('click', (e) => {
-                  if (e.target.closest('[data-del-line]')) return;
+                  if (e.target.closest('[data-del-line]') || e.target.closest('[data-edit-line]')) return;
                   this.seleccionarLinea(el.getAttribute('data-item-line'));
+                });
+              });
+
+              lBody.querySelectorAll('[data-edit-line]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  this.seleccionarLinea(btn.getAttribute('data-edit-line'));
                 });
               });
 
@@ -5391,7 +5683,15 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           img.crossOrigin = 'anonymous';
           img.onload = () => this.procesarElementoImagen(img, url);
           img.onerror = () => {
-            this.setStatus('La URL externa bloquea lectura directa; sube la imagen desde tu equipo.');
+            // Intento con proxy para evitar bloqueo por CORS de la URL externa
+            const proxyUrl = 'https://images.weserv.nl/?url=' + encodeURIComponent(url.replace(/^https?:\/\//, ''));
+            const fallbackImg = new Image();
+            fallbackImg.crossOrigin = 'anonymous';
+            fallbackImg.onload = () => this.procesarElementoImagen(fallbackImg, proxyUrl);
+            fallbackImg.onerror = () => {
+              this.setStatus('La URL externa bloquea lectura directa; sube la imagen desde tu equipo con el botón 📁.');
+            };
+            fallbackImg.src = proxyUrl;
           };
           img.src = url;
         }
