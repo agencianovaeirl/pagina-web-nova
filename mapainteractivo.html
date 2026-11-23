@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -22,6 +22,9 @@
 
   <!-- Supabase JS v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Tesseract.js v5 para reconocimiento OCR en español -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
   <style>
     /* Requisitos críticos de visibilidad */
@@ -622,6 +625,9 @@
               <span>🧲 Pegar Lados</span>
             </button>
           </div>
+          <button onclick="abrirModuloDetectarLotes()" type="button" class="w-full mt-2 py-2 px-3 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
+            <span>🗺️ Abrir Convertidor de Planos con OCR Tesseract</span>
+          </button>
         </div>
 
         <!-- Calco Guía Privado -->
@@ -663,6 +669,9 @@
             <span>🧲 Pegar</span>
           </button>
         </div>
+          <button onclick="abrirModuloDetectarLotes()" type="button" class="w-full mt-2 py-2 px-3 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
+            <span>🗺️ Abrir Convertidor de Planos con OCR Tesseract</span>
+          </button>
 
         <!-- INSPECTOR DE DATOS DEL POLÍGONO SELECCIONADO (DATOS EN EL INTERIOR) -->
         <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-white/10 space-y-2.5 shadow-lg">
@@ -1037,7 +1046,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
   </div>
 
 <!-- 8. NOTIFICACIONES TOAST (SIN alert/confirm) -->
-  <div id="toastBox" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-[900] pointer-events-none opacity-0 transition-opacity duration-300">
+  <div id="toastBox" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-[100000] pointer-events-none opacity-0 transition-opacity duration-300">
     <div id="toastText" class="glass-panel rounded-2xl px-4 py-2.5 text-xs font-bold text-white border-sky-400/40"></div>
   </div>
 
@@ -5639,17 +5648,301 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     });
   </script>
 
-  <!-- MÓDULO AUTOCONTENIDO: CONVERTIDOR DE PLANO A POLÍGONOS INTERACTIVOS -->
+    <!-- ========================================================================= -->
+  <!-- MÓDULO AUTOCONTENIDO: CONVERTIDOR DE PLANO A POLÍGONOS INTERACTIVOS (OCR) -->
+  <!-- ========================================================================= -->
+  <div id="lotizadorModalBackdrop" class="fixed inset-0 z-[99999] bg-[#020617]/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+    <!-- VENTANA PRINCIPAL DEL CONVERTIDOR -->
+    <div class="w-full max-w-[1280px] h-[95vh] min-h-[640px] bg-[#0f172a] border border-white/15 rounded-2xl shadow-[0_24px_60px_rgba(0,0,0,0.65)] flex flex-col overflow-hidden relative">
+
+      <!-- CABECERA -->
+      <header class="px-4 sm:px-5 py-3.5 bg-[#0b1120] border-b border-white/10 flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-sky-500/15 border border-sky-400/35 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polygon points="12 2 22 8.5 18 21 6 21 2 8.5 12 2"></polygon>
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <h1 class="text-sm sm:text-base font-extrabold text-white tracking-tight truncate">
+                CONVERTIDOR DE PLANO A POLÍGONOS INTERACTIVOS
+              </h1>
+              <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">
+                OCR Tesseract v5
+              </span>
+            </div>
+            <p class="text-[11.5px] text-slate-400 truncate">
+              Reconoce automáticamente N° de Lote, Área (m²), Estado (Disponible / Reservado / Vendido) y Precio (S/.) desde la imagen.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="btnLoadSampleTop" type="button" class="px-3 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-400/40 text-emerald-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+            <span>🗺️</span>
+            <span>Cargar plano de ejemplo</span>
+          </button>
+          <button id="btnCloseLotizador" type="button" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-slate-300 hover:text-white flex items-center justify-center text-lg font-bold transition cursor-pointer" title="Cerrar modal">&times;</button>
+        </div>
+      </header>
+
+      <!-- CUERPO PRINCIPAL: STAGE + SIDEBAR -->
+      <div class="flex-1 grid grid-cols-1 lg:grid-cols-[1fr_360px] min-h-0 overflow-hidden">
+
+        <!-- ÁREA DE LIENZO (STAGE) -->
+        <section id="stage" class="relative bg-[#020617] overflow-auto flex p-4 min-h-[300px]">
+          <!-- Estado vacío con carga por clic, arrastre o plano de ejemplo -->
+          <div id="emptyState" class="m-auto w-full max-w-md border-2 border-dashed border-slate-700 hover:border-sky-400 rounded-2xl p-7 sm:p-9 text-center bg-slate-900/40 transition flex flex-col items-center gap-3">
+            <div class="w-14 h-14 rounded-2xl bg-sky-500/15 border border-sky-400/30 flex items-center justify-center text-3xl">
+              🗺️
+            </div>
+            <div>
+              <h2 class="text-base font-extrabold text-white">Sube la imagen de tu plano</h2>
+              <p class="text-xs text-slate-400 mt-1">
+                Arrastra una imagen PNG / JPG aquí o selecciona un archivo desde tu dispositivo.
+              </p>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-2 mt-2 w-full">
+              <button id="btnEmptyUpload" type="button" class="px-4 py-2.5 rounded-xl bg-sky-400 hover:bg-sky-300 text-slate-950 text-xs font-extrabold transition cursor-pointer">
+                📁 Subir imagen
+              </button>
+              <button id="btnEmptySample" type="button" class="px-4 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-extrabold transition cursor-pointer">
+                ✨ Cargar plano de ejemplo (6 lotes)
+              </button>
+            </div>
+          </div>
+
+          <!-- Contenedor del plano + capa SVG interactiva -->
+          <div id="canvasWrap" class="hidden m-auto relative shrink-0 shadow-[0_12px_40px_rgba(0,0,0,0.75)] select-none rounded-lg overflow-hidden ring-1 ring-white/10">
+            <img id="previewImg" alt="Plano de lotización" class="block w-full h-full pointer-events-none" />
+            <svg id="overlaySvg" class="absolute inset-0 w-full h-full cursor-crosshair touch-none"></svg>
+          </div>
+
+          <input type="file" id="fileInput" accept="image/*" class="hidden" />
+        </section>
+
+        <!-- PANEL LATERAL (SIDEBAR) -->
+        <aside class="border-t lg:border-t-0 lg:border-l border-white/10 bg-[#0f172a] flex flex-col min-h-0 overflow-y-auto p-3.5 space-y-3">
+
+          <!-- PESTAÑAS -->
+          <div class="grid grid-cols-2 gap-1 bg-[#0b1120] p-1 rounded-xl border border-white/10 shrink-0">
+            <button id="tabBtnLotes" type="button" class="py-2 px-2 rounded-lg text-[11px] font-extrabold bg-sky-400 text-slate-950 transition cursor-pointer">
+              ⚡ DETECTAR LOTES
+            </button>
+            <button id="tabBtnTextLines" type="button" class="py-2 px-2 rounded-lg text-[11px] font-bold text-slate-400 hover:text-white hover:bg-white/5 transition cursor-pointer">
+              📋 LISTA DE LOTES (<span id="tabListCount">0</span>)
+            </button>
+          </div>
+
+          <!-- PANEL 1: DETECCIÓN + ZOOM + INSPECTOR DE DATOS -->
+          <div id="panelLotes" class="flex flex-col gap-3">
+
+            <!-- 1. Imagen y Detección -->
+            <div class="rounded-xl bg-[#1e293b] border border-white/10 p-3 space-y-2.5">
+              <h3 class="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400">
+                1. Imagen y Detección OCR
+              </h3>
+              <div class="grid grid-cols-2 gap-2">
+                <button id="btnUpload" type="button" class="py-2 px-2.5 rounded-lg bg-[#0f172a] hover:bg-slate-800 border border-slate-700 text-white text-xs font-bold transition cursor-pointer">
+                  📁 Subir imagen
+                </button>
+                <button id="btnDetect" type="button" disabled class="py-2 px-2.5 rounded-lg bg-sky-400 hover:bg-sky-300 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 text-xs font-extrabold transition cursor-pointer">
+                  ⚡ Detectar lotes
+                </button>
+              </div>
+
+              <div class="space-y-1">
+                <div class="flex justify-between text-[11px] text-slate-300">
+                  <span>Sensibilidad de líneas (Umbral)</span>
+                  <strong id="lblThreshold" class="text-sky-300 font-mono">185</strong>
+                </div>
+                <input type="range" id="rngThreshold" min="80" max="240" value="185" class="w-full accent-sky-400 cursor-pointer" />
+              </div>
+
+              <div class="space-y-1">
+                <div class="flex justify-between text-[11px] text-slate-300">
+                  <span>Área mínima en px</span>
+                  <strong id="lblMinArea" class="text-sky-300 font-mono">350</strong>
+                </div>
+                <input type="range" id="rngMinArea" min="80" max="3000" step="20" value="350" class="w-full accent-sky-400 cursor-pointer" />
+              </div>
+
+              <button id="btnSnapSides" type="button" disabled class="w-full py-2 px-3 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 disabled:opacity-40 disabled:cursor-not-allowed border border-sky-400/50 text-sky-300 text-xs font-bold transition cursor-pointer">
+                🧲 Pegar lados contiguos
+              </button>
+            </div>
+
+            <!-- 2. Zoom y Progreso OCR -->
+            <div class="rounded-xl bg-[#1e293b] border border-white/10 p-3 space-y-2.5">
+              <h3 class="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400">
+                2. Zoom y Estado del Reconocimiento
+              </h3>
+              <div class="grid grid-cols-3 gap-1.5">
+                <button id="btnZoomOut" type="button" disabled class="py-1.5 rounded-lg bg-[#0f172a] hover:bg-slate-800 disabled:opacity-40 border border-slate-700 text-xs font-bold text-slate-200 transition cursor-pointer">
+                  🔍 - Alejar
+                </button>
+                <button id="btnZoomReset" type="button" disabled class="py-1.5 rounded-lg bg-[#0f172a] hover:bg-slate-800 disabled:opacity-40 border border-slate-700 text-xs font-bold text-sky-300 transition cursor-pointer">
+                  100%
+                </button>
+                <button id="btnZoomIn" type="button" disabled class="py-1.5 rounded-lg bg-[#0f172a] hover:bg-slate-800 disabled:opacity-40 border border-slate-700 text-xs font-bold text-slate-200 transition cursor-pointer">
+                  🔍 + Acercar
+                </button>
+              </div>
+
+              <!-- Barra de progreso OCR en vivo -->
+              <div id="ocrProgressWrap" class="hidden space-y-1">
+                <div class="flex items-center justify-between text-[10.5px]">
+                  <span id="ocrProgressLabel" class="font-bold text-sky-300">Ejecutando OCR...</span>
+                  <span id="ocrProgressPct" class="font-mono text-emerald-300 font-bold">0%</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-slate-900 overflow-hidden border border-white/10">
+                  <div id="ocrProgressBar" class="h-full bg-gradient-to-r from-sky-400 via-indigo-400 to-emerald-400 transition-all duration-200" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <div id="statusBar" class="text-[11.5px] text-slate-400 leading-snug">
+                Sube una imagen para comenzar. Al detectar, se leerán automáticamente los datos de cada lote con OCR.
+              </div>
+            </div>
+
+            <!-- 3. Inspector Editable de Datos del Lote -->
+            <div id="inspectorCard" class="rounded-xl bg-[#1e293b] border border-white/10 p-3 space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400">
+                  3. Datos del Lote
+                </h3>
+                <span id="badgeLoteId" class="px-2.5 py-0.5 rounded-full text-[10.5px] font-extrabold bg-slate-700 text-sky-300">
+                  Sin selección
+                </span>
+              </div>
+
+              <div class="space-y-2">
+                <div>
+                  <label for="fldLoteNumero" class="block text-[11px] font-semibold text-slate-300 mb-1">N° de Lote</label>
+                  <input type="text" id="fldLoteNumero" disabled placeholder="Ej. Lote 01 o Mz. A - Lote 01" class="w-full px-2.5 py-1.5 rounded-lg bg-[#0f172a] border border-slate-700 focus:border-sky-400 focus:outline-none text-xs text-white disabled:opacity-50" />
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label for="fldArea" class="block text-[11px] font-semibold text-slate-300 mb-1">Área (m²)</label>
+                    <input type="number" id="fldArea" step="0.01" disabled placeholder="0.00" class="w-full px-2.5 py-1.5 rounded-lg bg-[#0f172a] border border-slate-700 focus:border-sky-400 focus:outline-none text-xs text-white disabled:opacity-50" />
+                  </div>
+                  <div>
+                    <label for="fldEstado" class="block text-[11px] font-semibold text-slate-300 mb-1">Estado</label>
+                    <select id="fldEstado" disabled class="w-full px-2 py-1.5 rounded-lg bg-[#0f172a] border border-slate-700 focus:border-sky-400 focus:outline-none text-xs text-white disabled:opacity-50">
+                      <option value="Disponible">Disponible</option>
+                      <option value="Reservado">Reservado</option>
+                      <option value="Vendido">Vendido</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label for="fldPrecio" class="block text-[11px] font-semibold text-slate-300 mb-1">Precio (S/.)</label>
+                  <input type="text" id="fldPrecio" disabled placeholder="Ej. 28500" class="w-full px-2.5 py-1.5 rounded-lg bg-[#0f172a] border border-slate-700 focus:border-sky-400 focus:outline-none text-xs text-white disabled:opacity-50" />
+                </div>
+
+                <!-- Vista rápida del texto leído por OCR en este lote -->
+                <div id="ocrRawBox" class="hidden rounded-lg bg-[#0b1120] border border-sky-400/25 p-2">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-sky-300">Texto detectado por OCR</span>
+                    <span id="ocrSourceTag" class="text-[9.5px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">Tesseract</span>
+                  </div>
+                  <pre id="ocrRawText" class="text-[10.5px] font-mono text-slate-300 whitespace-pre-wrap break-words max-h-20 overflow-y-auto"></pre>
+                </div>
+              </div>
+
+              <button id="btnDeletePoly" type="button" disabled class="w-full py-2 rounded-lg bg-red-500/15 hover:bg-red-500/25 disabled:opacity-40 disabled:cursor-not-allowed border border-red-500/40 text-red-300 text-xs font-bold transition cursor-pointer">
+                🗑️ Eliminar polígono
+              </button>
+            </div>
+          </div>
+
+          <!-- PANEL 2: LISTA COMPLETA DE LOTES RECONOCIDOS -->
+          <div id="panelLista" class="hidden flex-col gap-2">
+            <div class="rounded-xl bg-[#1e293b] border border-white/10 p-3 space-y-2">
+              <div class="flex items-center justify-between">
+                <h3 class="text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400">
+                  Lotes Detectados
+                </h3>
+                <span id="lblListSummary" class="text-[10.5px] font-bold text-sky-300">0 lotes</span>
+              </div>
+              <div id="lotsListContainer" class="space-y-1.5 max-h-[460px] overflow-y-auto pr-0.5">
+                <div class="text-xs text-slate-400 text-center py-6">
+                  Aún no hay polígonos detectados.
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- PIE DE VENTANA: RESUMEN Y EXPORTACIÓN -->
+      <footer class="px-4 sm:px-5 py-3 bg-[#0b1120] border-t border-white/10 flex flex-wrap items-center justify-between gap-2 shrink-0">
+        <div class="text-xs text-slate-400 flex items-center gap-3 flex-wrap">
+          <span>Lotes: <strong id="lotLblCount" class="text-white">0</strong></span>
+          <span class="text-slate-600">|</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><strong id="lotCntDisp" class="text-emerald-300">0</strong></span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-400"></span><strong id="lotCntRes" class="text-amber-300">0</strong></span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-400"></span><strong id="lotCntVend" class="text-red-300">0</strong></span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btnCopySvg" type="button" disabled class="px-3 py-2 rounded-lg bg-[#1e293b] hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed border border-slate-700 text-xs font-bold text-white transition cursor-pointer">
+            Copiar SVG
+          </button>
+          <button id="btnDownloadJson" type="button" disabled class="px-3 py-2 rounded-lg bg-[#1e293b] hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed border border-slate-700 text-xs font-bold text-white transition cursor-pointer">
+            Descargar JSON
+          </button>
+          <button id="btnApply" type="button" disabled class="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 text-xs font-black transition cursor-pointer shadow-lg shadow-emerald-500/20 flex items-center gap-1.5">
+            <span>✅</span>
+            <span>Aplicar al mapa</span>
+          </button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
   <script>
     (function (global) {
       'use strict';
 
+      // =========================================================================
+      // 1. CONFIGURACIÓN DE ESTADOS Y UTILIDADES GEOMÉTRICAS
+      // =========================================================================
       const ESTADOS = {
-        Disponible: { label: 'Disponible', fill: 'rgba(16, 185, 129, 0.38)', stroke: '#10b981' },
-        Reservado: { label: 'Reservado', fill: 'rgba(245, 158, 11, 0.40)', stroke: '#f59e0b' },
-        Vendido: { label: 'Vendido', fill: 'rgba(239, 68, 68, 0.38)', stroke: '#ef4444' }
+        Disponible: { label: 'Disponible', fill: 'rgba(16, 185, 129, 0.36)', stroke: '#10b981', dot: '#34d399', text: '#6ee7b7' },
+        Reservado:  { label: 'Reservado',  fill: 'rgba(245, 158, 11, 0.38)', stroke: '#f59e0b', dot: '#fbbf24', text: '#fcd34d' },
+        Vendido:    { label: 'Vendido',    fill: 'rgba(239, 68, 68, 0.36)',  stroke: '#ef4444', dot: '#f87171', text: '#fca5a5' }
       };
 
+      function escapeHtml(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function showToast(msg) {
+        if (typeof global.showToast === 'function') {
+          global.showToast(msg);
+        } else {
+          const box = document.getElementById('toastBox');
+          const txt = document.getElementById('toastText');
+          if (!box || !txt) return;
+          txt.textContent = msg;
+          box.classList.remove('opacity-0');
+          box.classList.add('opacity-100');
+          setTimeout(() => {
+            box.classList.remove('opacity-100');
+            box.classList.add('opacity-0');
+          }, 2800);
+        }
+      }
+
+      // Algoritmo Ramer-Douglas-Peucker para simplificar contornos
       function ramerDouglasPeucker(points, epsilon) {
         if (points.length <= 3) return points;
         let maxDist = 0, index = 0;
@@ -5703,13 +5996,88 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         return [Math.round(sx / n), Math.round(sy / n)];
       }
 
+      // Verificación Ray-Casting: ¿un punto está dentro del polígono?
+      function puntoEnPoligono(point, vs) {
+        const x = point[0], y = point[1];
+        let inside = false;
+        for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+          const xi = vs[i][0], yi = vs[i][1];
+          const xj = vs[j][0], yj = vs[j][1];
+          const intersect = ((yi > y) !== (yj > y)) &&
+            (x < (xj - xi) * (y - yi) / ((yj - yi) || 1e-9) + xi);
+          if (intersect) inside = !inside;
+        }
+        return inside;
+      }
+
+      // Snap de lados y vértices entre polígonos contiguos
+      function snapAdjacentPolygons(poligonos, snapDist = 8) {
+        if (!poligonos || poligonos.length < 2) return poligonos;
+
+        const allVerts = [];
+        for (let i = 0; i < poligonos.length; i++) {
+          for (let vi = 0; vi < poligonos[i].length; vi++) {
+            allVerts.push({ i, vi, x: poligonos[i][vi][0], y: poligonos[i][vi][1] });
+          }
+        }
+
+        const visited = new Array(allVerts.length).fill(false);
+        for (let a = 0; a < allVerts.length; a++) {
+          if (visited[a]) continue;
+          const cluster = [allVerts[a]];
+          visited[a] = true;
+          for (let b = a + 1; b < allVerts.length; b++) {
+            if (visited[b]) continue;
+            const dist = Math.hypot(allVerts[a].x - allVerts[b].x, allVerts[a].y - allVerts[b].y);
+            if (dist <= snapDist) {
+              visited[b] = true;
+              cluster.push(allVerts[b]);
+            }
+          }
+          if (cluster.length > 1) {
+            const avgX = Math.round(cluster.reduce((s, v) => s + v.x, 0) / cluster.length);
+            const avgY = Math.round(cluster.reduce((s, v) => s + v.y, 0) / cluster.length);
+            for (const v of cluster) {
+              poligonos[v.i][v.vi] = [avgX, avgY];
+            }
+          }
+        }
+
+        for (let i = 0; i < poligonos.length; i++) {
+          for (let j = 0; j < poligonos.length; j++) {
+            if (i === j) continue;
+            for (let vi = 0; vi < poligonos[i].length; vi++) {
+              const pt = poligonos[i][vi];
+              for (let vj = 0; vj < poligonos[j].length; vj++) {
+                const p1 = poligonos[j][vj];
+                const p2 = poligonos[j][(vj + 1) % poligonos[j].length];
+                if ((pt[0] === p1[0] && pt[1] === p1[1]) || (pt[0] === p2[0] && pt[1] === p2[1])) continue;
+                const dx = p2[0] - p1[0], dy = p2[1] - p1[1];
+                const lenSq = dx * dx + dy * dy;
+                if (lenSq < 9) continue;
+                const t = ((pt[0] - p1[0]) * dx + (pt[1] - p1[1]) * dy) / lenSq;
+                if (t >= 0.05 && t <= 0.95) {
+                  const projX = p1[0] + t * dx;
+                  const projY = p1[1] + t * dy;
+                  if (Math.hypot(pt[0] - projX, pt[1] - projY) <= snapDist) {
+                    poligonos[i][vi] = [Math.round(projX), Math.round(projY)];
+                  }
+                }
+              }
+            }
+          }
+        }
+        return poligonos;
+      }
+
+      // Detección de polígonos por umbral + Flood-Fill + Moore-Neighbor + RDP
       function detectarPoligonosDesdeImageData(imageData, opciones) {
         const { width, height, data } = imageData;
         const umbral = opciones.umbral ?? 185;
         const minAreaPx = opciones.minAreaPx ?? 350;
         const maxAreaRatio = opciones.maxAreaRatio ?? 0.45;
         const epsilon = opciones.simplificacion ?? 2.5;
-        const grosorBorde = opciones.grosorBorde ?? 1;
+        const grosorBorde = opciones.grosorBorde ?? 0;
 
         const total = width * height;
         let mask = new Uint8Array(total);
@@ -5781,7 +6149,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           }
         }
 
-        // Expandir cada región hacia los píxeles de borde para que los lotes queden juntos sin huecos
+        // Expandir regiones hacia los bordes divisorios para cerrar huecos
         const validSet = new Set(regiones.map(r => r.label));
         const regMap = new Map(regiones.map(r => [r.label, r]));
         for (let iter = 0; iter < 4; iter++) {
@@ -5809,6 +6177,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           labels.set(nextLabels);
         }
 
+        // Moore-Neighbor contour tracing
         const dirs = [[-1, 0], [-1, -1], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1]];
         const poligonos = [];
 
@@ -5846,7 +6215,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           if (contour.length < 4) continue;
           let eps = epsilon;
           let simplified = ramerDouglasPeucker(contour, eps);
-          // Ajustar adaptativamente entre 4 y 8 vértices
+
           let guard = 0;
           while (simplified.length > 8 && guard < 18) {
             eps *= 1.25;
@@ -5867,1479 +6236,1022 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           }
           if (simplified.length >= 4 && simplified.length <= 8) poligonos.push(simplified);
         }
-        // Unir vértices y lados entre polígonos adyacentes para que queden pegados por sus lados exactos
+
         return snapAdjacentPolygons(poligonos, 8);
       }
 
-      function snapAdjacentPolygons(poligonos, snapDist = 8) {
-        if (!poligonos || poligonos.length < 2) return poligonos;
+      // =========================================================================
+      // 2. GENERADOR DE PLANO DE PRUEBA (6 LOTES CON TEXTOS Y COLORES REALES)
+      // =========================================================================
+      function generarPlanoDeEjemploDataUrl() {
+        const c = document.createElement('canvas');
+        c.width = 1040;
+        c.height = 680;
+        const ctx = c.getContext('2d');
 
-        // 1. Fusionar vértices muy cercanos entre polígonos al promedio de su clúster
-        const allVerts = [];
-        for (let i = 0; i < poligonos.length; i++) {
-          for (let vi = 0; vi < poligonos[i].length; vi++) {
-            allVerts.push({ i, vi, x: poligonos[i][vi][0], y: poligonos[i][vi][1] });
-          }
+        // Fondo y cuadrícula técnica del plano
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(0, 0, c.width, c.height);
+
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < c.width; x += 30) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, c.height); ctx.stroke();
+        }
+        for (let y = 0; y < c.height; y += 30) {
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(c.width, y); ctx.stroke();
         }
 
-        const visited = new Array(allVerts.length).fill(false);
-        for (let a = 0; a < allVerts.length; a++) {
-          if (visited[a]) continue;
-          const cluster = [allVerts[a]];
-          visited[a] = true;
-          for (let b = a + 1; b < allVerts.length; b++) {
-            if (visited[b]) continue;
-            const dist = Math.hypot(allVerts[a].x - allVerts[b].x, allVerts[a].y - allVerts[b].y);
-            if (dist <= snapDist) {
-              visited[b] = true;
-              cluster.push(allVerts[b]);
-            }
-          }
-          if (cluster.length > 1) {
-            const avgX = Math.round(cluster.reduce((s, v) => s + v.x, 0) / cluster.length);
-            const avgY = Math.round(cluster.reduce((s, v) => s + v.y, 0) / cluster.length);
-            for (const v of cluster) {
-              poligonos[v.i][v.vi] = [avgX, avgY];
-            }
-          }
-        }
+        // Título del plano de loteo
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 20px Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('PLANO DE LOTIZACIÓN - PROYECTO FORTUNATO (EJEMPLO OCR)', c.width / 2, 42);
 
-        // 2. Proyectar vértices sobre bordes de polígonos adyacentes para asegurar bordes perfectamente pegados (sin grietas)
-        for (let i = 0; i < poligonos.length; i++) {
-          for (let j = 0; j < poligonos.length; j++) {
-            if (i === j) continue;
-            for (let vi = 0; vi < poligonos[i].length; vi++) {
-              const pt = poligonos[i][vi];
-              for (let vj = 0; vj < poligonos[j].length; vj++) {
-                const p1 = poligonos[j][vj];
-                const p2 = poligonos[j][(vj + 1) % poligonos[j].length];
-                if ((pt[0] === p1[0] && pt[1] === p1[1]) || (pt[0] === p2[0] && pt[1] === p2[1])) continue;
+        // Definición de 6 lotes en dos filas con avenida central
+        const lotesDemo = [
+          { x: 90,  y: 85,  w: 280, h: 210, fill: '#dcfce7', code: 'Lote 01', area: '160 m2',   price: 'S/. 28,500', status: 'DISPONIBLE' },
+          { x: 375, y: 85,  w: 280, h: 210, fill: '#fef3c7', code: 'Lote 02', area: '180 m2',   price: 'S/. 32,000', status: 'RESERVADO'  },
+          { x: 660, y: 85,  w: 290, h: 210, fill: '#fee2e2', code: 'Lote 03', area: '150 m2',   price: 'S/. 26,000', status: 'VENDIDO'    },
+          { x: 90,  y: 385, w: 280, h: 210, fill: '#dcfce7', code: 'Lote 04', area: '200 m2',   price: 'S/. 36,500', status: 'DISPONIBLE' },
+          { x: 375, y: 385, w: 280, h: 210, fill: '#fee2e2', code: 'Lote 05', area: '145.5 m2', price: 'S/. 24,800', status: 'VENDIDO'    },
+          { x: 660, y: 385, w: 290, h: 210, fill: '#fef3c7', code: 'Lote 06', area: '175 m2',   price: 'S/. 31,200', status: 'RESERVADO'  }
+        ];
 
-                const dx = p2[0] - p1[0];
-                const dy = p2[1] - p1[1];
-                const lenSq = dx * dx + dy * dy;
-                if (lenSq < 9) continue;
-                const t = ((pt[0] - p1[0]) * dx + (pt[1] - p1[1]) * dy) / lenSq;
-                if (t >= 0.05 && t <= 0.95) {
-                  const projX = p1[0] + t * dx;
-                  const projY = p1[1] + t * dy;
-                  const dist = Math.hypot(pt[0] - projX, pt[1] - projY);
-                  if (dist <= snapDist) {
-                    poligonos[i][vi] = [Math.round(projX), Math.round(projY)];
-                  }
-                }
-              }
-            }
-          }
-        }
+        // Pasaje / Calle central (sin bordes cerrados para no ser detectada como lote)
+        ctx.fillStyle = '#64748b';
+        ctx.font = 'bold 16px Arial, sans-serif';
+        ctx.fillText('PASAJE VEHICULAR PRINCIPAL (8.00 m)', c.width / 2, 345);
 
-        return poligonos;
+        // Dibujar cada lote con borde oscuro nítido y textos de alto contraste
+        lotesDemo.forEach((l) => {
+          ctx.fillStyle = l.fill;
+          ctx.fillRect(l.x, l.y, l.w, l.h);
+
+          ctx.lineWidth = 5;
+          ctx.strokeStyle = '#0f172a';
+          ctx.strokeRect(l.x, l.y, l.w, l.h);
+
+          const cx = l.x + l.w / 2;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+
+          ctx.fillStyle = '#0f172a';
+          ctx.font = 'bold 26px Arial, sans-serif';
+          ctx.fillText(l.code, cx, l.y + 48);
+
+          ctx.font = 'bold 21px Arial, sans-serif';
+          ctx.fillText(l.area, cx, l.y + 92);
+
+          ctx.font = 'bold 21px Arial, sans-serif';
+          ctx.fillText(l.price, cx, l.y + 132);
+
+          ctx.font = 'bold 20px Arial, sans-serif';
+          ctx.fillText(l.status, cx, l.y + 174);
+        });
+
+        return c.toDataURL('image/png');
       }
 
-      const TEMPLATE_CSS = `
-        :host { all: initial; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
-        *, *::before, *::after { box-sizing: border-box; }
-        .backdrop {
-          position: fixed; inset: 0; z-index: 2147483000;
-          background: rgba(11, 17, 32, 0.78); backdrop-filter: blur(6px);
-          display: none; align-items: center; justify-content: center; padding: 16px;
-        }
-        .backdrop.open { display: flex; }
-        .modal {
-          background: #0f172a; color: #f8fafc; border: 1px solid rgba(255,255,255,0.14);
-          border-radius: 16px; width: min(1160px, 100%); height: min(860px, 92vh);
-          display: flex; flex-direction: column; overflow: hidden;
-          box-shadow: 0 24px 60px rgba(0,0,0,0.55);
-        }
-        .header {
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); background: #0b1120;
-        }
-        .header h2 { margin: 0; font-size: 15px; font-weight: 800; color: #f8fafc; }
-        .header p { margin: 2px 0 0; font-size: 12px; color: #94a3b8; }
-        .btn-close {
-          border: none; background: rgba(255,255,255,0.1); color: #e2e8f0; width: 32px; height: 32px;
-          border-radius: 8px; cursor: pointer; font-size: 18px; line-height: 1;
-        }
-        .btn-close:hover { background: rgba(255,255,255,0.2); }
-        .body { flex: 1; display: grid; grid-template-columns: 1fr 330px; min-height: 0; }
-        @media (max-width: 860px) { .body { grid-template-columns: 1fr; grid-template-rows: 1fr 300px; } }
-        .stage {
-          position: relative; background: #020617; overflow: auto;
-          display: flex; padding: 16px;
-        }
-        .empty-state, .canvas-wrap { margin: auto; flex-shrink: 0; }
-        .empty-state {
-          text-align: center; color: #cbd5e1; border: 2px dashed #334155;
-          border-radius: 14px; padding: 40px 28px; max-width: 420px; cursor: pointer;
-        }
-        .empty-state:hover { border-color: #38bdf8; color: #ffffff; }
-        .canvas-wrap { position: relative; display: inline-block; box-shadow: 0 8px 30px rgba(0,0,0,0.6); line-height: 0; user-select: none; }
-        .canvas-wrap img { display: block; width: 100%; height: 100%; pointer-events: none; }
-        .vertex-dot { fill: #38bdf8; stroke: #ffffff; stroke-width: 1.5; cursor: move; }
-        .vertex-dot:hover { fill: #f59e0b; }
-        .canvas-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; }
-        .poly-shape { transition: fill 0.15s, stroke-width 0.15s; cursor: pointer; }
-        .poly-shape.selected { stroke-width: 3.5 !important; stroke: #38bdf8 !important; }
-        .poly-label {
-          font-size: 11px; font-weight: 800; fill: #ffffff;
-          paint-order: stroke; stroke: #0f172a; stroke-width: 3px; pointer-events: none;
-          text-anchor: middle; dominant-baseline: central;
-        }
-        .sidebar {
-          border-left: 1px solid rgba(255,255,255,0.1); background: #0f172a;
-          display: flex; flex-direction: column; min-height: 0; overflow-y: auto;
-          padding: 14px 16px; gap: 10px;
-        }
-        .lotizador-tabs {
-          display: flex; gap: 4px; background: #0b1120; padding: 4px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 2px;
-        }
-        .lotizador-tab-btn {
-          flex: 1; padding: 8px 8px; font-size: 11.5px; font-weight: 700; border: none; border-radius: 7px;
-          background: transparent; color: #94a3b8; cursor: pointer; transition: all 0.2s; text-align: center;
-        }
-        .lotizador-tab-btn:hover { color: #f8fafc; background: rgba(255,255,255,0.06); }
-        .lotizador-tab-btn.active { background: #38bdf8; color: #0b1120; font-weight: 800; }
-        .tab-panel { display: flex; flex-direction: column; gap: 10px; }
-        .tab-panel.hidden { display: none; }
-        .custom-plan-text {
-          cursor: move; user-select: none; font-family: 'Inter', system-ui, sans-serif;
-        }
-        .custom-plan-text.selected {
-          stroke: #38bdf8 !important; stroke-width: 4px !important;
-        }
-        .custom-plan-line {
-          cursor: pointer;
-        }
-        .custom-plan-line.selected {
-          stroke: #38bdf8 !important; stroke-width: 4px !important;
-        }
-        .line-handle {
-          fill: #38bdf8; stroke: #ffffff; stroke-width: 1.5; cursor: move;
-        }
-        .line-handle:hover { fill: #f59e0b; }
-        .item-list { max-height: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
-        .item-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; font-size: 11px; cursor: pointer; }
-        .item-row.selected { border-color: #38bdf8; background: rgba(56,189,248,0.12); }
-        .item-row:hover { background: #1e293b; }
-        .card { border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; background: #1e293b; }
-        .card h3 { margin: 0 0 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #94a3b8; }
-        .row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
-        .row:last-child { margin-bottom: 0; }
-        label.field { display: flex; flex-direction: column; gap: 4px; font-size: 11.5px; color: #cbd5e1; flex: 1; }
-        input[type="text"], input[type="number"], select {
-          width: 100%; padding: 7px 9px; border: 1px solid #334155; border-radius: 8px;
-          font-size: 12.5px; background: #0f172a; color: #f8fafc;
-        }
-        input[type="range"] { width: 100%; accent-color: #38bdf8; }
-        .btn {
-          border: 1px solid #334155; background: #0f172a; color: #f8fafc;
-          padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;
-          cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-        }
-        .btn:hover:not(:disabled) { background: #334155; }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .btn-primary { background: #38bdf8; border-color: #38bdf8; color: #0f172a; }
-        .btn-primary:hover:not(:disabled) { background: #7dd3fc; }
-        .btn-accent { background: #10b981; border-color: #10b981; color: #0f172a; }
-        .btn-accent:hover:not(:disabled) { background: #34d399; }
-        .btn-danger { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); color: #fca5a5; }
-        .btn-active { background: rgba(56,189,248,0.25); border-color: #38bdf8; color: #7dd3fc; }
-        .btn-warning { background: rgba(245,158,11,0.25); border-color: #f59e0b; color: #fbbf24; }
-        .btn-warning:hover:not(:disabled) { background: rgba(245,158,11,0.4); }
-        .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; background: #334155; color: #38bdf8; }
-        .status-bar { font-size: 11.5px; color: #94a3b8; min-height: 18px; margin-top: 4px; }
-        .footer {
-          display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between;
-          padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.1); background: #0b1120;
-        }
-        .footer-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-      `;
+      // =========================================================================
+      // 3. CONTROLADOR PRINCIPAL DEL CONVERTIDOR + OCR
+      // =========================================================================
+      let modalOptions = {};
+      const state = {
+        origImg: null,
+        imgNaturalW: 0,
+        imgNaturalH: 0,
+        workW: 0,
+        workH: 0,
+        workCanvas: document.createElement('canvas'),
+        workCtx: null,
+        lotes: [],
+        selectedId: null,
+        zoom: 1,
+        draggingVertex: null,
+        isProcessingOcr: false
+      };
+      state.workCtx = state.workCanvas.getContext('2d', { willReadFrequently: true });
 
-      const TEMPLATE_HTML = `
-        <div class="backdrop" id="backdrop">
-          <div class="modal" role="dialog" aria-modal="true" aria-label="Convertidor de Plano a Polígonos">
-            <div class="header">
-              <div>
-                <h2>Convertidor de Plano a Polígonos Interactivos</h2>
-                <p>Sube o carga la imagen del plano, detecta los lotes y agrégales textos y líneas personalizadas.</p>
-              </div>
-              <button class="btn-close" id="btnClose" title="Cerrar">&times;</button>
-            </div>
+      const $ = (id) => document.getElementById(id);
 
-            <div class="body">
-              <div class="stage" id="stage">
-                <div class="empty-state" id="emptyState">
-                  <div style="font-size:32px;margin-bottom:8px;">🗺️</div>
-                  <div style="font-weight:700;font-size:15px;margin-bottom:6px;">Sube la imagen de tu plano</div>
-                  <div style="font-size:12px;opacity:0.85;">Haz clic aquí o arrastra una imagen PNG / JPG de tu lotización</div>
-                </div>
-                <div class="canvas-wrap" id="canvasWrap" style="display:none;">
-                  <img id="previewImg" alt="Plano de lotización" />
-                  <svg id="overlaySvg"></svg>
-                </div>
-                <input type="file" id="fileInput" accept="image/*" style="display:none;" />
-              </div>
+      function setStatus(html) {
+        const el = $('statusBar');
+        if (el) el.innerHTML = html;
+      }
 
-              <aside class="sidebar">
-                <!-- PESTAÑAS: DETECTAR LOTES VS TEXTO Y LÍNEA -->
-                <div class="lotizador-tabs">
-                  <button class="lotizador-tab-btn active" id="tabBtnLotes">⚡ DETECTAR LOTES</button>
-                  <button class="lotizador-tab-btn" id="tabBtnTextLines">✏️ TEXTO Y LÍNEA (AGREGAR, EDITAR, BORRAR)</button>
-                </div>
+      function setOcrProgress(visible, label, pct) {
+        const wrap = $('ocrProgressWrap');
+        if (!wrap) return;
+        if (!visible) {
+          wrap.classList.add('hidden');
+          return;
+        }
+        wrap.classList.remove('hidden');
+        const lbl = $('ocrProgressLabel');
+        const num = $('ocrProgressPct');
+        const bar = $('ocrProgressBar');
+        if (lbl) lbl.textContent = label;
+        if (num) num.textContent = `${Math.round(pct)}%`;
+        if (bar) bar.style.width = `${Math.min(100, Math.max(0, pct))}%`;
+      }
 
-                <!-- PANEL 1: LOTES / POLÍGONOS -->
-                <div id="panelLotes" class="tab-panel">
-                  <div class="card">
-                    <h3>1. Imagen y Detección</h3>
-                    <div class="row">
-                      <button class="btn" id="btnUpload" style="flex:1;">📁 Subir imagen</button>
-                      <button class="btn btn-primary" id="btnDetect" style="flex:1;" disabled>⚡ Detectar lotes</button>
-                    </div>
-                    <label class="field" style="margin-top:8px;">
-                      <span>Sensibilidad de líneas (Umbral: <strong id="lblThreshold">185</strong>)</span>
-                      <input type="range" id="rngThreshold" min="80" max="240" value="185" />
-                    </label>
-                    <label class="field" style="margin-top:6px;">
-                      <span>Área mínima en px (<strong id="lblMinArea">350</strong>)</span>
-                      <input type="range" id="rngMinArea" min="80" max="3000" step="20" value="350" />
-                    </label>
-                    <div class="row" style="margin-top:8px;">
-                      <button class="btn btn-active" id="btnSnapSides" style="flex:1;" title="Une los bordes y vértices de los polígonos contiguos sin dejar huecos">🧲 Pegar lados contiguos</button>
-                    </div>
-                  </div>
+      // Carga de imagen desde archivo o DataURL
+      function cargarImagenDesdeSrc(srcUrl) {
+        if (!srcUrl) return;
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => procesarElementoImagen(img, srcUrl);
+        img.onerror = () => showToast('No se pudo cargar la imagen seleccionada.');
+        img.src = srcUrl;
+      }
 
-                  <div class="card">
-                    <h3>2. Zoom y Edición de Polígonos</h3>
-                    <div class="row">
-                      <button class="btn" id="btnZoomOut" style="flex:1;" disabled>🔍- Alejar</button>
-                      <button class="btn" id="btnZoomReset" style="flex:1;" disabled>100%</button>
-                      <button class="btn" id="btnZoomIn" style="flex:1;" disabled>🔍+ Acercar</button>
-                    </div>
-                    <div class="status-bar" id="statusBar">Sube una imagen para comenzar. Clic en borde agrega vértice · Anticlick en vértice lo elimina.</div>
-                  </div>
+      function cargarImagenArchivo(file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => cargarImagenDesdeSrc(ev.target.result);
+        reader.readAsDataURL(file);
+      }
 
-                  <div class="card" id="inspectorCard">
-                    <div class="row" style="justify-content:space-between;">
-                      <h3 style="margin:0;">3. Datos del Lote</h3>
-                      <span class="badge" id="badgeLoteId">L-01</span>
-                    </div>
-                    <div class="row">
-                      <label class="field" style="flex:1;">
-                        <span>N° de Lote</span>
-                        <input type="text" id="fldLoteNumero" placeholder="Ej. Lote 01 o Mz. A - Lote 01" />
-                      </label>
-                    </div>
-                    <div class="row">
-                      <label class="field">
-                        <span>Área (m²)</span>
-                        <input type="number" id="fldArea" step="0.01" />
-                      </label>
-                      <label class="field">
-                        <span>Estado</span>
-                        <select id="fldEstado">
-                          <option value="Disponible">Disponible</option>
-                          <option value="Reservado">Reservado</option>
-                          <option value="Vendido">Vendido</option>
-                        </select>
-                      </label>
-                    </div>
-                    <div class="row">
-                      <label class="field">
-                        <span>Precio (S/.)</span>
-                        <input type="text" id="fldPrecio" placeholder="Ej. 25000" />
-                      </label>
-                    </div>
-                    <div class="row" style="margin-top:8px;">
-                      <button class="btn btn-danger" id="btnDeletePoly" style="flex:1;">🗑️ Eliminar polígono</button>
-                    </div>
-                  </div>
-                </div>
+      function procesarElementoImagen(img, srcUrl) {
+        state.origImg = img;
+        state.imgNaturalW = img.naturalWidth || img.width || 1000;
+        state.imgNaturalH = img.naturalHeight || img.height || 700;
 
-                <!-- PANEL 2: TEXTO Y LÍNEAS -->
-                <div id="panelTextLines" class="tab-panel hidden">
-                  <!-- RÓTULOS DE TEXTO -->
-                  <div class="card">
-                    <div class="row" style="justify-content:space-between;">
-                      <h3 style="margin:0;">1. Textos en el Plano</h3>
-                      <span class="badge" id="badgeTextCount">0 textos</span>
-                    </div>
-                    <div class="row" style="margin-top:8px; gap:4px;">
-                      <button class="btn btn-primary" id="btnAddText" style="flex:1;" title="Colocar nuevo texto en el plano">➕ Agregar</button>
-                      <button class="btn btn-warning" id="btnEditText" style="flex:1;" disabled title="Editar texto seleccionado">✏️ Editar</button>
-                      <button class="btn btn-danger" id="btnDeleteText" style="flex:1;" disabled title="Borrar texto seleccionado">🗑️ Borrar</button>
-                    </div>
-                    <div id="textFormGroup" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;">
-                      <label class="field">
-                        <span>Contenido del Texto</span>
-                        <input type="text" id="fldCustomText" placeholder="Ej. Mz. A / Calle 1 / Área Verde" value="Mz. A" />
-                      </label>
-                      <div class="row">
-                        <label class="field">
-                          <span>Tamaño (px)</span>
-                          <input type="number" id="fldTextSize" min="8" max="72" value="15" />
-                        </label>
-                        <label class="field">
-                          <span>Color</span>
-                          <select id="fldTextColor">
-                            <option value="#ffffff" selected>Blanco (#ffffff)</option>
-                            <option value="#fbbf24">Amarillo (#fbbf24)</option>
-                            <option value="#38bdf8">Cian (#38bdf8)</option>
-                            <option value="#10b981">Verde (#10b981)</option>
-                            <option value="#f43f5e">Rojo / Rosa (#f43f5e)</option>
-                            <option value="#000000">Negro (#000000)</option>
-                          </select>
-                        </label>
-                      </div>
-                    </div>
-                    <div style="font-size:10.5px;color:#94a3b8;margin-top:6px;">Textos colocados:</div>
-                    <div class="item-list" id="textsList"></div>
-                  </div>
+        const maxDim = 1200;
+        const ratio = Math.min(1, maxDim / Math.max(state.imgNaturalW, state.imgNaturalH));
+        state.workW = Math.round(state.imgNaturalW * ratio);
+        state.workH = Math.round(state.imgNaturalH * ratio);
 
-                  <!-- LÍNEAS Y DELIMITACIONES -->
-                  <div class="card">
-                    <div class="row" style="justify-content:space-between;">
-                      <h3 style="margin:0;">2. Líneas y Trazos</h3>
-                      <span class="badge" id="badgeLineCount">0 líneas</span>
-                    </div>
-                    <div class="row" style="margin-top:8px; gap:4px;">
-                      <button class="btn btn-primary" id="btnAddLine" style="flex:1;" title="Trazar nueva línea en el plano">➕ Trazar</button>
-                      <button class="btn btn-warning" id="btnEditLine" style="flex:1;" disabled title="Editar línea seleccionada">✏️ Editar</button>
-                      <button class="btn btn-danger" id="btnDeleteLine" style="flex:1;" disabled title="Borrar línea seleccionada">🗑️ Borrar</button>
-                    </div>
-                    <div id="lineFormGroup" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;">
-                      <div class="row">
-                        <label class="field">
-                          <span>Color de Línea</span>
-                          <select id="fldLineColor">
-                            <option value="#38bdf8" selected>Cian (#38bdf8)</option>
-                            <option value="#fbbf24">Amarillo (#fbbf24)</option>
-                            <option value="#10b981">Verde (#10b981)</option>
-                            <option value="#ffffff">Blanco (#ffffff)</option>
-                            <option value="#ef4444">Rojo (#ef4444)</option>
-                          </select>
-                        </label>
-                        <label class="field">
-                          <span>Grosor</span>
-                          <select id="fldLineWidth">
-                            <option value="1">1 px</option>
-                            <option value="2" selected>2 px</option>
-                            <option value="3">3 px</option>
-                            <option value="5">5 px</option>
-                          </select>
-                        </label>
-                      </div>
-                      <label class="field">
-                        <span>Estilo de Trazo</span>
-                        <select id="fldLineStyle">
-                          <option value="solid" selected>Línea Continua</option>
-                          <option value="dashed">Línea Discontinua / Punteada</option>
-                        </select>
-                      </label>
-                    </div>
-                    <div style="font-size:10.5px;color:#94a3b8;margin-top:6px;">Líneas trazadas:</div>
-                    <div class="item-list" id="linesList"></div>
-                  </div>
-                </div>
-              </aside>
-            </div>
+        state.workCanvas.width = state.workW;
+        state.workCanvas.height = state.workH;
+        state.workCtx.drawImage(img, 0, 0, state.workW, state.workH);
 
-            <div class="footer">
-              <div style="font-size:12px;color:#94a3b8;">
-                Lotes: <strong id="lblCount" style="color:#fff;">0</strong> · Escala: <strong id="lblScale" style="color:#38bdf8;">Sin calibrar</strong>
-              </div>
-              <div class="footer-actions">
-                <button class="btn" id="btnCopySvg" disabled>Copiar SVG</button>
-                <button class="btn" id="btnDownloadJson" disabled>Descargar JSON</button>
-                <button class="btn btn-accent" id="btnApply" disabled>Aplicar al mapa</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
+        const prev = $('previewImg');
+        if (prev) prev.src = srcUrl;
+        const empty = $('emptyState');
+        if (empty) empty.classList.add('hidden');
+        const wrap = $('canvasWrap');
+        if (wrap) wrap.classList.remove('hidden');
+        const svg = $('overlaySvg');
+        if (svg) svg.setAttribute('viewBox', `0 0 ${state.workW} ${state.workH}`);
 
-      class LotizadorModal {
-        constructor() {
-          this.host = null;
-          this.shadow = null;
-          this.options = {};
-          this.imgNaturalW = 0;
-          this.imgNaturalH = 0;
-          this.workW = 0;
-          this.workH = 0;
-          this.workCanvas = document.createElement('canvas');
-          this.workCtx = this.workCanvas.getContext('2d', { willReadFrequently: true });
-          this.lotes = [];
-          this.selectedId = null;
-          this.metersPerPixel = null;
-          this.zoom = 1;
-          this.draggingVertex = null;
+        state.lotes = [];
+        state.selectedId = null;
 
-          // Pestañas y elementos interactivos personalizados (Textos y Líneas)
-          this.currentTab = 'lotes';
-          this.customTexts = [];
-          this.selectedTextId = null;
-          this.customLines = [];
-          this.selectedLineId = null;
-          this.actionState = null; // 'add_text' | 'add_line_start' | 'add_line_end' | 'drag_text' | 'drag_line_handle'
-          this.lineTempStart = null;
-          this.draggingLineHandle = null;
-          this.draggingTextId = null;
+        if ($('btnDetect')) $('btnDetect').disabled = false;
+        if ($('btnZoomIn')) $('btnZoomIn').disabled = false;
+        if ($('btnZoomOut')) $('btnZoomOut').disabled = false;
+        if ($('btnZoomReset')) $('btnZoomReset').disabled = false;
+        if ($('btnSnapSides')) $('btnSnapSides').disabled = true;
+
+        // Ajustar zoom inicial para que quepa cómodamente en el stage
+        const stage = $('stage');
+        if (stage) {
+          const fitZoom = Math.min(
+            1,
+            (stage.clientWidth - 40) / Math.max(1, state.workW),
+            (stage.clientHeight - 40) / Math.max(1, state.workH)
+          );
+          setZoom(Math.max(0.45, fitZoom));
         }
 
-        ensureMounted() {
-          if (this.host) return;
-          this.host = document.createElement('div');
-          this.host.id = 'lotizador-imagen-modulo-host';
-          this.shadow = this.host.attachShadow({ mode: 'open' });
+        setOcrProgress(false);
+        setStatus(`Imagen cargada (<strong>${state.imgNaturalW}×${state.imgNaturalH}px</strong>). Pulsa <strong>⚡ Detectar lotes</strong> para detectar polígonos y leer sus datos con OCR.`);
+        renderOverlay();
+      }
 
-          const style = document.createElement('style');
-          style.textContent = TEMPLATE_CSS;
-          const wrapper = document.createElement('div');
-          wrapper.innerHTML = TEMPLATE_HTML;
+      // Análisis cromático de respaldo + inicialización de cada lote
+      function reconocerDatosBaseLote(pts, idx, medianPx) {
+        const numStr = String(idx + 1).padStart(2, '0');
+        const areaPx = calcularAreaPx(pts);
+        const perimPx = calcularPerimetroPx(pts);
+        const ratio = Math.max(0.35, Math.min(3.5, areaPx / (medianPx || areaPx || 1000)));
+        const areaEstimada = Math.max(30, Math.round(150 * ratio));
 
-          this.shadow.appendChild(style);
-          this.shadow.appendChild(wrapper);
-          document.body.appendChild(this.host);
-          this.bindEvents();
-        }
-
-        $(id) { return this.shadow.getElementById(id); }
-
-        bindEvents() {
-          this.$('btnClose').addEventListener('click', () => this.cerrar());
-          this.$('backdrop').addEventListener('click', (e) => { if (e.target === this.$('backdrop')) this.cerrar(); });
-
-          // Pestañas (Lotes / Polígonos vs Texto y Líneas)
-          this.$('tabBtnLotes').addEventListener('click', () => this.switchTab('lotes'));
-          this.$('tabBtnTextLines').addEventListener('click', () => this.switchTab('textLines'));
-
-          const triggerUpload = () => this.$('fileInput').click();
-          this.$('emptyState').addEventListener('click', triggerUpload);
-          this.$('btnUpload').addEventListener('click', triggerUpload);
-
-          this.$('stage').addEventListener('dragover', (e) => e.preventDefault());
-          this.$('stage').addEventListener('drop', (e) => {
-            e.preventDefault();
-            const file = e.dataTransfer?.files?.[0];
-            if (file && file.type.startsWith('image/')) this.cargarImagenArchivo(file);
+        // Análisis cromático interior para estado de respaldo
+        let estado = 'Disponible';
+        try {
+          let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+          pts.forEach(([px, py]) => {
+            if (px < minX) minX = px;
+            if (px > maxX) maxX = px;
+            if (py < minY) minY = py;
+            if (py > maxY) maxY = py;
           });
+          minX = Math.max(0, Math.floor(minX));
+          maxX = Math.min(state.workW - 1, Math.ceil(maxX));
+          minY = Math.max(0, Math.floor(minY));
+          maxY = Math.min(state.workH - 1, Math.ceil(maxY));
 
-          this.$('fileInput').addEventListener('change', (e) => {
-            const file = e.target.files?.[0];
-            if (file) this.cargarImagenArchivo(file);
-            e.target.value = '';
-          });
+          const wBox = maxX - minX;
+          const hBox = maxY - minY;
+          if (wBox > 4 && hBox > 4) {
+            const cropData = state.workCtx.getImageData(minX, minY, wBox, hBox).data;
+            let redCount = 0, yellowCount = 0, greenCount = 0;
+            const stepY = Math.max(1, Math.floor(hBox / 16));
+            const stepX = Math.max(1, Math.floor(wBox / 16));
 
-          this.$('rngThreshold').addEventListener('input', (e) => { this.$('lblThreshold').textContent = e.target.value; });
-          this.$('rngMinArea').addEventListener('input', (e) => { this.$('lblMinArea').textContent = e.target.value; });
+            for (let sy = 2; sy < hBox - 2; sy += stepY) {
+              for (let sx = 2; sx < wBox - 2; sx += stepX) {
+                if (!puntoEnPoligono([minX + sx, minY + sy], pts)) continue;
+                const pIdx = (sy * wBox + sx) * 4;
+                const r = cropData[pIdx], g = cropData[pIdx + 1], b = cropData[pIdx + 2];
+                const lum = 0.299 * r + 0.587 * g + 0.114 * b;
 
-          this.$('btnDetect').addEventListener('click', () => this.ejecutarDeteccion());
-          this.$('btnSnapSides').addEventListener('click', () => this.pegarLadosContiguos());
+                // Ignorar texto negro o fondo blanco puro
+                if (lum < 60 || (r > 248 && g > 248 && b > 248)) continue;
 
-          this.$('btnZoomIn').addEventListener('click', () => this.setZoom(this.zoom * 1.25));
-          this.$('btnZoomOut').addEventListener('click', () => this.setZoom(this.zoom / 1.25));
-          this.$('btnZoomReset').addEventListener('click', () => this.setZoom(1));
-
-          this.$('stage').addEventListener('wheel', (e) => {
-            if (!this.workW) return;
-            e.preventDefault();
-            this.setZoom(e.deltaY < 0 ? this.zoom * 1.12 : this.zoom / 1.12);
-          }, { passive: false });
-
-          const svgEl = this.$('overlaySvg');
-          svgEl.addEventListener('click', (e) => this.onSvgClick(e));
-          svgEl.addEventListener('mousedown', (e) => this.onSvgMouseDown(e));
-          svgEl.addEventListener('mousemove', (e) => this.onSvgMouseMove(e));
-          window.addEventListener('mouseup', () => {
-            this.draggingVertex = null;
-            this.draggingTextId = null;
-            this.draggingLineHandle = null;
-          });
-          svgEl.addEventListener('contextmenu', (e) => this.onSvgContextMenu(e));
-
-          // Inspector de Lotes
-          ['fldLoteNumero', 'fldArea', 'fldEstado', 'fldPrecio'].forEach((id) => {
-            const el = this.$(id);
-            if (el) el.addEventListener('input', () => this.actualizarLoteSeleccionado());
-          });
-
-          this.$('btnDeletePoly').addEventListener('click', () => {
-            if (!this.selectedId) return;
-            this.lotes = this.lotes.filter((l) => l.id !== this.selectedId);
-            this.selectedId = this.lotes[0]?.id || null;
-            this.renderOverlay();
-          });
-
-          // Acciones de Texto
-          this.$('btnAddText').addEventListener('click', () => this.iniciarAgregarTexto());
-          this.$('btnEditText').addEventListener('click', () => this.actualizarTextoSeleccionado());
-          ['fldCustomText', 'fldTextSize', 'fldTextColor'].forEach((id) => {
-            this.$(id).addEventListener('input', () => this.actualizarTextoSeleccionado());
-          });
-          this.$('btnDeleteText').addEventListener('click', () => this.borrarTextoSeleccionado());
-
-          // Acciones de Línea
-          this.$('btnAddLine').addEventListener('click', () => this.iniciarTrazarLinea());
-          this.$('btnEditLine').addEventListener('click', () => this.actualizarLineaSeleccionada());
-          ['fldLineColor', 'fldLineWidth', 'fldLineStyle'].forEach((id) => {
-            this.$(id).addEventListener('change', () => this.actualizarLineaSeleccionada());
-          });
-          this.$('btnDeleteLine').addEventListener('click', () => this.borrarLineaSeleccionada());
-
-          // Exportar
-          this.$('btnCopySvg').addEventListener('click', () => this.copiarSvg());
-          this.$('btnDownloadJson').addEventListener('click', () => this.descargarJson());
-          this.$('btnApply').addEventListener('click', () => this.aplicarExportacion());
-        }
-
-        switchTab(tabName) {
-          this.currentTab = tabName;
-          this.$('tabBtnLotes').classList.toggle('active', tabName === 'lotes');
-          this.$('tabBtnTextLines').classList.toggle('active', tabName === 'textLines');
-          this.$('panelLotes').classList.toggle('hidden', tabName !== 'lotes');
-          this.$('panelTextLines').classList.toggle('hidden', tabName !== 'textLines');
-          if (tabName === 'textLines') {
-            this.renderTextLinesList();
-          }
-        }
-
-        pegarLadosContiguos() {
-          if (!this.lotes || this.lotes.length < 2) {
-            this.setStatus('Se requieren al menos 2 lotes para pegar sus lados.');
-            return;
-          }
-          const rawPolys = this.lotes.map(l => l.points);
-          const snapped = snapAdjacentPolygons(rawPolys, 8);
-          snapped.forEach((pts, idx) => {
-            if (this.lotes[idx]) {
-              this.lotes[idx].points = pts;
-              this.lotes[idx].areaPx = calcularAreaPx(pts);
-              this.lotes[idx].perimPx = calcularPerimetroPx(pts);
-            }
-          });
-          this.recalcularMetricas();
-          this.renderOverlay(true);
-          this.setStatus('🧲 Lados de polígonos contiguos perfectamente pegados y unificados sin huecos.');
-        }
-
-        // ================= GESTIÓN DE TEXTOS =================
-        iniciarAgregarTexto() {
-          const txt = (this.$('fldCustomText').value || '').trim() || 'Mz. A';
-          this.actionState = 'add_text';
-          this.setStatus(`Haz clic sobre el plano para colocar el texto: "${txt}"`);
-        }
-
-        colocarTexto(pt) {
-          const text = (this.$('fldCustomText').value || '').trim() || 'Mz. A';
-          const size = parseInt(this.$('fldTextSize').value, 10) || 15;
-          const color = this.$('fldTextColor').value || '#ffffff';
-          const id = `txt-${Date.now().toString(36).slice(-4)}`;
-          const item = { id, text, x: pt[0], y: pt[1], size, color };
-          this.customTexts.push(item);
-          this.selectedTextId = id;
-          this.actionState = null;
-          this.renderOverlay();
-          this.renderTextLinesList();
-          this.setStatus(`Texto "${text}" colocado.`);
-        }
-
-        seleccionarTexto(id) {
-          this.selectedTextId = id;
-          this.selectedLineId = null;
-          this.selectedId = null;
-          const t = this.customTexts.find(x => x.id === id);
-          if (t) {
-            this.switchTab('textLines');
-            this.$('fldCustomText').value = t.text;
-            this.$('fldTextSize').value = t.size;
-            this.$('fldTextColor').value = t.color;
-            this.$('btnEditText').disabled = false;
-            this.$('btnDeleteText').disabled = false;
-          }
-          this.renderOverlay();
-          this.renderTextLinesList();
-        }
-
-        actualizarTextoSeleccionado() {
-          if (!this.selectedTextId) return;
-          const t = this.customTexts.find(x => x.id === this.selectedTextId);
-          if (!t) return;
-          t.text = this.$('fldCustomText').value;
-          t.size = parseInt(this.$('fldTextSize').value, 10) || 15;
-          t.color = this.$('fldTextColor').value;
-          this.renderOverlay();
-          this.renderTextLinesList();
-        }
-
-        borrarTextoSeleccionado() {
-          if (!this.selectedTextId) return;
-          this.customTexts = this.customTexts.filter(x => x.id !== this.selectedTextId);
-          this.selectedTextId = null;
-          this.$('btnEditText').disabled = true;
-          this.$('btnDeleteText').disabled = true;
-          this.renderOverlay();
-          this.renderTextLinesList();
-          this.setStatus('Texto eliminado.');
-        }
-
-        // ================= GESTIÓN DE LÍNEAS =================
-        iniciarTrazarLinea() {
-          this.actionState = 'add_line_start';
-          this.lineTempStart = null;
-          this.setStatus('Haz clic en el plano para marcar el punto INICIAL de la línea.');
-        }
-
-        gestionarClickLinea(pt) {
-          if (this.actionState === 'add_line_start') {
-            this.lineTempStart = pt;
-            this.actionState = 'add_line_end';
-            this.setStatus('Haz clic en el plano para marcar el punto FINAL de la línea.');
-          } else if (this.actionState === 'add_line_end') {
-            const color = this.$('fldLineColor').value || '#38bdf8';
-            const width = parseInt(this.$('fldLineWidth').value, 10) || 2;
-            const dash = this.$('fldLineStyle').value || 'solid';
-            const id = `line-${Date.now().toString(36).slice(-4)}`;
-            const newLine = {
-              id,
-              x1: this.lineTempStart[0],
-              y1: this.lineTempStart[1],
-              x2: pt[0],
-              y2: pt[1],
-              color,
-              width,
-              dash
-            };
-            this.customLines.push(newLine);
-            this.selectedLineId = id;
-            this.actionState = null;
-            this.lineTempStart = null;
-            this.renderOverlay();
-            this.renderTextLinesList();
-            this.setStatus('Línea trazada con éxito.');
-          }
-        }
-
-        seleccionarLinea(id) {
-          this.selectedLineId = id;
-          this.selectedTextId = null;
-          this.selectedId = null;
-          const l = this.customLines.find(x => x.id === id);
-          if (l) {
-            this.switchTab('textLines');
-            this.$('fldLineColor').value = l.color;
-            this.$('fldLineWidth').value = l.width;
-            this.$('fldLineStyle').value = l.dash;
-            this.$('btnEditLine').disabled = false;
-            this.$('btnDeleteLine').disabled = false;
-          }
-          this.renderOverlay();
-          this.renderTextLinesList();
-        }
-
-        actualizarLineaSeleccionada() {
-          if (!this.selectedLineId) return;
-          const l = this.customLines.find(x => x.id === this.selectedLineId);
-          if (!l) return;
-          l.color = this.$('fldLineColor').value;
-          l.width = parseInt(this.$('fldLineWidth').value, 10) || 2;
-          l.dash = this.$('fldLineStyle').value;
-          this.renderOverlay();
-          this.renderTextLinesList();
-        }
-
-        borrarLineaSeleccionada() {
-          if (!this.selectedLineId) return;
-          this.customLines = this.customLines.filter(x => x.id !== this.selectedLineId);
-          this.selectedLineId = null;
-          this.$('btnEditLine').disabled = true;
-          this.$('btnDeleteLine').disabled = true;
-          this.renderOverlay();
-          this.renderTextLinesList();
-          this.setStatus('Línea eliminada.');
-        }
-
-        renderTextLinesList() {
-          this.$('badgeTextCount').textContent = `${this.customTexts.length} textos`;
-          this.$('badgeLineCount').textContent = `${this.customLines.length} líneas`;
-
-          // Lista de Textos
-          const tBody = this.$('textsList');
-          if (tBody) {
-            if (!this.customTexts.length) {
-              tBody.innerHTML = '<div style="font-size:10px;color:#64748b;padding:4px 0;">Sin textos en el plano.</div>';
-            } else {
-              tBody.innerHTML = this.customTexts.map(t => {
-                const isSel = t.id === this.selectedTextId;
-                return `
-                  <div class="item-row ${isSel ? 'selected' : ''}" data-item-text="${t.id}">
-                    <span style="font-weight:700;color:${t.color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;">${escapeHtml(t.text)} (${t.size}px)</span>
-                    <div style="display:flex;gap:4px;align-items:center;">
-                      <button type="button" data-edit-text="${t.id}" title="Editar este texto" style="background:rgba(245,158,11,0.25);color:#fbbf24;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✏️</button>
-                      <button type="button" data-del-text="${t.id}" title="Eliminar este texto" style="background:rgba(239,68,68,0.25);color:#fca5a5;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✕</button>
-                    </div>
-                  </div>
-                `;
-              }).join('');
-
-              tBody.querySelectorAll('[data-item-text]').forEach(el => {
-                el.addEventListener('click', (e) => {
-                  if (e.target.closest('[data-del-text]') || e.target.closest('[data-edit-text]')) return;
-                  this.seleccionarTexto(el.getAttribute('data-item-text'));
-                });
-              });
-
-              tBody.querySelectorAll('[data-edit-text]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                  e.stopPropagation();
-                  this.seleccionarTexto(btn.getAttribute('data-edit-text'));
-                  const fld = this.$('fldCustomText');
-                  if (fld) { fld.focus(); fld.select(); }
-                });
-              });
-
-              tBody.querySelectorAll('[data-del-text]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                  e.stopPropagation();
-                  this.selectedTextId = btn.getAttribute('data-del-text');
-                  this.borrarTextoSeleccionado();
-                });
-              });
-            }
-          }
-
-          // Lista de Líneas
-          const lBody = this.$('linesList');
-          if (lBody) {
-            if (!this.customLines.length) {
-              lBody.innerHTML = '<div style="font-size:10px;color:#64748b;padding:4px 0;">Sin líneas trazadas.</div>';
-            } else {
-              lBody.innerHTML = this.customLines.map((l, i) => {
-                const isSel = l.id === this.selectedLineId;
-                return `
-                  <div class="item-row ${isSel ? 'selected' : ''}" data-item-line="${l.id}">
-                    <span style="font-weight:700;color:${l.color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;">Línea #${i + 1} (${l.width}px · ${l.dash === 'dashed' ? 'Puntos' : 'Sólida'})</span>
-                    <div style="display:flex;gap:4px;align-items:center;">
-                      <button type="button" data-edit-line="${l.id}" title="Editar esta línea" style="background:rgba(245,158,11,0.25);color:#fbbf24;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✏️</button>
-                      <button type="button" data-del-line="${l.id}" title="Eliminar esta línea" style="background:rgba(239,68,68,0.25);color:#fca5a5;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✕</button>
-                    </div>
-                  </div>
-                `;
-              }).join('');
-
-              lBody.querySelectorAll('[data-item-line]').forEach(el => {
-                el.addEventListener('click', (e) => {
-                  if (e.target.closest('[data-del-line]') || e.target.closest('[data-edit-line]')) return;
-                  this.seleccionarLinea(el.getAttribute('data-item-line'));
-                });
-              });
-
-              lBody.querySelectorAll('[data-edit-line]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                  e.stopPropagation();
-                  this.seleccionarLinea(btn.getAttribute('data-edit-line'));
-                });
-              });
-
-              lBody.querySelectorAll('[data-del-line]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                  e.stopPropagation();
-                  this.selectedLineId = btn.getAttribute('data-del-line');
-                  this.borrarLineaSeleccionada();
-                });
-              });
-            }
-          }
-        }
-
-        abrir(options = {}) {
-          this.options = options;
-          this.ensureMounted();
-          this.$('backdrop').classList.add('open');
-          if (options.initialTab) {
-            this.switchTab(options.initialTab);
-          }
-          if (options.initialImageUrl && !this.imgNaturalW) {
-            this.cargarImagenDesdeUrl(options.initialImageUrl);
-          }
-        }
-
-        cerrar() {
-          if (this.shadow) this.$('backdrop').classList.remove('open');
-        }
-
-        setStatus(msg) { this.$('statusBar').textContent = msg; }
-
-        cargarImagenDesdeUrl(url) {
-          const img = new Image();
-          img.crossOrigin = 'anonymous';
-          img.onload = () => this.procesarElementoImagen(img, url);
-          img.onerror = () => {
-            // Intento con proxy para evitar bloqueo por CORS de la URL externa
-            const proxyUrl = 'https://images.weserv.nl/?url=' + encodeURIComponent(url.replace(/^https?:\/\//, ''));
-            const fallbackImg = new Image();
-            fallbackImg.crossOrigin = 'anonymous';
-            fallbackImg.onload = () => this.procesarElementoImagen(fallbackImg, proxyUrl);
-            fallbackImg.onerror = () => {
-              this.setStatus('La URL externa bloquea lectura directa; sube la imagen desde tu equipo con el botón 📁.');
-            };
-            fallbackImg.src = proxyUrl;
-          };
-          img.src = url;
-        }
-
-        cargarImagenArchivo(file) {
-          const reader = new FileReader();
-          reader.onload = (ev) => {
-            const img = new Image();
-            img.onload = () => this.procesarElementoImagen(img, ev.target.result);
-            img.src = ev.target.result;
-          };
-          reader.readAsDataURL(file);
-        }
-
-        procesarElementoImagen(img, srcUrl) {
-          this.imgNaturalW = img.naturalWidth;
-          this.imgNaturalH = img.naturalHeight;
-
-          const maxDim = 1200;
-          const ratio = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
-          this.workW = Math.round(img.naturalWidth * ratio);
-          this.workH = Math.round(img.naturalHeight * ratio);
-
-          this.workCanvas.width = this.workW;
-          this.workCanvas.height = this.workH;
-          this.workCtx.drawImage(img, 0, 0, this.workW, this.workH);
-
-          this.$('previewImg').src = srcUrl;
-          this.$('emptyState').style.display = 'none';
-          this.$('canvasWrap').style.display = 'inline-block';
-          this.$('overlaySvg').setAttribute('viewBox', `0 0 ${this.workW} ${this.workH}`);
-
-          this.lotes = [];
-          this.selectedId = null;
-          this.metersPerPixel = null;
-          this.$('lblScale').textContent = 'Sin calibrar';
-          this.$('btnDetect').disabled = false;
-          this.$('btnZoomIn').disabled = false;
-          this.$('btnZoomOut').disabled = false;
-          this.$('btnZoomReset').disabled = false;
-          this.setZoom(1);
-
-          this.setStatus(`Imagen cargada (${this.imgNaturalW}×${this.imgNaturalH}px). Pulsa "Detectar lotes".`);
-          this.renderOverlay();
-        }
-
-        // RECONOCIMIENTO INTELIGENTE DE DATOS DE LA IMAGEN (N° DE LOTE, ÁREA, ESTADO Y PRECIO)
-        reconocerDatosDeImagenLote(pts, idx, medianPx = null) {
-          const num = idx + 1;
-          const numStr = String(num).padStart(2, '0');
-          const loteNumero = `Lote ${numStr}`;
-          const areaPx = calcularAreaPx(pts);
-          const perimPx = calcularPerimetroPx(pts);
-
-          // 1. Reconocimiento de Área (m²)
-          let areaM2;
-          if (this.metersPerPixel) {
-            areaM2 = +(areaPx * this.metersPerPixel * this.metersPerPixel).toFixed(2);
-          } else {
-            const baseMedian = medianPx || areaPx || 1000;
-            const ratio = Math.max(0.35, Math.min(3.5, areaPx / baseMedian));
-            areaM2 = Math.round(120 * ratio);
-          }
-          areaM2 = Math.max(30, areaM2);
-
-          // 2. Reconocimiento de Estado (DISPONIBLE, RESERVADO, VENDIDO) mediante análisis cromático de los píxeles interiores
-          let estado = 'Disponible';
-          try {
-            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-            pts.forEach(([px, py]) => {
-              if (px < minX) minX = px;
-              if (px > maxX) maxX = px;
-              if (py < minY) minY = py;
-              if (py > maxY) maxY = py;
-            });
-            minX = Math.max(0, Math.floor(minX));
-            maxX = Math.min(this.workW - 1, Math.ceil(maxX));
-            minY = Math.max(0, Math.floor(minY));
-            maxY = Math.min(this.workH - 1, Math.ceil(maxY));
-
-            const wBox = maxX - minX;
-            const hBox = maxY - minY;
-            if (wBox > 4 && hBox > 4) {
-              const cropData = this.workCtx.getImageData(minX, minY, wBox, hBox).data;
-              let redCount = 0;
-              let yellowCount = 0;
-              let greenCount = 0;
-
-              for (let sy = 2; sy < hBox - 2; sy += Math.max(1, Math.floor(hBox / 14))) {
-                for (let sx = 2; sx < wBox - 2; sx += Math.max(1, Math.floor(wBox / 14))) {
-                  const worldX = minX + sx;
-                  const worldY = minY + sy;
-                  if (puntoEnPoligono([worldX, worldY], pts)) {
-                    const pIdx = (sy * wBox + sx) * 4;
-                    const r = cropData[pIdx];
-                    const g = cropData[pIdx + 1];
-                    const b = cropData[pIdx + 2];
-                    const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-
-                    if (lum > 50 && lum < 240) {
-                      // Tonalidad Roja / Rosa / Burdeos -> VENDIDO
-                      if (r > 135 && (r - g > 25) && (r - b > 25)) {
-                        redCount++;
-                      }
-                      // Tonalidad Amarilla / Naranja / Ámbar -> RESERVADO
-                      else if (r > 145 && g > 115 && b < 105 && (r + g > b * 2)) {
-                        yellowCount++;
-                      }
-                      // Tonalidad Verde clara -> DISPONIBLE
-                      else if (g > 120 && (g - r > 20) && (g - b > 20)) {
-                        greenCount++;
-                      }
-                    }
-                  }
+                // Ámbar / Amarillo (pastel o vivo)
+                if (r > 150 && g > 125 && (r - b > 28) && (g - b > 20)) {
+                  yellowCount++;
+                }
+                // Rojo / Rosado (pastel o vivo)
+                else if (r > 140 && (r - g > 18) && (r - b > 18)) {
+                  redCount++;
+                }
+                // Verde (pastel o vivo)
+                else if (g > 120 && (g - r > 15) && (g - b > 12)) {
+                  greenCount++;
                 }
               }
-
-              if (redCount > 3 && redCount > yellowCount && redCount > greenCount) {
-                estado = 'Vendido';
-              } else if (yellowCount > 3 && yellowCount > greenCount) {
-                estado = 'Reservado';
-              } else {
-                estado = 'Disponible';
-              }
             }
-          } catch (e) {
-            estado = 'Disponible';
+
+            if (redCount > 3 && redCount >= yellowCount && redCount >= greenCount) {
+              estado = 'Vendido';
+            } else if (yellowCount > 3 && yellowCount >= greenCount) {
+              estado = 'Reservado';
+            } else {
+              estado = 'Disponible';
+            }
           }
-
-          // 3. Reconocimiento de Precio (S/.) proporcional al metraje reconocido
-          const precioSoles = Math.round(areaM2 * 190);
-
-          return {
-            id: `L-${numStr}-${Date.now().toString(36).slice(-3)}`,
-            lote_numero: loteNumero,
-            manzana: 'A',
-            lote: numStr,
-            estado,
-            precio: String(precioSoles),
-            points: pts,
-            areaPx,
-            perimPx,
-            area_m2: areaM2,
-            perimetro_m: this.metersPerPixel ? +(perimPx * this.metersPerPixel).toFixed(2) : +perimPx.toFixed(0)
-          };
+        } catch (err) {
+          estado = 'Disponible';
         }
 
-        ejecutarDeteccion() {
-          try {
-            this.setStatus('Procesando imagen, detectando polígonos y reconociendo datos (N° de Lote, Área, Estado y Precio)...');
-            const imgData = this.workCtx.getImageData(0, 0, this.workW, this.workH);
-            const umbral = Number(this.$('rngThreshold').value);
-            const minAreaPx = Number(this.$('rngMinArea').value);
+        return {
+          id: `L-${numStr}-${Date.now().toString(36).slice(-3)}`,
+          lote_numero: `Lote ${numStr}`,
+          lote: numStr,
+          estado,
+          precio: String(Math.round(areaEstimada * 180)),
+          points: pts,
+          areaPx,
+          perimPx,
+          area_m2: areaEstimada,
+          ocrRaw: '',
+          ocrMatched: false
+        };
+      }
 
-            let poligonos = detectarPoligonosDesdeImageData(imgData, {
-              umbral, minAreaPx, grosorBorde: 0, simplificacion: 2.5
-            });
+      // Parser inteligente del texto reconocido por Tesseract OCR
+      function extraerDatosDesdeTextoOCR(rawText) {
+        const text = String(rawText || '').replace(/\r/g, '\n').trim();
+        const upper = text.toUpperCase();
+        const res = { lote_numero: null, area_m2: null, estado: null, precio: null };
 
-            if (!poligonos.length) {
-              this.setStatus('No se detectaron polígonos con los parámetros actuales. Ajusta la sensibilidad de líneas.');
+        // 1. Estado: DISPONIBLE / RESERVADO / VENDIDO
+        if (/\b(VENDIDO|VEND\.?)\b/.test(upper)) {
+          res.estado = 'Vendido';
+        } else if (/\b(RESERVADO|RESERV\.?)\b/.test(upper)) {
+          res.estado = 'Reservado';
+        } else if (/\b(DISPONIBLE|DISP\.?)\b/.test(upper)) {
+          res.estado = 'Disponible';
+        }
+
+        // 2. Número de Lote (unificado: "Lote 01", "Mz. A - Lote 02", etc.)
+        const matchMzLt = text.match(/\b(Mz\.?\s*[A-Za-z0-9]+)\s*[-/,\s]?\s*(?:Lt\.?|Lote)?\s*([0-9]{1,3})\b/i);
+        if (matchMzLt) {
+          res.lote_numero = `${matchMzLt[1]} - Lote ${matchMzLt[2].padStart(2, '0')}`;
+        } else {
+          const matchLt = text.match(/\b(?:LOTE|LT\.?|L\.)\s*([0-9]{1,3})\b/i);
+          if (matchLt) {
+            res.lote_numero = `Lote ${matchLt[1].padStart(2, '0')}`;
+          } else {
+            const matchJustNum = text.match(/^\s*([0-9]{1,3})\s*$/m);
+            if (matchJustNum) {
+              res.lote_numero = `Lote ${matchJustNum[1].padStart(2, '0')}`;
+            }
+          }
+        }
+
+        // 3. Área en m² (ej. "160 m2", "145.50 m²", "A=180", "120.00 M2")
+        const matchArea = text.match(/(?:ÁREA|AREA|A\s*[:=])?\s*([0-9]{2,4}(?:[.,][0-9]{1,2})?)\s*(?:M2|M²|MT2|MTS2)/i);
+        if (matchArea) {
+          const parsed = parseFloat(matchArea[1].replace(',', '.'));
+          if (!isNaN(parsed) && parsed >= 20 && parsed <= 5000) res.area_m2 = parsed;
+        }
+
+        // 4. Precio (ej. "S/. 28,500", "$ 15000", "28500", "S/ 32.000")
+        const matchPrice = text.match(/(?:S\/?\.?|\$)\s*([0-9]{1,3}(?:[.,\s][0-9]{3})*(?:[.,][0-9]{2})?)/i);
+        if (matchPrice) {
+          const clean = matchPrice[1].replace(/[\s,.]/g, '');
+          const val = parseInt(clean, 10);
+          if (!isNaN(val) && val >= 5000 && val <= 2000000) res.precio = String(val);
+        }
+
+        return res;
+      }
+
+      // Recorta el lote, lo escala y le aplica contraste para alimentar a Tesseract OCR
+      function crearRecorteParaOCR(pts) {
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        pts.forEach(([px, py]) => {
+          if (px < minX) minX = px;
+          if (px > maxX) maxX = px;
+          if (py < minY) minY = py;
+          if (py > maxY) maxY = py;
+        });
+
+        const padX = Math.round((maxX - minX) * 0.08);
+        const padY = Math.round((maxY - minY) * 0.08);
+
+        const sx = Math.max(0, Math.floor(minX - padX));
+        const sy = Math.max(0, Math.floor(minY - padY));
+        const sw = Math.min(state.workW - sx, Math.ceil(maxX - minX + padX * 2));
+        const sh = Math.min(state.workH - sy, Math.ceil(maxY - minY + padY * 2));
+
+        if (sw <= 12 || sh <= 12) return null;
+
+        const upscale = sw < 180 ? 2.6 : (sw < 340 ? 1.9 : 1.3);
+        const c = document.createElement('canvas');
+        c.width = Math.round(sw * upscale);
+        c.height = Math.round(sh * upscale);
+        const ctx = c.getContext('2d', { willReadFrequently: true });
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, c.width, c.height);
+
+        const sourceImg = state.origImg || state.workCanvas;
+        ctx.drawImage(sourceImg, sx, sy, sw, sh, 0, 0, c.width, c.height);
+
+        // Escala de grises + alto contraste para lectura OCR precisa
+        const imgData = ctx.getImageData(0, 0, c.width, c.height);
+        const d = imgData.data;
+        for (let i = 0; i < d.length; i += 4) {
+          const lum = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+          const contrast = Math.max(0, Math.min(255, (lum - 140) * 2.1 + 140));
+          d[i] = d[i + 1] = d[i + 2] = contrast;
+        }
+        ctx.putImageData(imgData, 0, 0);
+        return c;
+      }
+
+      // Ejecución del motor Tesseract.js v5 lote por lote
+      async function ejecutarOcrEnLotes() {
+        if (!window.Tesseract || !state.lotes.length) {
+          setOcrProgress(false);
+          return;
+        }
+
+        state.isProcessingOcr = true;
+        if ($('btnDetect')) $('btnDetect').disabled = true;
+        let worker = null;
+
+        try {
+          setOcrProgress(true, 'Inicializando Tesseract OCR (español)...', 8);
+          setStatus('🔍 Iniciando motor OCR en español (Tesseract.js v5)...');
+
+          worker = await window.Tesseract.createWorker('spa');
+
+          let reconocidos = 0;
+          const total = state.lotes.length;
+
+          for (let i = 0; i < total; i++) {
+            const lote = state.lotes[i];
+            const pct = 15 + ((i / total) * 80);
+            setOcrProgress(true, `Leyendo lote ${i + 1} de ${total}...`, pct);
+            setStatus(`🔍 Reconociendo textos del plano: lote <strong>${i + 1}</strong> de <strong>${total}</strong>...`);
+
+            const cropCanvas = crearRecorteParaOCR(lote.points);
+            if (!cropCanvas) continue;
+
+            const { data: { text } } = await worker.recognize(cropCanvas);
+            lote.ocrRaw = (text || '').trim();
+            const parsed = extraerDatosDesdeTextoOCR(lote.ocrRaw);
+
+            let huboCambio = false;
+            if (parsed.lote_numero) {
+              lote.lote_numero = parsed.lote_numero;
+              lote.lote = parsed.lote_numero.replace(/[^\d]/g, '') || lote.lote;
+              huboCambio = true;
+            }
+            if (parsed.area_m2 !== null) {
+              lote.area_m2 = parsed.area_m2;
+              huboCambio = true;
+            }
+            if (parsed.estado) {
+              lote.estado = parsed.estado;
+              huboCambio = true;
+            }
+            if (parsed.precio) {
+              lote.precio = parsed.precio;
+              huboCambio = true;
+            }
+
+            if (huboCambio) {
+              lote.ocrMatched = true;
+              reconocidos++;
+              renderOverlay(lote.id !== state.selectedId);
+            }
+          }
+
+          setOcrProgress(true, 'Reconocimiento OCR completado', 100);
+          renderOverlay(false);
+          setStatus(`✅ <strong>${total} lotes</strong> detectados · <strong>${reconocidos}</strong> con datos reconocidos directamente desde la imagen.`);
+          showToast(`OCR completado: ${reconocidos} de ${total} lotes leídos.`);
+        } catch (err) {
+          console.error('Error OCR:', err);
+          setOcrProgress(false);
+          setStatus(`⚠️ Polígonos detectados (${state.lotes.length}), pero el OCR no pudo completarse (${err.message || 'error'}). Se aplicó respaldo cromático.`);
+        } finally {
+          state.isProcessingOcr = false;
+          if ($('btnDetect')) $('btnDetect').disabled = false;
+          if (worker) {
+            try { await worker.terminate(); } catch (e) {}
+          }
+          setTimeout(() => setOcrProgress(false), 1800);
+        }
+      }
+
+      // Flujo principal al pulsar "⚡ Detectar lotes"
+      async function ejecutarDeteccion() {
+        if (state.isProcessingOcr || !state.workW) return;
+        try {
+          setStatus('⚡ Analizando imagen y detectando polígonos...');
+          const imgData = state.workCtx.getImageData(0, 0, state.workW, state.workH);
+          const umbral = Number($('rngThreshold')?.value || 185);
+          const minAreaPx = Number($('rngMinArea')?.value || 350);
+
+          const poligonos = detectarPoligonosDesdeImageData(imgData, {
+            umbral, minAreaPx, grosorBorde: 0, simplificacion: 2.5
+          });
+
+          if (!poligonos.length) {
+            setStatus('No se detectaron polígonos con los parámetros actuales. Ajusta el umbral o el área mínima.');
+            return;
+          }
+
+          const conCentro = poligonos.map(pts => {
+            const [cx, cy] = calcularCentroide(pts);
+            return { pts, cx, cy, areaPx: calcularAreaPx(pts) };
+          });
+
+          const areas = conCentro.map(p => p.areaPx).sort((a, b) => a - b);
+          const medianPx = areas[Math.floor(areas.length / 2)] || 1000;
+
+          conCentro.sort((a, b) => {
+            if (Math.abs(a.cy - b.cy) > 35) return a.cy - b.cy;
+            return a.cx - b.cx;
+          });
+
+          state.lotes = conCentro.map((item, idx) => reconocerDatosBaseLote(item.pts, idx, medianPx));
+          state.selectedId = state.lotes[0]?.id || null;
+          if ($('btnSnapSides')) $('btnSnapSides').disabled = state.lotes.length < 2;
+
+          renderOverlay(false);
+          await ejecutarOcrEnLotes();
+        } catch (err) {
+          console.error('Error en detección:', err);
+          setStatus('Error al procesar los píxeles de la imagen.');
+        }
+      }
+
+      function pegarLadosContiguos() {
+        if (state.lotes.length < 2) return;
+        const snapped = snapAdjacentPolygons(state.lotes.map(l => l.points), 10);
+        snapped.forEach((pts, idx) => {
+          state.lotes[idx].points = pts;
+          state.lotes[idx].areaPx = calcularAreaPx(pts);
+          state.lotes[idx].perimPx = calcularPerimetroPx(pts);
+        });
+        renderOverlay(true);
+        setStatus('🧲 Lados de polígonos contiguos pegados y unificados sin huecos.');
+        showToast('Lados contiguos unidos.');
+      }
+
+      // =========================================================================
+      // 4. RENDERIZADO SVG, INSPECTOR Y LISTA DE LOTES
+      // =========================================================================
+      function setZoom(val) {
+        const stage = $('stage');
+        if (!stage) return;
+        const oldZoom = state.zoom || 1;
+        const newZoom = Math.max(0.35, Math.min(4.5, val));
+        const cxRatio = (stage.scrollLeft + stage.clientWidth / 2) / Math.max(1, stage.scrollWidth);
+        const cyRatio = (stage.scrollTop + stage.clientHeight / 2) / Math.max(1, stage.scrollHeight);
+
+        state.zoom = newZoom;
+        const wrap = $('canvasWrap');
+        if (wrap && state.workW && state.workH) {
+          wrap.style.width = `${(state.workW * newZoom).toFixed(2)}px`;
+          wrap.style.height = `${(state.workH * newZoom).toFixed(2)}px`;
+        }
+        if ($('btnZoomReset')) $('btnZoomReset').textContent = `${Math.round(newZoom * 100)}%`;
+
+        if (oldZoom !== newZoom) {
+          requestAnimationFrame(() => {
+            stage.scrollLeft = Math.max(0, cxRatio * stage.scrollWidth - stage.clientWidth / 2);
+            stage.scrollTop = Math.max(0, cyRatio * stage.scrollHeight - stage.clientHeight / 2);
+          });
+        }
+      }
+
+      function obtenerPuntoSvg(e) {
+        const svg = $('overlaySvg');
+        const rect = svg.getBoundingClientRect();
+        return [
+          Math.round(((e.clientX - rect.left) / rect.width) * state.workW),
+          Math.round(((e.clientY - rect.top) / rect.height) * state.workH)
+        ];
+      }
+
+      function renderOverlay(skipInspectorInputs = false) {
+        const svg = $('overlaySvg');
+        if (!svg) return;
+        svg.innerHTML = '';
+
+        for (const l of state.lotes) {
+          const isSel = l.id === state.selectedId;
+          const est = ESTADOS[l.estado] || ESTADOS.Disponible;
+
+          const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+          poly.setAttribute('points', l.points.map(p => p.join(',')).join(' '));
+          poly.setAttribute('fill', est.fill);
+          poly.setAttribute('stroke', isSel ? '#38bdf8' : est.stroke);
+          poly.setAttribute('stroke-width', isSel ? '3.5' : '2');
+          poly.setAttribute('data-lote-id', l.id);
+          poly.style.cursor = 'pointer';
+          svg.appendChild(poly);
+
+          // Etiqueta limpia sobre el polígono
+          const [cx, cy] = calcularCentroide(l.points);
+          const lbl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          lbl.setAttribute('x', cx);
+          lbl.setAttribute('y', cy - 8);
+          lbl.setAttribute('text-anchor', 'middle');
+          lbl.setAttribute('dominant-baseline', 'central');
+          lbl.setAttribute('fill', '#ffffff');
+          lbl.setAttribute('stroke', '#0b1120');
+          lbl.setAttribute('stroke-width', '3.5');
+          lbl.setAttribute('paint-order', 'stroke');
+          lbl.setAttribute('font-size', '13');
+          lbl.setAttribute('font-weight', '800');
+          lbl.style.pointerEvents = 'none';
+          lbl.textContent = l.lote_numero;
+          svg.appendChild(lbl);
+
+          const sub = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          sub.setAttribute('x', cx);
+          sub.setAttribute('y', cy + 9);
+          sub.setAttribute('text-anchor', 'middle');
+          sub.setAttribute('dominant-baseline', 'central');
+          sub.setAttribute('fill', est.text || '#cbd5e1');
+          sub.setAttribute('stroke', '#0b1120');
+          sub.setAttribute('stroke-width', '3');
+          sub.setAttribute('paint-order', 'stroke');
+          sub.setAttribute('font-size', '10.5');
+          sub.setAttribute('font-weight', '700');
+          sub.style.pointerEvents = 'none';
+          sub.textContent = `${l.area_m2} m²`;
+          svg.appendChild(sub);
+        }
+
+        // Si hay lote seleccionado, renderizar bordes clickeables y vértices arrastrables
+        const sel = state.lotes.find(l => l.id === state.selectedId);
+        if (sel) {
+          for (let i = 0; i < sel.points.length; i++) {
+            const p1 = sel.points[i];
+            const p2 = sel.points[(i + 1) % sel.points.length];
+            const edge = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            edge.setAttribute('x1', p1[0]); edge.setAttribute('y1', p1[1]);
+            edge.setAttribute('x2', p2[0]); edge.setAttribute('y2', p2[1]);
+            edge.setAttribute('stroke', 'transparent');
+            edge.setAttribute('stroke-width', '14');
+            edge.setAttribute('data-edge-lote', sel.id);
+            edge.style.cursor = 'copy';
+            svg.appendChild(edge);
+          }
+
+          sel.points.forEach((pt, idx) => {
+            const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            c.setAttribute('cx', pt[0]);
+            c.setAttribute('cy', pt[1]);
+            c.setAttribute('r', '6');
+            c.setAttribute('fill', '#38bdf8');
+            c.setAttribute('stroke', '#ffffff');
+            c.setAttribute('stroke-width', '2');
+            c.setAttribute('data-vertex-idx', String(idx));
+            c.style.cursor = 'move';
+            svg.appendChild(c);
+          });
+        }
+
+        // Contadores y botones de exportación
+        const total = state.lotes.length;
+        if ($('lotLblCount')) $('lotLblCount').textContent = String(total);
+        if ($('tabListCount')) $('tabListCount').textContent = String(total);
+        if ($('lblListSummary')) $('lblListSummary').textContent = `${total} lote${total === 1 ? '' : 's'}`;
+        if ($('lotCntDisp')) $('lotCntDisp').textContent = String(state.lotes.filter(l => l.estado === 'Disponible').length);
+        if ($('lotCntRes')) $('lotCntRes').textContent = String(state.lotes.filter(l => l.estado === 'Reservado').length);
+        if ($('lotCntVend')) $('lotCntVend').textContent = String(state.lotes.filter(l => l.estado === 'Vendido').length);
+        if ($('btnCopySvg')) $('btnCopySvg').disabled = total === 0;
+        if ($('btnDownloadJson')) $('btnDownloadJson').disabled = total === 0;
+        if ($('btnApply')) $('btnApply').disabled = total === 0;
+        if ($('btnSnapSides')) $('btnSnapSides').disabled = total < 2;
+
+        // Actualizar inspector del lote seleccionado
+        if (sel) {
+          if ($('badgeLoteId')) $('badgeLoteId').textContent = sel.lote_numero;
+          if (!skipInspectorInputs) {
+            if ($('fldLoteNumero')) $('fldLoteNumero').value = sel.lote_numero;
+            if ($('fldArea')) $('fldArea').value = sel.area_m2;
+            if ($('fldEstado')) $('fldEstado').value = sel.estado;
+            if ($('fldPrecio')) $('fldPrecio').value = sel.precio;
+          }
+          if ($('fldLoteNumero')) $('fldLoteNumero').disabled = false;
+          if ($('fldArea')) $('fldArea').disabled = false;
+          if ($('fldEstado')) $('fldEstado').disabled = false;
+          if ($('fldPrecio')) $('fldPrecio').disabled = false;
+          if ($('btnDeletePoly')) $('btnDeletePoly').disabled = false;
+
+          if (sel.ocrRaw) {
+            if ($('ocrRawBox')) $('ocrRawBox').classList.remove('hidden');
+            if ($('ocrRawText')) $('ocrRawText').textContent = sel.ocrRaw;
+            if ($('ocrSourceTag')) $('ocrSourceTag').textContent = sel.ocrMatched ? 'OCR Reconocido' : 'OCR + Color';
+          } else {
+            if ($('ocrRawBox')) $('ocrRawBox').classList.add('hidden');
+          }
+        } else {
+          if ($('badgeLoteId')) $('badgeLoteId').textContent = 'Sin selección';
+          if (!skipInspectorInputs) {
+            if ($('fldLoteNumero')) $('fldLoteNumero').value = '';
+            if ($('fldArea')) $('fldArea').value = '';
+            if ($('fldPrecio')) $('fldPrecio').value = '';
+          }
+          if ($('fldLoteNumero')) $('fldLoteNumero').disabled = true;
+          if ($('fldArea')) $('fldArea').disabled = true;
+          if ($('fldEstado')) $('fldEstado').disabled = true;
+          if ($('fldPrecio')) $('fldPrecio').disabled = true;
+          if ($('btnDeletePoly')) $('btnDeletePoly').disabled = true;
+          if ($('ocrRawBox')) $('ocrRawBox').classList.add('hidden');
+        }
+
+        renderLotsList();
+      }
+
+      function renderLotsList() {
+        const container = $('lotsListContainer');
+        if (!container) return;
+        if (!state.lotes.length) {
+          container.innerHTML = `<div class="text-xs text-slate-400 text-center py-6">Aún no hay polígonos detectados.</div>`;
+          return;
+        }
+        container.innerHTML = state.lotes.map(l => {
+          const est = ESTADOS[l.estado] || ESTADOS.Disponible;
+          const isSel = l.id === state.selectedId;
+          return `
+            <button type="button" data-pick-lot="${escapeHtml(l.id)}" class="w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between gap-2 cursor-pointer ${isSel ? 'bg-sky-500/20 border-sky-400/60' : 'bg-[#0f172a] border-white/10 hover:bg-slate-800/80'}">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${est.dot}"></span>
+                <div class="min-w-0">
+                  <div class="text-xs font-extrabold text-white truncate">${escapeHtml(l.lote_numero)}</div>
+                  <div class="text-[10.5px] text-slate-400">${l.area_m2} m² · S/. ${Number(l.precio || 0).toLocaleString('en-US')}</div>
+                </div>
+              </div>
+              <span class="text-[10px] font-extrabold uppercase shrink-0" style="color:${est.text}">${est.label}</span>
+            </button>
+          `;
+        }).join('');
+
+        container.querySelectorAll('[data-pick-lot]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.selectedId = btn.getAttribute('data-pick-lot');
+            switchTab('lotes');
+            renderOverlay(false);
+          });
+        });
+      }
+
+      function actualizarLoteSeleccionado() {
+        const sel = state.lotes.find(l => l.id === state.selectedId);
+        if (!sel) return;
+        sel.lote_numero = $('fldLoteNumero')?.value.trim() || 'Lote';
+        sel.area_m2 = parseFloat($('fldArea')?.value) || 0;
+        sel.estado = $('fldEstado')?.value || 'Disponible';
+        sel.precio = $('fldPrecio')?.value.trim() || '0';
+        if ($('badgeLoteId')) $('badgeLoteId').textContent = sel.lote_numero;
+        renderOverlay(true);
+      }
+
+      // =========================================================================
+      // 5. EXPORTACIÓN SVG, JSON Y MAPA SATELITAL
+      // =========================================================================
+      function construirExportacion() {
+        const scale = state.imgNaturalW / (state.workW || 1);
+        const lotesExport = state.lotes.map((l, idx) => {
+          const pointsPx = l.points.map(([x, y]) => [Math.round(x * scale), Math.round(y * scale)]);
+          let manzana = '';
+          let loteNum = l.lote || '';
+          const matchMz = (l.lote_numero || '').match(/Mz\.?\s*([A-Za-z0-9]+)/i);
+          if (matchMz) {
+            manzana = matchMz[1];
+            loteNum = (l.lote_numero || '').replace(/Mz\.?\s*[A-Za-z0-9]+\s*(-|\/|Lt|Lote)?\s*/i, '').trim();
+          }
+          if (!loteNum) {
+            loteNum = (l.lote_numero || '').replace(/[^\d]/g, '') || String(idx + 1);
+          }
+
+          return {
+            id: l.id,
+            lote_numero: l.lote_numero,
+            manzana,
+            lote: loteNum,
+            area_m2: l.area_m2,
+            estado: l.estado,
+            precio: l.precio,
+            pointsPx,
+            svgPoints: pointsPx.map(p => p.join(',')).join(' ')
+          };
+        });
+
+        const polygonsSvg = lotesExport.map(l => {
+          const est = ESTADOS[l.estado] || ESTADOS.Disponible;
+          return `  <polygon data-id="${l.id}" data-lote-numero="${escapeHtml(l.lote_numero)}" data-area="${l.area_m2}" data-estado="${l.estado}" data-precio="${escapeHtml(l.precio)}" points="${l.svgPoints}" fill="${est.fill}" stroke="${est.stroke}" stroke-width="2" />`;
+        }).join('\n');
+
+        const svgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${state.imgNaturalW} ${state.imgNaturalH}">\n${polygonsSvg}\n</svg>`;
+
+        return {
+          imageWidth: state.imgNaturalW,
+          imageHeight: state.imgNaturalH,
+          metersPerPixelOrig: null,
+          lotes: lotesExport,
+          svgMarkup
+        };
+      }
+
+      function copiarSvg() {
+        const { svgMarkup } = construirExportacion();
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = svgMarkup;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          showToast('SVG interactivo copiado al portapapeles.');
+        } catch (err) {
+          showToast('No se pudo copiar el SVG.');
+        }
+      }
+
+      function descargarJson() {
+        const payload = construirExportacion();
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `lotes-poligonos-ocr-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Archivo JSON descargado.');
+      }
+
+      function aplicarExportacion() {
+        const payload = construirExportacion();
+        if (typeof modalOptions.onExport === 'function') {
+          modalOptions.onExport(payload);
+        }
+        global.dispatchEvent(new CustomEvent('lotizador:aplicar', { detail: payload }));
+        cerrarModal();
+        showToast('Lotes integrados exitosamente al mapa.');
+      }
+
+      // =========================================================================
+      // 6. EVENTOS DE INTERFAZ Y EDICIÓN INTERACTIVA DE VÉRTICES
+      // =========================================================================
+      function switchTab(tab) {
+        const isLotes = tab === 'lotes';
+        const pLotes = $('panelLotes');
+        const pLista = $('panelLista');
+        if (pLotes) pLotes.classList.toggle('hidden', !isLotes);
+        if (pLista) {
+          pLista.classList.toggle('hidden', isLotes);
+          pLista.classList.toggle('flex', !isLotes);
+        }
+
+        const bLotes = $('tabBtnLotes');
+        const bLista = $('tabBtnTextLines');
+        if (bLotes) {
+          bLotes.className = isLotes
+            ? 'py-2 px-2 rounded-lg text-[11px] font-extrabold bg-sky-400 text-slate-950 transition cursor-pointer'
+            : 'py-2 px-2 rounded-lg text-[11px] font-bold text-slate-400 hover:text-white hover:bg-white/5 transition cursor-pointer';
+        }
+        if (bLista) {
+          bLista.className = !isLotes
+            ? 'py-2 px-2 rounded-lg text-[11px] font-extrabold bg-sky-400 text-slate-950 transition cursor-pointer'
+            : 'py-2 px-2 rounded-lg text-[11px] font-bold text-slate-400 hover:text-white hover:bg-white/5 transition cursor-pointer';
+        }
+      }
+
+      function abrirModal(options = {}) {
+        modalOptions = options || {};
+        const backdrop = $('lotizadorModalBackdrop');
+        if (backdrop) {
+          backdrop.classList.remove('opacity-0', 'pointer-events-none');
+          backdrop.classList.add('opacity-100', 'pointer-events-auto');
+        }
+        if (options.initialTab === 'lista') {
+          switchTab('lista');
+        } else {
+          switchTab('lotes');
+        }
+        if (options.initialImageUrl && (!state.workW || options.forceReload)) {
+          cargarImagenDesdeSrc(options.initialImageUrl);
+        }
+      }
+
+      function cerrarModal() {
+        const backdrop = $('lotizadorModalBackdrop');
+        if (backdrop) {
+          backdrop.classList.add('opacity-0', 'pointer-events-none');
+          backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+        }
+      }
+
+      function bindEvents() {
+        const triggerUpload = () => $('fileInput')?.click();
+        $('btnUpload')?.addEventListener('click', triggerUpload);
+        $('btnEmptyUpload')?.addEventListener('click', triggerUpload);
+
+        const loadSample = () => {
+          const dataUrl = generarPlanoDeEjemploDataUrl();
+          cargarImagenDesdeSrc(dataUrl);
+          showToast('Plano de ejemplo cargado. Pulsa "⚡ Detectar lotes" para probar el OCR.');
+        };
+        $('btnLoadSampleTop')?.addEventListener('click', loadSample);
+        $('btnEmptySample')?.addEventListener('click', loadSample);
+
+        $('btnCloseLotizador')?.addEventListener('click', cerrarModal);
+        $('lotizadorModalBackdrop')?.addEventListener('click', (e) => {
+          if (e.target === $('lotizadorModalBackdrop')) cerrarModal();
+        });
+
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && $('lotizadorModalBackdrop') && !$('lotizadorModalBackdrop').classList.contains('pointer-events-none')) {
+            cerrarModal();
+          }
+        });
+
+        $('fileInput')?.addEventListener('change', (e) => {
+          const file = e.target.files?.[0];
+          if (file) cargarImagenArchivo(file);
+          e.target.value = '';
+        });
+
+        // Drag & drop sobre el stage
+        const stage = $('stage');
+        if (stage) {
+          stage.addEventListener('dragover', (e) => e.preventDefault());
+          stage.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const file = e.dataTransfer?.files?.[0];
+            if (file && file.type.startsWith('image/')) cargarImagenArchivo(file);
+          });
+
+          // Zoom con rueda del ratón
+          stage.addEventListener('wheel', (e) => {
+            if (!state.workW) return;
+            e.preventDefault();
+            setZoom(e.deltaY < 0 ? state.zoom * 1.12 : state.zoom / 1.12);
+          }, { passive: false });
+        }
+
+        $('btnZoomIn')?.addEventListener('click', () => setZoom(state.zoom * 1.25));
+        $('btnZoomOut')?.addEventListener('click', () => setZoom(state.zoom / 1.25));
+        $('btnZoomReset')?.addEventListener('click', () => setZoom(1));
+
+        $('rngThreshold')?.addEventListener('input', (e) => {
+          if ($('lblThreshold')) $('lblThreshold').textContent = e.target.value;
+        });
+        $('rngMinArea')?.addEventListener('input', (e) => {
+          if ($('lblMinArea')) $('lblMinArea').textContent = e.target.value;
+        });
+
+        $('btnDetect')?.addEventListener('click', ejecutarDeteccion);
+        $('btnSnapSides')?.addEventListener('click', pegarLadosContiguos);
+
+        $('tabBtnLotes')?.addEventListener('click', () => switchTab('lotes'));
+        $('tabBtnTextLines')?.addEventListener('click', () => switchTab('lista'));
+
+        ['fldLoteNumero', 'fldArea', 'fldEstado', 'fldPrecio'].forEach((id) => {
+          $(id)?.addEventListener('input', actualizarLoteSeleccionado);
+        });
+
+        $('btnDeletePoly')?.addEventListener('click', () => {
+          if (!state.selectedId) return;
+          state.lotes = state.lotes.filter(l => l.id !== state.selectedId);
+          state.selectedId = state.lotes[0]?.id || null;
+          renderOverlay(false);
+          showToast('Polígono eliminado.');
+        });
+
+        $('btnCopySvg')?.addEventListener('click', copiarSvg);
+        $('btnDownloadJson')?.addEventListener('click', descargarJson);
+        $('btnApply')?.addEventListener('click', aplicarExportacion);
+
+        // Interacción Pointer Events sobre SVG (compatible mouse + touch)
+        const svgEl = $('overlaySvg');
+        if (svgEl) {
+          svgEl.addEventListener('pointerdown', (e) => {
+            const vEl = e.target.closest('[data-vertex-idx]');
+            if (vEl && e.button === 0) {
+              e.stopPropagation();
+              state.draggingVertex = Number(vEl.getAttribute('data-vertex-idx'));
+              svgEl.setPointerCapture(e.pointerId);
+            }
+          });
+
+          svgEl.addEventListener('pointermove', (e) => {
+            if (state.draggingVertex === null || !state.selectedId) return;
+            const lote = state.lotes.find(l => l.id === state.selectedId);
+            if (!lote) return;
+            lote.points[state.draggingVertex] = obtenerPuntoSvg(e);
+            renderOverlay(true);
+          });
+
+          const endDrag = () => { state.draggingVertex = null; };
+          svgEl.addEventListener('pointerup', endDrag);
+          svgEl.addEventListener('pointercancel', endDrag);
+
+          svgEl.addEventListener('contextmenu', (e) => {
+            const vEl = e.target.closest('[data-vertex-idx]');
+            if (!vEl || !state.selectedId) return;
+            e.preventDefault();
+            const idx = Number(vEl.getAttribute('data-vertex-idx'));
+            const lote = state.lotes.find(l => l.id === state.selectedId);
+            if (!lote) return;
+            if (lote.points.length <= 3) {
+              showToast('Un polígono requiere al menos 3 vértices.');
+              return;
+            }
+            lote.points.splice(idx, 1);
+            renderOverlay(true);
+            showToast('Vértice eliminado.');
+          });
+
+          svgEl.addEventListener('click', (e) => {
+            if (e.target.closest('[data-vertex-idx]')) return;
+
+            // Clic en borde para agregar nuevo vértice
+            const edgeEl = e.target.closest('[data-edge-lote]');
+            if (edgeEl) {
+              const pt = obtenerPuntoSvg(e);
+              const lote = state.lotes.find(l => l.id === state.selectedId);
+              if (lote) {
+                let bestIdx = 0, bestDist = Infinity;
+                for (let i = 0; i < lote.points.length; i++) {
+                  const a = lote.points[i];
+                  const b = lote.points[(i + 1) % lote.points.length];
+                  const dx = b[0] - a[0], dy = b[1] - a[1];
+                  const lenSq = dx * dx + dy * dy;
+                  const t = lenSq === 0 ? 0 : Math.max(0, Math.min(1, ((pt[0] - a[0]) * dx + (pt[1] - a[1]) * dy) / lenSq));
+                  const d = Math.hypot(pt[0] - (a[0] + t * dx), pt[1] - (a[1] + t * dy));
+                  if (d < bestDist) { bestDist = d; bestIdx = i + 1; }
+                }
+                lote.points.splice(bestIdx, 0, pt);
+                renderOverlay(true);
+                showToast('Vértice agregado en el borde.');
+              }
               return;
             }
 
-            // Ordenar geométricamente en filas y columnas (orden natural de lectura top-down, left-right)
-            const poligonosConCentro = poligonos.map(pts => {
-              const [cx, cy] = calcularCentroide(pts);
-              return { pts, cx, cy, areaPx: calcularAreaPx(pts) };
-            });
-
-            const areas = poligonosConCentro.map(p => p.areaPx).sort((a, b) => a - b);
-            const medianPx = areas[Math.floor(areas.length / 2)] || 1000;
-
-            poligonosConCentro.sort((a, b) => {
-              if (Math.abs(a.cy - b.cy) > 28) return a.cy - b.cy;
-              return a.cx - b.cx;
-            });
-
-            // Reconocer datos de cada lote desde la imagen
-            this.lotes = poligonosConCentro.map((item, idx) => {
-              return this.reconocerDatosDeImagenLote(item.pts, idx, medianPx);
-            });
-
-            this.selectedId = this.lotes[0]?.id || null;
-            this.recalcularMetricas();
-            this.renderOverlay();
-
-            // Sincronizar inmediatamente los datos reconocidos en la Sección 3
-            if (this.selectedId) {
-              const sel = this.lotes[0];
-              this.$('inspectorCard').style.display = 'block';
-              this.$('badgeLoteId').textContent = sel.lote_numero;
-              this.$('fldLoteNumero').value = sel.lote_numero;
-              this.$('fldArea').value = sel.area_m2;
-              this.$('fldEstado').value = sel.estado;
-              this.$('fldPrecio').value = sel.precio;
+            // Clic en polígono para seleccionarlo
+            const polyEl = e.target.closest('[data-lote-id]');
+            if (polyEl) {
+              state.selectedId = polyEl.getAttribute('data-lote-id');
+              renderOverlay(false);
             }
-
-            this.setStatus(`✅ ${this.lotes.length} lotes detectados con datos reconocidos (N° de Lote, Área, Estado y Precio).`);
-          } catch (err) {
-            console.error('Error en detección:', err);
-            this.setStatus('No se pudo leer píxeles de esta URL por CORS; súbela con "Subir imagen".');
-          }
-        }
-
-        recalcularMetricas() {
-          if (!this.metersPerPixel) return;
-          for (const l of this.lotes) {
-            l.areaPx = calcularAreaPx(l.points);
-            l.perimPx = calcularPerimetroPx(l.points);
-            l.area_m2 = +(l.areaPx * this.metersPerPixel * this.metersPerPixel).toFixed(2);
-            l.perimetro_m = +(l.perimPx * this.metersPerPixel).toFixed(2);
-          }
-        }
-
-        obtenerPuntoSvg(e) {
-          const rect = this.$('overlaySvg').getBoundingClientRect();
-          return [
-            Math.round(((e.clientX - rect.left) / rect.width) * this.workW),
-            Math.round(((e.clientY - rect.top) / rect.height) * this.workH)
-          ];
-        }
-
-        setZoom(val) {
-          const stage = this.$('stage');
-          const oldZoom = this.zoom || 1;
-          const newZoom = Math.max(0.35, Math.min(4.5, val));
-          const cxRatio = stage ? (stage.scrollLeft + stage.clientWidth / 2) / Math.max(1, stage.scrollWidth) : 0.5;
-          const cyRatio = stage ? (stage.scrollTop + stage.clientHeight / 2) / Math.max(1, stage.scrollHeight) : 0.5;
-
-          this.zoom = newZoom;
-          const wrap = this.$('canvasWrap');
-          if (wrap && this.workW && this.workH) {
-            wrap.style.width = `${(this.workW * newZoom).toFixed(2)}px`;
-            wrap.style.height = `${(this.workH * newZoom).toFixed(2)}px`;
-          }
-          this.$('btnZoomReset').textContent = `${Math.round(newZoom * 100)}%`;
-
-          if (stage && oldZoom !== newZoom) {
-            requestAnimationFrame(() => {
-              stage.scrollLeft = Math.max(0, cxRatio * stage.scrollWidth - stage.clientWidth / 2);
-              stage.scrollTop = Math.max(0, cyRatio * stage.scrollHeight - stage.clientHeight / 2);
-            });
-          }
-        }
-
-        onSvgMouseDown(e) {
-          const pt = this.obtenerPuntoSvg(e);
-
-          // 1. Manejo de extremos de línea (line-handle)
-          const lineHandle = e.target.closest('[data-line-handle]');
-          if (lineHandle && e.button === 0) {
-            e.stopPropagation();
-            this.draggingLineHandle = {
-              lineId: lineHandle.getAttribute('data-line-id'),
-              handle: lineHandle.getAttribute('data-line-handle')
-            };
-            return;
-          }
-
-          // 2. Manejo de texto arrastrable
-          const textEl = e.target.closest('[data-plan-text-id]');
-          if (textEl && e.button === 0) {
-            e.stopPropagation();
-            const textId = textEl.getAttribute('data-plan-text-id');
-            this.seleccionarTexto(textId);
-            this.draggingTextId = textId;
-            return;
-          }
-
-          // 3. Vértice de polígono
-          const vEl = e.target.closest('[data-vertex-idx]');
-          if (vEl && e.button === 0) {
-            e.stopPropagation();
-            this.draggingVertex = Number(vEl.getAttribute('data-vertex-idx'));
-          }
-        }
-
-        onSvgMouseMove(e) {
-          const pt = this.obtenerPuntoSvg(e);
-
-          // Mover extremo de línea seleccionada
-          if (this.draggingLineHandle) {
-            const line = this.customLines.find(l => l.id === this.draggingLineHandle.lineId);
-            if (line) {
-              if (this.draggingLineHandle.handle === 'p1') {
-                line.x1 = pt[0]; line.y1 = pt[1];
-              } else {
-                line.x2 = pt[0]; line.y2 = pt[1];
-              }
-              this.renderOverlay(true);
-            }
-            return;
-          }
-
-          // Mover texto seleccionado
-          if (this.draggingTextId) {
-            const t = this.customTexts.find(x => x.id === this.draggingTextId);
-            if (t) {
-              t.x = pt[0];
-              t.y = pt[1];
-              this.renderOverlay(true);
-            }
-            return;
-          }
-
-          // Mover vértice de polígono seleccionado
-          if (this.draggingVertex !== null && this.selectedId) {
-            const lote = this.lotes.find((l) => l.id === this.selectedId);
-            if (!lote) return;
-            lote.points[this.draggingVertex] = pt;
-            this.renderOverlay(true);
-          }
-        }
-
-        onSvgContextMenu(e) {
-          const vEl = e.target.closest('[data-vertex-idx]');
-          if (!vEl || !this.selectedId) return;
-          e.preventDefault();
-          const idx = Number(vEl.getAttribute('data-vertex-idx'));
-          const lote = this.lotes.find((l) => l.id === this.selectedId);
-          if (!lote) return;
-          if (lote.points.length <= 3) {
-            this.setStatus('Un polígono necesita al menos 3 vértices.');
-            return;
-          }
-          lote.points.splice(idx, 1);
-          this.renderOverlay(true);
-          this.setStatus('Vértice eliminado.');
-        }
-
-        onSvgClick(e) {
-          const pt = this.obtenerPuntoSvg(e);
-
-          // Si estamos en modo agregar texto
-          if (this.actionState === 'add_text') {
-            this.colocarTexto(pt);
-            return;
-          }
-
-          // Si estamos en modo agregar línea
-          if (this.actionState === 'add_line_start' || this.actionState === 'add_line_end') {
-            this.gestionarClickLinea(pt);
-            return;
-          }
-
-          if (e.target.closest('[data-vertex-idx]')) return;
-          if (e.target.closest('[data-line-handle]')) return;
-
-          // Clic en texto personalizado
-          const textEl = e.target.closest('[data-plan-text-id]');
-          if (textEl) {
-            const textId = textEl.getAttribute('data-plan-text-id');
-            this.seleccionarTexto(textId);
-            return;
-          }
-
-          // Clic en línea personalizada
-          const lineEl = e.target.closest('[data-plan-line-id]');
-          if (lineEl) {
-            const lineId = lineEl.getAttribute('data-plan-line-id');
-            this.seleccionarLinea(lineId);
-            return;
-          }
-
-          // Clic en borde para agregar vértice al lote seleccionado
-          const edgeEl = e.target.closest('[data-edge-lote]');
-          if (edgeEl) {
-            const lote = this.lotes.find((l) => l.id === this.selectedId);
-            if (lote) {
-              let bestIdx = 0, bestDist = Infinity;
-              for (let i = 0; i < lote.points.length; i++) {
-                const a = lote.points[i];
-                const b = lote.points[(i + 1) % lote.points.length];
-                const dx = b[0] - a[0], dy = b[1] - a[1];
-                const lenSq = dx * dx + dy * dy;
-                const t = lenSq === 0 ? 0 : Math.max(0, Math.min(1, ((pt[0] - a[0]) * dx + (pt[1] - a[1]) * dy) / lenSq));
-                const d = Math.hypot(pt[0] - (a[0] + t * dx), pt[1] - (a[1] + t * dy));
-                if (d < bestDist) { bestDist = d; bestIdx = i + 1; }
-              }
-              lote.points.splice(bestIdx, 0, pt);
-              this.renderOverlay(true);
-              this.setStatus('Vértice agregado en el borde.');
-            }
-            return;
-          }
-
-          // Clic en un polígono de lote
-          const polyEl = e.target.closest('[data-lote-id]');
-          if (polyEl) {
-            this.selectedId = polyEl.getAttribute('data-lote-id');
-            this.selectedTextId = null;
-            this.selectedLineId = null;
-            this.switchTab('lotes');
-            this.renderOverlay();
-          }
-        }
-
-        actualizarLoteSeleccionado() {
-          const lote = this.lotes.find((l) => l.id === this.selectedId);
-          if (!lote) return;
-          const valNum = (this.$('fldLoteNumero')?.value || '').trim();
-          lote.lote_numero = valNum;
-          lote.lote = valNum.replace(/[^\d]/g, '') || valNum;
-          lote.manzana = (valNum.match(/Mz\.?\s*([A-Za-z0-9]+)/i) || [])[1] || lote.manzana || '';
-          lote.area_m2 = parseFloat(this.$('fldArea').value) || 0;
-          lote.estado = this.$('fldEstado').value;
-          lote.precio = (this.$('fldPrecio')?.value || '').trim();
-          this.$('badgeLoteId').textContent = lote.lote_numero || lote.id;
-          this.renderOverlay(true);
-        }
-
-        renderOverlay(skipInspectorInputs = false) {
-          const svg = this.$('overlaySvg');
-          svg.innerHTML = '';
-
-          // 1. Renderizar Polígonos de Lotes
-          for (const l of this.lotes) {
-            const isSel = l.id === this.selectedId;
-            const est = ESTADOS[l.estado] || ESTADOS.Disponible;
-            const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-            poly.setAttribute('points', l.points.map((p) => p.join(',')).join(' '));
-            poly.setAttribute('fill', est.fill);
-            poly.setAttribute('stroke', isSel ? '#38bdf8' : est.stroke);
-            poly.setAttribute('stroke-width', isSel ? '3' : '1.5');
-            poly.setAttribute('data-lote-id', l.id);
-            poly.setAttribute('class', `poly-shape${isSel ? ' selected' : ''}`);
-            svg.appendChild(poly);
-
-            const [cx, cy] = calcularCentroide(l.points);
-            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            text.setAttribute('x', cx);
-            text.setAttribute('y', cy);
-            text.setAttribute('class', 'poly-label');
-            text.textContent = l.lote_numero || `${l.manzana ? l.manzana + '-' : ''}${l.lote}`;
-            svg.appendChild(text);
-          }
-
-          // 2. Renderizar Líneas Personalizadas
-          for (const line of this.customLines) {
-            const isSel = line.id === this.selectedLineId;
-            const lEl = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            lEl.setAttribute('x1', line.x1);
-            lEl.setAttribute('y1', line.y1);
-            lEl.setAttribute('x2', line.x2);
-            lEl.setAttribute('y2', line.y2);
-            lEl.setAttribute('stroke', isSel ? '#38bdf8' : line.color);
-            lEl.setAttribute('stroke-width', isSel ? Math.max(3, line.width + 1.5) : line.width);
-            if (line.dash === 'dashed') lEl.setAttribute('stroke-dasharray', '6,4');
-            lEl.setAttribute('data-plan-line-id', line.id);
-            lEl.setAttribute('class', `custom-plan-line ${isSel ? 'selected' : ''}`);
-            svg.appendChild(lEl);
-
-            // Nodos en extremos si está seleccionada
-            if (isSel) {
-              const h1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-              h1.setAttribute('cx', line.x1); h1.setAttribute('cy', line.y1); h1.setAttribute('r', '6');
-              h1.setAttribute('class', 'line-handle');
-              h1.setAttribute('data-line-id', line.id);
-              h1.setAttribute('data-line-handle', 'p1');
-              svg.appendChild(h1);
-
-              const h2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-              h2.setAttribute('cx', line.x2); h2.setAttribute('cy', line.y2); h2.setAttribute('r', '6');
-              h2.setAttribute('class', 'line-handle');
-              h2.setAttribute('data-line-id', line.id);
-              h2.setAttribute('data-line-handle', 'p2');
-              svg.appendChild(h2);
-            }
-          }
-
-          // 3. Renderizar Textos Personalizados
-          for (const txt of this.customTexts) {
-            const isSel = txt.id === this.selectedTextId;
-            const tEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            tEl.setAttribute('x', txt.x);
-            tEl.setAttribute('y', txt.y);
-            tEl.setAttribute('font-size', txt.size);
-            tEl.setAttribute('font-weight', '800');
-            tEl.setAttribute('fill', txt.color);
-            tEl.setAttribute('stroke', isSel ? '#38bdf8' : '#000000');
-            tEl.setAttribute('stroke-width', isSel ? '4' : '2.5');
-            tEl.setAttribute('paint-order', 'stroke');
-            tEl.setAttribute('text-anchor', 'middle');
-            tEl.setAttribute('dominant-baseline', 'central');
-            tEl.setAttribute('data-plan-text-id', txt.id);
-            tEl.setAttribute('class', `custom-plan-text ${isSel ? 'selected' : ''}`);
-            tEl.textContent = txt.text;
-            svg.appendChild(tEl);
-          }
-
-          // 4. Hit-area y Vértices del Lote Seleccionado
-          const selLote = this.lotes.find((l) => l.id === this.selectedId);
-          if (selLote && selLote.points.length >= 3) {
-            const closedPts = [...selLote.points, selLote.points[0]].map((p) => p.join(',')).join(' ');
-            const edgeHit = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-            edgeHit.setAttribute('points', closedPts);
-            edgeHit.setAttribute('fill', 'none');
-            edgeHit.setAttribute('stroke', 'transparent');
-            edgeHit.setAttribute('stroke-width', '12');
-            edgeHit.setAttribute('data-edge-lote', selLote.id);
-            edgeHit.style.cursor = 'copy';
-            svg.appendChild(edgeHit);
-
-            selLote.points.forEach(([vx, vy], idx) => {
-              const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-              c.setAttribute('cx', vx); c.setAttribute('cy', vy); c.setAttribute('r', '5.5');
-              c.setAttribute('class', 'vertex-dot');
-              c.setAttribute('data-vertex-idx', String(idx));
-              svg.appendChild(c);
-            });
-          }
-
-          this.$('lblCount').textContent = String(this.lotes.length);
-          const hasContent = this.lotes.length > 0 || this.customTexts.length > 0 || this.customLines.length > 0;
-          this.$('btnCopySvg').disabled = !hasContent;
-          this.$('btnDownloadJson').disabled = !hasContent;
-          this.$('btnApply').disabled = !hasContent;
-
-          // Inspector de Lotes
-          const sel = this.lotes.find((l) => l.id === this.selectedId);
-          if (sel) {
-            this.$('inspectorCard').style.display = 'block';
-            this.$('badgeLoteId').textContent = sel.lote_numero || `${sel.manzana ? sel.manzana + '-' : ''}${sel.lote}`;
-            if (!skipInspectorInputs) {
-              const fld = this.$('fldLoteNumero');
-              if (fld) { fld.value = sel.lote_numero || `${sel.manzana ? sel.manzana + '-' : ''}${sel.lote}`; fld.disabled = false; }
-              this.$('fldArea').value = sel.area_m2;
-              this.$('fldArea').disabled = false;
-              this.$('fldEstado').value = sel.estado;
-              this.$('fldEstado').disabled = false;
-              this.$('fldPrecio').value = sel.precio;
-              this.$('fldPrecio').disabled = false;
-              this.$('btnDeletePoly').disabled = false;
-            }
-          } else {
-            this.$('inspectorCard').style.display = 'block';
-            this.$('badgeLoteId').textContent = this.lotes.length ? 'Selecciona un lote' : 'L-01';
-            if (!skipInspectorInputs) {
-              const fld = this.$('fldLoteNumero');
-              if (fld) { fld.value = ''; fld.placeholder = 'Ej. Lote 01 o Mz. A - Lote 01'; }
-            }
-          }
-        }
-
-        construirPayload() {
-          const scaleToOriginal = this.imgNaturalW / (this.workW || 1);
-          const metersPerPixelOrig = this.metersPerPixel ? (this.metersPerPixel / scaleToOriginal) : null;
-
-          const lotesExport = this.lotes.map((l) => {
-            const pointsPx = l.points.map(([x, y]) => [
-              Math.round(x * scaleToOriginal),
-              Math.round(y * scaleToOriginal)
-            ]);
-            const pointsPct = l.points.map(([x, y]) => [
-              +((x / this.workW) * 100).toFixed(3),
-              +((y / this.workH) * 100).toFixed(3)
-            ]);
-            const [cx, cy] = calcularCentroide(pointsPx);
-
-            return {
-              id: l.id,
-              lote_numero: l.lote_numero || (l.manzana ? `${l.manzana}-${l.lote}` : `Lote ${l.lote}`),
-              manzana: l.manzana || '',
-              lote: l.lote || (l.lote_numero ? l.lote_numero.replace(/[^\d]/g, '') : ''),
-              estado: l.estado,
-              area_m2: l.area_m2,
-              perimetro_m: l.perimetro_m,
-              precio: l.precio,
-              centroidPx: [cx, cy], pointsPx, pointsPct,
-              svgPoints: pointsPx.map((p) => p.join(',')).join(' ')
-            };
           });
-
-          const customTextsExport = (this.customTexts || []).map(t => ({
-            id: t.id,
-            text: t.text,
-            x: Math.round(t.x * scaleToOriginal),
-            y: Math.round(t.y * scaleToOriginal),
-            size: Math.round(t.size * scaleToOriginal),
-            color: t.color
-          }));
-
-          const customLinesExport = (this.customLines || []).map(l => ({
-            id: l.id,
-            x1: Math.round(l.x1 * scaleToOriginal),
-            y1: Math.round(l.y1 * scaleToOriginal),
-            x2: Math.round(l.x2 * scaleToOriginal),
-            y2: Math.round(l.y2 * scaleToOriginal),
-            width: l.width,
-            color: l.color,
-            dash: l.dash
-          }));
-
-          const polygonsSvg = lotesExport.map((l) => {
-            const est = ESTADOS[l.estado] || ESTADOS.Disponible;
-            return `  <polygon class="lote-poligono" data-id="${l.id}" data-lote-numero="${l.lote_numero || l.lote}" data-manzana="${l.manzana || ''}" data-lote="${l.lote}" data-area="${l.area_m2}" data-estado="${l.estado}" data-precio="${l.precio}" points="${l.svgPoints}" fill="${est.fill}" stroke="${est.stroke}" stroke-width="2" />`;
-          }).join('\n');
-
-          const linesSvg = customLinesExport.map(l =>
-            `  <line data-id="${l.id}" x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" stroke="${l.color}" stroke-width="${l.width}" stroke-dasharray="${l.dash === 'dashed' ? '6,4' : 'none'}" />`
-          ).join('\n');
-
-          const textsSvg = customTextsExport.map(t =>
-            `  <text data-id="${t.id}" x="${t.x}" y="${t.y}" font-size="${t.size}" fill="${t.color}" font-weight="bold" stroke="#000" stroke-width="2" text-anchor="middle" dominant-baseline="central">${escapeHtml(t.text)}</text>`
-          ).join('\n');
-
-          const svgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${this.imgNaturalW} ${this.imgNaturalH}">\n${polygonsSvg}\n${linesSvg}\n${textsSvg}\n</svg>`;
-
-          return {
-            imageWidth: this.imgNaturalW,
-            imageHeight: this.imgNaturalH,
-            calibrated: Boolean(this.metersPerPixel),
-            metersPerPixelOrig,
-            lotes: lotesExport,
-            customTexts: customTextsExport,
-            customLines: customLinesExport,
-            svgMarkup
-          };
-        }
-
-        async copiarSvg() {
-          const { svgMarkup } = this.construirPayload();
-          try {
-            await navigator.clipboard.writeText(svgMarkup);
-            this.setStatus('SVG interactivo copiado al portapapeles.');
-          } catch {
-            this.setStatus('No se pudo copiar automáticamente.');
-          }
-        }
-
-        descargarJson() {
-          const payload = this.construirPayload();
-          const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `lotes-poligonos-${Date.now()}.json`;
-          a.click();
-          URL.revokeObjectURL(url);
-        }
-
-        aplicarExportacion() {
-          const payload = this.construirPayload();
-          if (typeof this.options.onExport === 'function') this.options.onExport(payload);
-          global.dispatchEvent(new CustomEvent('lotizador:aplicar', { detail: payload }));
-          this.cerrar();
         }
       }
 
-      const instancia = new LotizadorModal();
+      // Exponer API global
       global.detectarPoligonosDesdeImageData = detectarPoligonosDesdeImageData;
       global.snapAdjacentPolygons = snapAdjacentPolygons;
       global.LotizadorImagenModulo = {
-        abrir(options) { instancia.abrir(options); },
-        cerrar() { instancia.cerrar(); }
+        abrir(options) { abrirModal(options); },
+        cerrar() { cerrarModal(); }
       };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bindEvents);
+      } else {
+        bindEvents();
+      }
     })(window);
   </script>
 </body>
