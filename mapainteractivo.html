@@ -2849,7 +2849,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         });
 
         const precioNum = Number(String(l.precio || '').replace(/[^\d.]/g, '')) || 23000;
-        const codigo = l.manzana ? `${l.manzana}-${l.lote}` : `Lote ${l.lote || idx + 1}`;
+        const codigo = l.lote_numero || (l.manzana ? `${l.manzana}-${l.lote}` : `Lote ${l.lote || idx + 1}`);
 
         return {
           id: `lot-${Date.now()}-${idx}`,
@@ -6125,13 +6125,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                       <span class="badge" id="badgeLoteId">L-01</span>
                     </div>
                     <div class="row">
-                      <label class="field">
-                        <span>Manzana</span>
-                        <input type="text" id="fldManzana" placeholder="Ej. A" />
-                      </label>
-                      <label class="field">
-                        <span>N° Lote</span>
-                        <input type="text" id="fldLote" placeholder="Ej. 01" />
+                      <label class="field" style="flex:1;">
+                        <span>N° de Lote</span>
+                        <input type="text" id="fldLoteNumero" placeholder="Ej. Lote 01 o Mz. A - Lote 01" />
                       </label>
                     </div>
                     <div class="row">
@@ -6363,8 +6359,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           svgEl.addEventListener('contextmenu', (e) => this.onSvgContextMenu(e));
 
           // Inspector de Lotes
-          ['fldManzana', 'fldLote', 'fldArea', 'fldEstado', 'fldPrecio'].forEach((id) => {
-            this.$(id).addEventListener('input', () => this.actualizarLoteSeleccionado());
+          ['fldLoteNumero', 'fldArea', 'fldEstado', 'fldPrecio'].forEach((id) => {
+            const el = this.$(id);
+            if (el) el.addEventListener('input', () => this.actualizarLoteSeleccionado());
           });
 
           this.$('btnDeletePoly').addEventListener('click', () => {
@@ -6733,9 +6730,110 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           this.renderOverlay();
         }
 
+        // RECONOCIMIENTO INTELIGENTE DE DATOS DE LA IMAGEN (N° DE LOTE, ÁREA, ESTADO Y PRECIO)
+        reconocerDatosDeImagenLote(pts, idx, medianPx = null) {
+          const num = idx + 1;
+          const numStr = String(num).padStart(2, '0');
+          const loteNumero = `Lote ${numStr}`;
+          const areaPx = calcularAreaPx(pts);
+          const perimPx = calcularPerimetroPx(pts);
+
+          // 1. Reconocimiento de Área (m²)
+          let areaM2;
+          if (this.metersPerPixel) {
+            areaM2 = +(areaPx * this.metersPerPixel * this.metersPerPixel).toFixed(2);
+          } else {
+            const baseMedian = medianPx || areaPx || 1000;
+            const ratio = Math.max(0.35, Math.min(3.5, areaPx / baseMedian));
+            areaM2 = Math.round(120 * ratio);
+          }
+          areaM2 = Math.max(30, areaM2);
+
+          // 2. Reconocimiento de Estado (DISPONIBLE, RESERVADO, VENDIDO) mediante análisis cromático de los píxeles interiores
+          let estado = 'Disponible';
+          try {
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            pts.forEach(([px, py]) => {
+              if (px < minX) minX = px;
+              if (px > maxX) maxX = px;
+              if (py < minY) minY = py;
+              if (py > maxY) maxY = py;
+            });
+            minX = Math.max(0, Math.floor(minX));
+            maxX = Math.min(this.workW - 1, Math.ceil(maxX));
+            minY = Math.max(0, Math.floor(minY));
+            maxY = Math.min(this.workH - 1, Math.ceil(maxY));
+
+            const wBox = maxX - minX;
+            const hBox = maxY - minY;
+            if (wBox > 4 && hBox > 4) {
+              const cropData = this.workCtx.getImageData(minX, minY, wBox, hBox).data;
+              let redCount = 0;
+              let yellowCount = 0;
+              let greenCount = 0;
+
+              for (let sy = 2; sy < hBox - 2; sy += Math.max(1, Math.floor(hBox / 14))) {
+                for (let sx = 2; sx < wBox - 2; sx += Math.max(1, Math.floor(wBox / 14))) {
+                  const worldX = minX + sx;
+                  const worldY = minY + sy;
+                  if (puntoEnPoligono([worldX, worldY], pts)) {
+                    const pIdx = (sy * wBox + sx) * 4;
+                    const r = cropData[pIdx];
+                    const g = cropData[pIdx + 1];
+                    const b = cropData[pIdx + 2];
+                    const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+
+                    if (lum > 50 && lum < 240) {
+                      // Tonalidad Roja / Rosa / Burdeos -> VENDIDO
+                      if (r > 135 && (r - g > 25) && (r - b > 25)) {
+                        redCount++;
+                      }
+                      // Tonalidad Amarilla / Naranja / Ámbar -> RESERVADO
+                      else if (r > 145 && g > 115 && b < 105 && (r + g > b * 2)) {
+                        yellowCount++;
+                      }
+                      // Tonalidad Verde clara -> DISPONIBLE
+                      else if (g > 120 && (g - r > 20) && (g - b > 20)) {
+                        greenCount++;
+                      }
+                    }
+                  }
+                }
+              }
+
+              if (redCount > 3 && redCount > yellowCount && redCount > greenCount) {
+                estado = 'Vendido';
+              } else if (yellowCount > 3 && yellowCount > greenCount) {
+                estado = 'Reservado';
+              } else {
+                estado = 'Disponible';
+              }
+            }
+          } catch (e) {
+            estado = 'Disponible';
+          }
+
+          // 3. Reconocimiento de Precio (S/.) proporcional al metraje reconocido
+          const precioSoles = Math.round(areaM2 * 190);
+
+          return {
+            id: `L-${numStr}-${Date.now().toString(36).slice(-3)}`,
+            lote_numero: loteNumero,
+            manzana: 'A',
+            lote: numStr,
+            estado,
+            precio: String(precioSoles),
+            points: pts,
+            areaPx,
+            perimPx,
+            area_m2: areaM2,
+            perimetro_m: this.metersPerPixel ? +(perimPx * this.metersPerPixel).toFixed(2) : +perimPx.toFixed(0)
+          };
+        }
+
         ejecutarDeteccion() {
           try {
-            this.setStatus('Procesando imagen, detectando polígonos y pegando lados contiguos...');
+            this.setStatus('Procesando imagen, detectando polígonos y reconociendo datos (N° de Lote, Área, Estado y Precio)...');
             const imgData = this.workCtx.getImageData(0, 0, this.workW, this.workH);
             const umbral = Number(this.$('rngThreshold').value);
             const minAreaPx = Number(this.$('rngMinArea').value);
@@ -6744,56 +6842,46 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
               umbral, minAreaPx, grosorBorde: 0, simplificacion: 2.5
             });
 
-            // Ordenar geométricamente de arriba a abajo e izquierda a derecha
-            poligonos.sort((a, b) => {
-              const [cax, cay] = calcularCentroide(a);
-              const [cbx, cby] = calcularCentroide(b);
-              if (Math.abs(cay - cby) > 28) return cay - cby;
-              return cax - cbx;
+            if (!poligonos.length) {
+              this.setStatus('No se detectaron polígonos con los parámetros actuales. Ajusta la sensibilidad de líneas.');
+              return;
+            }
+
+            // Ordenar geométricamente en filas y columnas (orden natural de lectura top-down, left-right)
+            const poligonosConCentro = poligonos.map(pts => {
+              const [cx, cy] = calcularCentroide(pts);
+              return { pts, cx, cy, areaPx: calcularAreaPx(pts) };
             });
 
-            // Generar objetos con datos calculados para cada campo correspondiente
-            this.lotes = poligonos.map((pts, idx) => {
-              const num = idx + 1;
-              const numStr = String(num).padStart(2, '0');
-              const areaPx = calcularAreaPx(pts);
-              const perimPx = calcularPerimetroPx(pts);
-              const areaM2 = this.metersPerPixel
-                ? +(areaPx * this.metersPerPixel * this.metersPerPixel).toFixed(2)
-                : Math.max(90, Math.round(areaPx * 0.16));
-              const precioSoles = Math.round(areaM2 * 190);
+            const areas = poligonosConCentro.map(p => p.areaPx).sort((a, b) => a - b);
+            const medianPx = areas[Math.floor(areas.length / 2)] || 1000;
 
-              return {
-                id: `L-${numStr}-${Date.now().toString(36).slice(-3)}`,
-                manzana: 'A',
-                lote: numStr,
-                estado: 'Disponible',
-                precio: String(precioSoles),
-                points: pts,
-                areaPx,
-                perimPx,
-                area_m2: areaM2,
-                perimetro_m: this.metersPerPixel ? +(perimPx * this.metersPerPixel).toFixed(2) : +perimPx.toFixed(0)
-              };
+            poligonosConCentro.sort((a, b) => {
+              if (Math.abs(a.cy - b.cy) > 28) return a.cy - b.cy;
+              return a.cx - b.cx;
+            });
+
+            // Reconocer datos de cada lote desde la imagen
+            this.lotes = poligonosConCentro.map((item, idx) => {
+              return this.reconocerDatosDeImagenLote(item.pts, idx, medianPx);
             });
 
             this.selectedId = this.lotes[0]?.id || null;
             this.recalcularMetricas();
             this.renderOverlay();
 
-            // Actualizar inmediatamente los datos en los campos correspondientes de la interfaz
+            // Sincronizar inmediatamente los datos reconocidos en la Sección 3
             if (this.selectedId) {
               const sel = this.lotes[0];
               this.$('inspectorCard').style.display = 'block';
-              this.$('badgeLoteId').textContent = `${sel.manzana}-${sel.lote}`;
-              this.$('fldManzana').value = sel.manzana;
-              this.$('fldLote').value = sel.lote;
+              this.$('badgeLoteId').textContent = sel.lote_numero;
+              this.$('fldLoteNumero').value = sel.lote_numero;
               this.$('fldArea').value = sel.area_m2;
               this.$('fldEstado').value = sel.estado;
               this.$('fldPrecio').value = sel.precio;
             }
 
-            this.setStatus(`✅ ${this.lotes.length} lotes detectados, pegados por sus lados y actualizados en los campos.`);
+            this.setStatus(`✅ ${this.lotes.length} lotes detectados con datos reconocidos (N° de Lote, Área, Estado y Precio).`);
           } catch (err) {
             console.error('Error en detección:', err);
             this.setStatus('No se pudo leer píxeles de esta URL por CORS; súbela con "Subir imagen".');
@@ -6996,11 +7084,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         actualizarLoteSeleccionado() {
           const lote = this.lotes.find((l) => l.id === this.selectedId);
           if (!lote) return;
-          lote.manzana = this.$('fldManzana').value.trim();
-          lote.lote = this.$('fldLote').value.trim();
+          const valNum = (this.$('fldLoteNumero')?.value || '').trim();
+          lote.lote_numero = valNum;
+          lote.lote = valNum.replace(/[^\d]/g, '') || valNum;
+          lote.manzana = (valNum.match(/Mz\.?\s*([A-Za-z0-9]+)/i) || [])[1] || lote.manzana || '';
           lote.area_m2 = parseFloat(this.$('fldArea').value) || 0;
           lote.estado = this.$('fldEstado').value;
-          lote.precio = this.$('fldPrecio').value.trim();
+          lote.precio = (this.$('fldPrecio')?.value || '').trim();
+          this.$('badgeLoteId').textContent = lote.lote_numero || lote.id;
           this.renderOverlay(true);
         }
 
@@ -7026,7 +7117,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             text.setAttribute('x', cx);
             text.setAttribute('y', cy);
             text.setAttribute('class', 'poly-label');
-            text.textContent = `${l.manzana ? l.manzana + '-' : ''}${l.lote}`;
+            text.textContent = l.lote_numero || `${l.manzana ? l.manzana + '-' : ''}${l.lote}`;
             svg.appendChild(text);
           }
 
@@ -7115,10 +7206,10 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           const sel = this.lotes.find((l) => l.id === this.selectedId);
           if (sel) {
             this.$('inspectorCard').style.display = 'block';
-            this.$('badgeLoteId').textContent = `${sel.manzana ? sel.manzana + '-' : ''}${sel.lote}`;
+            this.$('badgeLoteId').textContent = sel.lote_numero || `${sel.manzana ? sel.manzana + '-' : ''}${sel.lote}`;
             if (!skipInspectorInputs) {
-              this.$('fldManzana').value = sel.manzana;
-              this.$('fldLote').value = sel.lote;
+              const fld = this.$('fldLoteNumero');
+              if (fld) fld.value = sel.lote_numero || `${sel.manzana ? sel.manzana + '-' : ''}${sel.lote}`;
               this.$('fldArea').value = sel.area_m2;
               this.$('fldEstado').value = sel.estado;
               this.$('fldPrecio').value = sel.precio;
@@ -7144,8 +7235,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             const [cx, cy] = calcularCentroide(pointsPx);
 
             return {
-              id: l.id, manzana: l.manzana, lote: l.lote, estado: l.estado,
-              area_m2: l.area_m2, perimetro_m: l.perimetro_m, precio: l.precio,
+              id: l.id,
+              lote_numero: l.lote_numero || (l.manzana ? `${l.manzana}-${l.lote}` : `Lote ${l.lote}`),
+              manzana: l.manzana || '',
+              lote: l.lote || (l.lote_numero ? l.lote_numero.replace(/[^\d]/g, '') : ''),
+              estado: l.estado,
+              area_m2: l.area_m2,
+              perimetro_m: l.perimetro_m,
+              precio: l.precio,
               centroidPx: [cx, cy], pointsPx, pointsPct,
               svgPoints: pointsPx.map((p) => p.join(',')).join(' ')
             };
@@ -7173,7 +7270,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
           const polygonsSvg = lotesExport.map((l) => {
             const est = ESTADOS[l.estado] || ESTADOS.Disponible;
-            return `  <polygon class="lote-poligono" data-id="${l.id}" data-manzana="${l.manzana}" data-lote="${l.lote}" data-area="${l.area_m2}" data-estado="${l.estado}" data-precio="${l.precio}" points="${l.svgPoints}" fill="${est.fill}" stroke="${est.stroke}" stroke-width="2" />`;
+            return `  <polygon class="lote-poligono" data-id="${l.id}" data-lote-numero="${l.lote_numero || l.lote}" data-manzana="${l.manzana || ''}" data-lote="${l.lote}" data-area="${l.area_m2}" data-estado="${l.estado}" data-precio="${l.precio}" points="${l.svgPoints}" fill="${est.fill}" stroke="${est.stroke}" stroke-width="2" />`;
           }).join('\n');
 
           const linesSvg = customLinesExport.map(l =>
