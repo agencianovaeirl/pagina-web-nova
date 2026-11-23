@@ -6119,7 +6119,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                     <div class="status-bar" id="statusBar">Sube una imagen para comenzar. Clic en borde agrega vértice · Anticlick en vértice lo elimina.</div>
                   </div>
 
-                  <div class="card" id="inspectorCard" style="display:none;">
+                  <div class="card" id="inspectorCard">
                     <div class="row" style="justify-content:space-between;">
                       <h3 style="margin:0;">3. Datos del Lote</h3>
                       <span class="badge" id="badgeLoteId">L-01</span>
@@ -7209,13 +7209,22 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             this.$('badgeLoteId').textContent = sel.lote_numero || `${sel.manzana ? sel.manzana + '-' : ''}${sel.lote}`;
             if (!skipInspectorInputs) {
               const fld = this.$('fldLoteNumero');
-              if (fld) fld.value = sel.lote_numero || `${sel.manzana ? sel.manzana + '-' : ''}${sel.lote}`;
+              if (fld) { fld.value = sel.lote_numero || `${sel.manzana ? sel.manzana + '-' : ''}${sel.lote}`; fld.disabled = false; }
               this.$('fldArea').value = sel.area_m2;
+              this.$('fldArea').disabled = false;
               this.$('fldEstado').value = sel.estado;
+              this.$('fldEstado').disabled = false;
               this.$('fldPrecio').value = sel.precio;
+              this.$('fldPrecio').disabled = false;
+              this.$('btnDeletePoly').disabled = false;
             }
           } else {
-            this.$('inspectorCard').style.display = 'none';
+            this.$('inspectorCard').style.display = 'block';
+            this.$('badgeLoteId').textContent = this.lotes.length ? 'Selecciona un lote' : 'L-01';
+            if (!skipInspectorInputs) {
+              const fld = this.$('fldLoteNumero');
+              if (fld) { fld.value = ''; fld.placeholder = 'Ej. Lote 01 o Mz. A - Lote 01'; }
+            }
           }
         }
 

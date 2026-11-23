@@ -4270,19 +4270,15 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                   <div class="status-bar" id="statusBar">Sube una imagen para comenzar. Clic en borde agrega vértice · Anticlick en vértice lo elimina.</div>
                 </div>
 
-                <div class="card" id="inspectorCard" style="display:none;">
+                <div class="card" id="inspectorCard">
                   <div class="row" style="justify-content:space-between;">
                     <h3 style="margin:0;">3. Datos del Lote</h3>
                     <span class="badge" id="badgeLoteId">L-01</span>
                   </div>
                   <div class="row">
-                    <label class="field">
-                      <span>Manzana</span>
-                      <input type="text" id="fldManzana" placeholder="Ej. A" />
-                    </label>
-                    <label class="field">
-                      <span>N° Lote</span>
-                      <input type="text" id="fldLote" placeholder="Ej. 01" />
+                    <label class="field" style="flex:1;">
+                      <span>N° de Lote</span>
+                      <input type="text" id="fldLoteNumero" placeholder="Ej. Lote 01 o Mz. A - Lote 01" />
                     </label>
                   </div>
                   <div class="row">
@@ -4405,8 +4401,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           window.addEventListener('mouseup', () => { this.draggingVertex = null; });
           svgEl.addEventListener('contextmenu', (e) => this.onSvgContextMenu(e));
 
-          ['fldManzana', 'fldLote', 'fldArea', 'fldEstado', 'fldPrecio'].forEach((id) => {
-            this.$(id).addEventListener('input', () => this.actualizarLoteSeleccionado());
+          ['fldLoteNumero', 'fldArea', 'fldEstado', 'fldPrecio'].forEach((id) => {
+            const el = this.$(id);
+            if (el) el.addEventListener('input', () => this.actualizarLoteSeleccionado());
           });
 
           this.$('btnDeletePoly').addEventListener('click', () => {
@@ -4649,11 +4646,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         actualizarLoteSeleccionado() {
           const lote = this.lotes.find((l) => l.id === this.selectedId);
           if (!lote) return;
-          lote.manzana = this.$('fldManzana').value.trim();
-          lote.lote = this.$('fldLote').value.trim();
+          const valNum = (this.$('fldLoteNumero')?.value || '').trim();
+          lote.lote_numero = valNum;
+          lote.lote = valNum.replace(/[^\d]/g, '') || valNum;
+          lote.manzana = (valNum.match(/Mz\.?\s*([A-Za-z0-9]+)/i) || [])[1] || lote.manzana || '';
           lote.area_m2 = parseFloat(this.$('fldArea').value) || 0;
           lote.estado = this.$('fldEstado').value;
           lote.precio = this.$('fldPrecio').value.trim();
+          this.$('badgeLoteId').textContent = lote.lote_numero || lote.id;
           this.renderOverlay(true);
         }
 
@@ -4677,7 +4677,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             text.setAttribute('x', cx);
             text.setAttribute('y', cy);
             text.setAttribute('class', 'poly-label');
-            text.textContent = `${l.manzana ? l.manzana + '-' : ''}${l.lote}`;
+            text.textContent = l.lote_numero || `${l.manzana ? l.manzana + '-' : ''}${l.lote}`;
             svg.appendChild(text);
           }
 
@@ -4711,16 +4711,25 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           const sel = this.lotes.find((l) => l.id === this.selectedId);
           if (sel) {
             this.$('inspectorCard').style.display = 'block';
-            this.$('badgeLoteId').textContent = `${sel.manzana ? sel.manzana + '-' : ''}${sel.lote}`;
+            this.$('badgeLoteId').textContent = sel.lote_numero || `${sel.manzana ? sel.manzana + '-' : ''}${sel.lote}`;
             if (!skipInspectorInputs) {
-              this.$('fldManzana').value = sel.manzana;
-              this.$('fldLote').value = sel.lote;
+              const fld = this.$('fldLoteNumero');
+              if (fld) { fld.value = sel.lote_numero || `${sel.manzana ? sel.manzana + '-' : ''}${sel.lote}`; fld.disabled = false; }
               this.$('fldArea').value = sel.area_m2;
+              this.$('fldArea').disabled = false;
               this.$('fldEstado').value = sel.estado;
+              this.$('fldEstado').disabled = false;
               this.$('fldPrecio').value = sel.precio;
+              this.$('fldPrecio').disabled = false;
+              this.$('btnDeletePoly').disabled = false;
             }
           } else {
-            this.$('inspectorCard').style.display = 'none';
+            this.$('inspectorCard').style.display = 'block';
+            this.$('badgeLoteId').textContent = this.lotes.length ? 'Selecciona un lote' : 'L-01';
+            if (!skipInspectorInputs) {
+              const fld = this.$('fldLoteNumero');
+              if (fld) { fld.value = ''; fld.placeholder = 'Ej. Lote 01 o Mz. A - Lote 01'; }
+            }
           }
         }
 
