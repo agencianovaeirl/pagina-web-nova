@@ -2849,7 +2849,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         });
 
         const precioNum = Number(String(l.precio || '').replace(/[^\d.]/g, '')) || 23000;
-        const codigo = l.lote_numero || (l.manzana ? `${l.manzana}-${l.lote}` : `Lote ${l.lote || idx + 1}`);
+        const codigo = l.manzana ? `${l.manzana}-${l.lote}` : `Lote ${l.lote || idx + 1}`;
 
         return {
           id: `lot-${Date.now()}-${idx}`,
