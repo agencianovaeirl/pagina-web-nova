@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -25,7 +26,8 @@
 
   <style>
     /* Requisitos críticos de visibilidad */
-    html, body {
+    html,
+    body {
       margin: 0;
       padding: 0;
       width: 100%;
@@ -66,6 +68,7 @@
       height: 100%;
       cursor: grab;
     }
+
     #canvas3d:active {
       cursor: grabbing;
     }
@@ -139,16 +142,19 @@
       color: #ffffff;
       letter-spacing: 0.02em;
     }
+
     .lot-lbl-area {
       font-size: 10px;
       font-weight: 700;
       color: #f1f5f9;
     }
+
     .lot-lbl-price {
       font-size: 10px;
       font-weight: 800;
       color: #fef08a;
     }
+
     .lot-lbl-status {
       margin-top: 5px;
       font-size: 12px;
@@ -159,15 +165,19 @@
 
     /* Resplandor latente amarillo fuerte solo en el borde blanco al seleccionar */
     @keyframes lotBorderPulse {
-      0%, 100% {
+
+      0%,
+      100% {
         filter: drop-shadow(0 0 5px #facc15) drop-shadow(0 0 12px #eab308);
         stroke-opacity: 1;
       }
+
       50% {
         filter: drop-shadow(0 0 10px #fde047) drop-shadow(0 0 22px #facc15);
         stroke-opacity: 0.92;
       }
     }
+
     .lot-border-pulse {
       animation: lotBorderPulse 1.3s ease-in-out infinite;
     }
@@ -177,6 +187,7 @@
       background: transparent !important;
       border: none !important;
     }
+
     .project-pin-wrap {
       transform: translate(-50%, -100%);
       display: flex;
@@ -185,9 +196,11 @@
       cursor: pointer;
       transition: transform 0.18s ease;
     }
+
     .project-pin-wrap:hover {
       transform: translate(-50%, -104%) scale(1.04);
     }
+
     .project-pin-pill {
       display: inline-flex;
       align-items: center;
@@ -202,15 +215,18 @@
       white-space: nowrap;
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
     }
+
     .project-pin-wrap.is-active .project-pin-pill {
       border-color: #34d399;
       box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.28), 0 8px 20px rgba(0, 0, 0, 0.55);
     }
+
     .project-pin-stem {
       width: 2px;
       height: 12px;
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(56, 189, 248, 0.4));
     }
+
     .project-pin-dot {
       width: 8px;
       height: 8px;
@@ -225,15 +241,18 @@
       background: transparent !important;
       border: none !important;
     }
+
     .handle-dot {
       border-radius: 9999px;
       border: 2px solid #ffffff;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
       transition: transform 0.12s ease;
     }
+
     .handle-dot:hover {
       transform: scale(1.22);
     }
+
     .handle-move {
       width: 22px;
       height: 22px;
@@ -243,12 +262,14 @@
       justify-content: center;
       cursor: move;
     }
+
     .handle-resize {
       width: 14px;
       height: 14px;
       background: #f59e0b;
       cursor: nwse-resize;
     }
+
     .handle-rotate {
       width: 15px;
       height: 15px;
@@ -258,12 +279,14 @@
       align-items: center;
       justify-content: center;
     }
+
     .handle-vertex {
       width: 13px;
       height: 13px;
       background: #38bdf8;
       cursor: move;
     }
+
     .handle-delete {
       width: 16px;
       height: 16px;
@@ -288,6 +311,7 @@
       box-shadow: none !important;
       pointer-events: none !important;
     }
+
     .district-label-text {
       transform: translate(-50%, -50%);
       white-space: nowrap;
@@ -307,6 +331,7 @@
     .proj-chevron {
       transition: transform 0.2s ease;
     }
+
     .proj-chevron.is-open {
       transform: rotate(180deg);
     }
@@ -320,6 +345,7 @@
       z-index: 610;
       max-width: calc(100vw - 24px);
     }
+
     .dock-btn {
       display: inline-flex;
       align-items: center;
@@ -331,6 +357,7 @@
       white-space: nowrap;
       transition: background-color 0.16s ease, color 0.16s ease, transform 0.12s ease;
     }
+
     .dock-btn:active {
       transform: scale(0.96);
     }
@@ -339,21 +366,26 @@
     .custom-scroll::-webkit-scrollbar {
       width: 5px;
     }
+
     .custom-scroll::-webkit-scrollbar-track {
       background: rgba(255, 255, 255, 0.03);
     }
+
     .custom-scroll::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.18);
       border-radius: 9999px;
     }
 
     /* Permitir selección en inputs */
-    input, select, textarea {
+    input,
+    select,
+    textarea {
       user-select: text;
       -webkit-user-select: text;
     }
   </style>
 </head>
+
 <body>
 
   <!-- 1. MAPA 2D GOOGLE EARTH SATÉLITE (LEAFLET) -->
@@ -369,33 +401,46 @@
   <!-- 3. ESQUINA SUPERIOR IZQUIERDA: BOTÓN VOLVER + PÍLDORA DESPLEGABLE DE PROYECTOS -->
   <div class="fixed top-3.5 left-3.5 z-[600] flex items-start gap-2 max-w-[calc(100vw-28px)] pointer-events-none">
     <!-- Botón Volver a Terrenos -->
-    <a href="terrenos.html" class="pointer-events-auto glass-panel hover:bg-[#142c1e] text-[#f2ca50] border border-[#d4af37]/50 rounded-2xl px-3 py-2.5 flex items-center gap-1.5 text-xs font-black shadow-xl transition backdrop-blur-md group shrink-0" title="Regresar al Catálogo de Terrenos">
-      <svg class="w-4 h-4 text-amber-400 group-hover:-translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <a href="terrenos.html"
+      class="pointer-events-auto glass-panel hover:bg-[#142c1e] text-[#f2ca50] border border-[#d4af37]/50 rounded-2xl px-3 py-2.5 flex items-center gap-1.5 text-xs font-black shadow-xl transition backdrop-blur-md group shrink-0"
+      title="Regresar al Catálogo de Terrenos">
+      <svg class="w-4 h-4 text-amber-400 group-hover:-translate-x-1 transition-transform" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M19 12H5M12 19l-7-7 7-7" />
+      </svg>
       <span class="hidden sm:inline">Volver</span>
     </a>
 
     <!-- Píldora Desplegable de Proyectos -->
     <div id="projectsDropdownWrap" class="w-[285px] max-w-[calc(100vw-115px)] pointer-events-none">
       <!-- Botón píldora compacto -->
-      <button onclick="toggleProjectsDropdown()" id="btnProjectsPill" class="pointer-events-auto glass-panel hover:bg-slate-900/95 rounded-2xl px-3.5 py-2.5 flex items-center justify-between gap-3 w-auto max-w-full transition">
+      <button onclick="toggleProjectsDropdown()" id="btnProjectsPill"
+        class="pointer-events-auto glass-panel hover:bg-slate-900/95 rounded-2xl px-3.5 py-2.5 flex items-center justify-between gap-3 w-auto max-w-full transition">
         <div class="flex items-center gap-2.5 min-w-0">
-          <div class="w-7 h-7 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center shrink-0">
+          <div
+            class="w-7 h-7 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center shrink-0">
             <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"></circle>
               <path d="M2 12h20"></path>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+              </path>
             </svg>
           </div>
           <div class="text-left min-w-0">
             <div class="flex items-center gap-1.5">
-              <span class="text-[11px] font-extrabold text-white">Proyectos (<span id="sidebarProjCount">1</span>)</span>
-              <span id="badgeViewMode" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">2D</span>
-              <span id="badgeDbState" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-white/10">Local</span>
+              <span class="text-[11px] font-extrabold text-white">Proyectos (<span
+                  id="sidebarProjCount">1</span>)</span>
+              <span id="badgeViewMode"
+                class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">2D</span>
+              <span id="badgeDbState"
+                class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-white/10">Local</span>
             </div>
-            <div id="hudProjectName" class="text-[10.5px] font-semibold text-slate-300 truncate max-w-[165px]">Proyecto Fortunato</div>
+            <div id="hudProjectName" class="text-[10.5px] font-semibold text-slate-300 truncate max-w-[165px]">Proyecto
+              Fortunato</div>
           </div>
         </div>
-        <svg id="projectsPillChevron" class="w-4 h-4 text-slate-300 proj-chevron shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+        <svg id="projectsPillChevron" class="w-4 h-4 text-slate-300 proj-chevron shrink-0" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.4">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </button>
@@ -410,19 +455,24 @@
   </div>
 
   <!-- 4. ESQUINA SUPERIOR DERECHA: FILTROS COMPACTOS POR ESTADO -->
-  <div class="fixed top-3.5 right-3.5 z-[600] glass-panel rounded-2xl p-1 flex items-center gap-1 max-w-[calc(100vw-28px)] overflow-x-auto">
-    <button onclick="setFilter('ALL')" id="filterAll" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-white/15 text-white transition whitespace-nowrap">
+  <div
+    class="fixed top-3.5 right-3.5 z-[600] glass-panel rounded-2xl p-1 flex items-center gap-1 max-w-[calc(100vw-28px)] overflow-x-auto">
+    <button onclick="setFilter('ALL')" id="filterAll"
+      class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-white/15 text-white transition whitespace-nowrap">
       Todos <span id="cntAll" class="ml-0.5 text-slate-300">7</span>
     </button>
-    <button onclick="setFilter('Disponible')" id="filterDisp" class="px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-emerald-300 hover:bg-emerald-500/15 transition flex items-center gap-1 whitespace-nowrap">
+    <button onclick="setFilter('Disponible')" id="filterDisp"
+      class="px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-emerald-300 hover:bg-emerald-500/15 transition flex items-center gap-1 whitespace-nowrap">
       <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
       Disponible <span id="cntDisp" class="font-bold">0</span>
     </button>
-    <button onclick="setFilter('Reservado')" id="filterRes" class="px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-amber-300 hover:bg-amber-500/15 transition flex items-center gap-1 whitespace-nowrap">
+    <button onclick="setFilter('Reservado')" id="filterRes"
+      class="px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-amber-300 hover:bg-amber-500/15 transition flex items-center gap-1 whitespace-nowrap">
       <span class="w-2 h-2 rounded-full bg-amber-400"></span>
       Reservado <span id="cntRes" class="font-bold">0</span>
     </button>
-    <button onclick="setFilter('Vendido')" id="filterVend" class="px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-red-300 hover:bg-red-500/15 transition flex items-center gap-1 whitespace-nowrap">
+    <button onclick="setFilter('Vendido')" id="filterVend"
+      class="px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-red-300 hover:bg-red-500/15 transition flex items-center gap-1 whitespace-nowrap">
       <span class="w-2 h-2 rounded-full bg-red-400"></span>
       Vendido <span id="cntVend" class="font-bold">0</span>
     </button>
@@ -431,7 +481,9 @@
   <!-- 5. DOCK FLOTANTE INFERIOR CENTRADO (TODOS LOS ICONOS PRINCIPALES) -->
   <nav id="bottomDock" class="glass-panel rounded-2xl p-1.5 flex items-center gap-1 overflow-x-auto">
     <!-- 1) Satélite / Híbrido -->
-    <button onclick="toggleSatelliteStyle()" id="btnSatToggle" class="dock-btn bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 border border-sky-400/30" title="Alternar entre Satélite puro e Híbrido (carreteras + distritos)">
+    <button onclick="toggleSatelliteStyle()" id="btnSatToggle"
+      class="dock-btn bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 border border-sky-400/30"
+      title="Alternar entre Satélite puro e Híbrido (carreteras + distritos)">
       <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M13 7 9 3 5 7l4 4"></path>
         <path d="m17 11 4 4-4 4-4-4"></path>
@@ -445,7 +497,8 @@
     <div class="w-px h-6 bg-white/10 mx-0.5 shrink-0"></div>
 
     <!-- 2) Ver Todos -->
-    <button onclick="frameAllProjects()" class="dock-btn text-slate-200 hover:bg-white/10" title="Encuadrar todos los proyectos en el mapa">
+    <button onclick="frameAllProjects()" class="dock-btn text-slate-200 hover:bg-white/10"
+      title="Encuadrar todos los proyectos en el mapa">
       <svg class="w-4 h-4 text-sky-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path>
       </svg>
@@ -453,7 +506,8 @@
     </button>
 
     <!-- 3) Supabase -->
-    <button onclick="openSupabaseModal()" class="dock-btn text-emerald-300 hover:bg-emerald-500/15" title="Base de datos Supabase (nova_propiedades)">
+    <button onclick="openSupabaseModal()" class="dock-btn text-emerald-300 hover:bg-emerald-500/15"
+      title="Base de datos Supabase (nova_propiedades)">
       <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
         <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
@@ -465,7 +519,8 @@
     <div class="w-px h-6 bg-white/10 mx-0.5 shrink-0"></div>
 
     <!-- 4) Modo Editor (Acceso directo, sin clave) -->
-    <button onclick="toggleEditor()" id="btnToggleEditor" class="dock-btn bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold shadow-lg shadow-amber-500/20">
+    <button onclick="toggleEditor()" id="btnToggleEditor"
+      class="dock-btn bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold shadow-lg shadow-amber-500/20">
       <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
         <path d="M12 20h9"></path>
         <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"></path>
@@ -477,49 +532,74 @@
   <!-- CONTROLES COMPACTOS DE ZOOM (INFERIOR DERECHA) -->
   <div class="fixed bottom-5 right-3.5 z-[550] hidden sm:flex flex-col gap-1 glass-panel rounded-2xl p-1">
     <button onclick="handleZoomIn()" class="p-2 rounded-xl text-slate-200 hover:bg-white/10 transition" title="Acercar">
-      <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
     </button>
     <div class="h-px w-5 mx-auto bg-white/10"></div>
     <button onclick="handleZoomOut()" class="p-2 rounded-xl text-slate-200 hover:bg-white/10 transition" title="Alejar">
-      <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
     </button>
   </div>
 
   <!-- BANNER DE DIBUJO ACTIVO (CUANDO SE CREA UN POLÍGONO) -->
-  <div id="drawBanner" class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 z-[650] glass-panel rounded-2xl px-4 py-2.5 flex flex-wrap items-center justify-center gap-3 border-sky-400/50">
+  <div id="drawBanner"
+    class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 z-[650] glass-panel rounded-2xl px-4 py-2.5 flex flex-wrap items-center justify-center gap-3 border-sky-400/50">
     <div class="flex items-center gap-2 text-xs font-semibold text-white">
       <span class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping"></span>
-      <span>Clic para marcar vértices · Doble clic para cerrar (<strong id="drawVertexCount" class="text-sky-300">0</strong> puntos)</span>
+      <span>Clic para marcar vértices · Doble clic para cerrar (<strong id="drawVertexCount"
+          class="text-sky-300">0</strong> puntos)</span>
     </div>
     <div class="flex items-center gap-2">
-      <button onclick="finishDrawingPolygon()" class="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition">Finalizar Polígono</button>
-      <button onclick="cancelDrawingPolygon()" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition">Cancelar</button>
+      <button onclick="finishDrawingPolygon()"
+        class="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition">Finalizar
+        Polígono</button>
+      <button onclick="cancelDrawingPolygon()"
+        class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition">Cancelar</button>
     </div>
   </div>
 
   <!-- 6. CUADRO MODO EDITOR (PANEL LATERAL IZQUIERDO - CONSOLIDADO Y AMPLIADO) -->
-  <aside id="editorDrawer" class="hidden fixed top-3.5 bottom-20 left-3.5 z-[620] w-[460px] max-w-[calc(100vw-24px)] glass-panel rounded-3xl flex flex-col overflow-hidden shadow-2xl border border-white/15 transition-[width] duration-300">
+  <aside id="editorDrawer"
+    class="hidden fixed top-3.5 bottom-20 left-3.5 z-[620] w-[460px] max-w-[calc(100vw-24px)] glass-panel rounded-3xl flex flex-col overflow-hidden shadow-2xl border border-white/15 transition-[width] duration-300">
     <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between bg-slate-950/60">
       <div class="flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
         <h2 class="text-xs font-black uppercase tracking-wider text-white">Cuadro Modo Editor</h2>
-        <span id="editorDrawerModeBadge" class="text-[9.5px] font-bold text-amber-300 px-2 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/30">Consolidado</span>
+        <span id="editorDrawerModeBadge"
+          class="text-[9.5px] font-bold text-amber-300 px-2 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/30">Consolidado</span>
       </div>
       <div class="flex items-center gap-1.5">
-        <button onclick="toggleEditorDrawerExpand()" id="btnExpandDrawer" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition" title="Ampliar / Reducir Cuadro">
-          <svg id="iconExpandDrawer" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        <button onclick="toggleEditorDrawerExpand()" id="btnExpandDrawer"
+          class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition"
+          title="Ampliar / Reducir Cuadro">
+          <svg id="iconExpandDrawer" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.2">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+          </svg>
         </button>
-        <button onclick="toggleEditor()" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition" title="Cerrar Editor">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        <button onclick="toggleEditor()"
+          class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition" title="Cerrar Editor">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
       </div>
     </div>
 
     <!-- Pestañas del Editor Consolidado -->
     <div class="grid grid-cols-3 gap-1.5 p-2 border-b border-white/10 bg-slate-950/80 text-[11px] font-extrabold">
-      <button onclick="switchEditorTab(1)" id="tabBtn1" class="py-2 px-1 rounded-xl bg-amber-400 text-slate-950 transition text-center shadow">1. Proyecto y Plano</button>
-      <button onclick="switchEditorTab(2)" id="tabBtn2" class="py-2 px-1 rounded-xl text-slate-300 hover:bg-white/10 transition text-center">2. Polígonos</button>
-      <button onclick="switchEditorTab(3)" id="tabBtn3" class="py-2 px-1 rounded-xl text-slate-300 hover:bg-white/10 transition text-center">3. Texto y Línea</button>
+      <button onclick="switchEditorTab(1)" id="tabBtn1"
+        class="py-2 px-1 rounded-xl bg-amber-400 text-slate-950 transition text-center shadow">1. Proyecto y
+        Plano</button>
+      <button onclick="switchEditorTab(2)" id="tabBtn2"
+        class="py-2 px-1 rounded-xl text-slate-300 hover:bg-white/10 transition text-center">2. Polígonos</button>
+      <button onclick="switchEditorTab(3)" id="tabBtn3"
+        class="py-2 px-1 rounded-xl text-slate-300 hover:bg-white/10 transition text-center">3. Texto y Línea</button>
     </div>
 
     <!-- Contenido Scrolleable -->
@@ -532,23 +612,30 @@
           <div class="flex items-center justify-between gap-2">
             <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Proyecto Activo</label>
             <div class="flex items-center gap-2">
-              <button onclick="createNewProject()" class="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 transition">+ Nuevo</button>
-              <button onclick="saveCurrentProjectNow()" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-bold transition">Guardar</button>
+              <button onclick="createNewProject()"
+                class="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 transition">+ Nuevo</button>
+              <button onclick="saveCurrentProjectNow()"
+                class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-bold transition">Guardar</button>
             </div>
           </div>
-          <select id="editorProjectSelect" onchange="switchProject(this.value, true)" class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400"></select>
+          <select id="editorProjectSelect" onchange="switchProject(this.value, true)"
+            class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400"></select>
         </div>
 
         <!-- Datos Base del Proyecto y GPS -->
         <div class="space-y-2.5 pt-2 border-t border-white/10">
           <div>
             <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Nombre del Proyecto</label>
-            <input id="inpProjectName" type="text" onchange="handleProjectInputChange()" class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400" placeholder="Ej. Proyecto Fortunato" />
+            <input id="inpProjectName" type="text" onchange="handleProjectInputChange()"
+              class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400"
+              placeholder="Ej. Proyecto Fortunato" />
           </div>
 
           <div>
             <label class="block text-[10.5px] font-bold text-sky-300 mb-1">UBICACIÓN GPS (Latitud, Longitud)</label>
-            <input id="inpGpsLocation" type="text" onchange="handleProjectInputChange()" class="w-full bg-slate-900/90 border border-sky-400/40 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-400" placeholder="-13.421719, -72.089713" />
+            <input id="inpGpsLocation" type="text" onchange="handleProjectInputChange()"
+              class="w-full bg-slate-900/90 border border-sky-400/40 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-400"
+              placeholder="-13.421719, -72.089713" />
           </div>
         </div>
 
@@ -556,42 +643,64 @@
         <div class="p-3.5 rounded-2xl bg-slate-900/85 border border-amber-400/30 space-y-3 shadow-lg">
           <div class="flex items-center justify-between">
             <h3 class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-              <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
               <span>Plano y Detección de Polígonos</span>
             </h3>
-            <span id="drawerPlanBadge" class="text-[9.5px] font-bold text-emerald-300 px-2 py-0.5 rounded-full bg-emerald-400/15 border border-emerald-400/30">Activo</span>
+            <span id="drawerPlanBadge"
+              class="text-[9.5px] font-bold text-emerald-300 px-2 py-0.5 rounded-full bg-emerald-400/15 border border-emerald-400/30">Activo</span>
           </div>
 
           <div>
-            <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Imagen del Plano (URL o Archivo)</label>
+            <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Imagen del Plano (URL o
+              Archivo)</label>
             <div class="flex gap-1.5">
-              <input id="inpPlanUrl" type="url" placeholder="https://... URL del plano" onchange="handlePlanUrlChange(this.value)" class="flex-1 bg-slate-950 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400" />
-              <button onclick="document.getElementById('inpDrawerPlanFile').click()" type="button" class="px-3 py-2 bg-gradient-to-r from-sky-500/20 to-emerald-500/20 hover:bg-white/15 border border-sky-400/30 text-sky-200 text-xs font-bold rounded-xl transition flex items-center gap-1.5" title="Subir imagen desde equipo">
+              <input id="inpPlanUrl" type="url" placeholder="https://... URL del plano"
+                onchange="handlePlanUrlChange(this.value)"
+                class="flex-1 bg-slate-950 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400" />
+              <button onclick="document.getElementById('inpDrawerPlanFile').click()" type="button"
+                class="px-3 py-2 bg-gradient-to-r from-sky-500/20 to-emerald-500/20 hover:bg-white/15 border border-sky-400/30 text-sky-200 text-xs font-bold rounded-xl transition flex items-center gap-1.5"
+                title="Subir imagen desde equipo">
                 📁 Subir
               </button>
-              <input type="file" id="inpDrawerPlanFile" accept="image/*" class="hidden" onchange="handleDrawerPlanUpload(event)" />
+              <input type="file" id="inpDrawerPlanFile" accept="image/*" class="hidden"
+                onchange="handleDrawerPlanUpload(event)" />
             </div>
           </div>
 
           <!-- CUADRO VISOR / VISTA PREVIA DE LA IMAGEN DEL PLANO (AGRANDADO) -->
-          <div id="drawerPlanPreviewContainer" class="rounded-2xl border border-white/15 bg-slate-950 p-3 flex flex-col gap-2.5 shadow-xl">
+          <div id="drawerPlanPreviewContainer"
+            class="rounded-2xl border border-white/15 bg-slate-950 p-3 flex flex-col gap-2.5 shadow-xl">
             <div class="flex items-center justify-between text-[11px]">
               <span class="font-extrabold text-amber-300 flex items-center gap-1.5">
                 <span>🔍 Vista de la Imagen del Plano</span>
               </span>
               <div class="flex items-center gap-1">
                 <span id="lblDrawerPlanDimensions" class="font-mono text-sky-300 text-[10px] mr-1">Resolución: -</span>
-                <button type="button" onclick="zoomDrawerPlanPreview(-0.25)" class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center justify-center transition" title="Alejar">-</button>
-                <button type="button" onclick="zoomDrawerPlanPreview(0.25)" class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center justify-center transition" title="Acercar">+</button>
-                <button type="button" onclick="resetDrawerPlanPreviewZoom()" class="px-1.5 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-sky-300 flex items-center justify-center transition" title="Restablecer tamaño">100%</button>
+                <button type="button" onclick="zoomDrawerPlanPreview(-0.25)"
+                  class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center justify-center transition"
+                  title="Alejar">-</button>
+                <button type="button" onclick="zoomDrawerPlanPreview(0.25)"
+                  class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center justify-center transition"
+                  title="Acercar">+</button>
+                <button type="button" onclick="resetDrawerPlanPreviewZoom()"
+                  class="px-1.5 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-sky-300 flex items-center justify-center transition"
+                  title="Restablecer tamaño">100%</button>
               </div>
             </div>
-            <div id="drawerPlanViewport" class="relative w-full h-80 sm:h-96 min-h-[320px] max-h-[440px] rounded-xl overflow-auto bg-slate-900 border border-white/10 flex items-center justify-center custom-scroll select-none">
-              <img id="imgDrawerPlanPreview" src="" alt="Vista previa del plano" class="hidden max-w-none transition-transform duration-200 cursor-grab active:cursor-grabbing origin-center" style="transform: scale(1);" />
-              <div id="imgDrawerPlanPlaceholder" class="text-xs text-slate-500 flex flex-col items-center gap-2 text-center p-6">
+            <div id="drawerPlanViewport"
+              class="relative w-full h-80 sm:h-96 min-h-[320px] max-h-[440px] rounded-xl overflow-auto bg-slate-900 border border-white/10 flex items-center justify-center custom-scroll select-none">
+              <img id="imgDrawerPlanPreview" src="" alt="Vista previa del plano"
+                class="hidden max-w-none transition-transform duration-200 cursor-grab active:cursor-grabbing origin-center"
+                style="transform: scale(1);" />
+              <div id="imgDrawerPlanPlaceholder"
+                class="text-xs text-slate-500 flex flex-col items-center gap-2 text-center p-6">
                 <span class="text-3xl">🗺️</span>
                 <span class="font-bold text-slate-300">Ningún plano cargado aún</span>
-                <span class="text-[11px] text-slate-500 max-w-xs">Pega la URL de una imagen o sube el plano en formato JPG / PNG para visualizarlo en alta definición y detectar sus polígonos</span>
+                <span class="text-[11px] text-slate-500 max-w-xs">Pega la URL de una imagen o sube el plano en formato
+                  JPG / PNG para visualizarlo en alta definición y detectar sus polígonos</span>
               </div>
             </div>
           </div>
@@ -602,23 +711,32 @@
                 <span>Sensibilidad</span>
                 <strong id="lblThresholdDrawer" class="text-sky-300 font-mono">185</strong>
               </div>
-              <input type="range" id="rngThresholdDrawer" min="80" max="240" value="185" oninput="document.getElementById('lblThresholdDrawer').textContent=this.value" class="w-full accent-sky-400 cursor-pointer" />
+              <input type="range" id="rngThresholdDrawer" min="80" max="240" value="185"
+                oninput="document.getElementById('lblThresholdDrawer').textContent=this.value"
+                class="w-full accent-sky-400 cursor-pointer" />
             </div>
             <div>
               <div class="flex justify-between mb-0.5">
                 <span>Área Mínima</span>
                 <strong id="lblMinAreaDrawer" class="text-sky-300 font-mono">350px</strong>
               </div>
-              <input type="range" id="rngMinAreaDrawer" min="80" max="3000" step="20" value="350" oninput="document.getElementById('lblMinAreaDrawer').textContent=this.value+'px'" class="w-full accent-sky-400 cursor-pointer" />
+              <input type="range" id="rngMinAreaDrawer" min="80" max="3000" step="20" value="350"
+                oninput="document.getElementById('lblMinAreaDrawer').textContent=this.value+'px'"
+                class="w-full accent-sky-400 cursor-pointer" />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-2 pt-1">
-            <button onclick="detectLotsDirectlyFromDrawer()" class="py-2.5 px-2 rounded-xl bg-gradient-to-r from-amber-400 to-sky-400 hover:from-amber-300 hover:to-sky-300 text-slate-950 text-xs font-black uppercase tracking-wider transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1.5">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <button onclick="detectLotsDirectlyFromDrawer()"
+              class="py-2.5 px-2 rounded-xl bg-gradient-to-r from-amber-400 to-sky-400 hover:from-amber-300 hover:to-sky-300 text-slate-950 text-xs font-black uppercase tracking-wider transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1.5">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
               <span>Detectar Lotes</span>
             </button>
-            <button onclick="pegarLadosContiguosDrawer()" class="py-2.5 px-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-bold transition flex items-center justify-center gap-1.5" title="Unir bordes de lotes contiguos">
+            <button onclick="pegarLadosContiguosDrawer()"
+              class="py-2.5 px-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-bold transition flex items-center justify-center gap-1.5"
+              title="Unir bordes de lotes contiguos">
               <span>🧲 Pegar Lados</span>
             </button>
           </div>
@@ -632,8 +750,11 @@
               <p class="text-[10px] text-slate-400">Alinear plano sobre satélite</p>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="chkShowCalco" onchange="toggleCalcoVisibility(this.checked)" class="sr-only peer" />
-              <div class="w-10 h-5 bg-slate-700 rounded-full peer peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5"></div>
+              <input type="checkbox" id="chkShowCalco" onchange="toggleCalcoVisibility(this.checked)"
+                class="sr-only peer" />
+              <div
+                class="w-10 h-5 bg-slate-700 rounded-full peer peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5">
+              </div>
             </label>
           </div>
 
@@ -642,7 +763,8 @@
               <span>Opacidad</span>
               <span id="calcoOpacityVal" class="font-bold text-sky-300">65%</span>
             </div>
-            <input id="rngCalcoOpacity" type="range" min="10" max="100" value="65" oninput="updateCalcoOpacity(this.value)" class="w-full accent-sky-400 cursor-pointer" />
+            <input id="rngCalcoOpacity" type="range" min="10" max="100" value="65"
+              oninput="updateCalcoOpacity(this.value)" class="w-full accent-sky-400 cursor-pointer" />
           </div>
         </div>
       </div>
@@ -651,15 +773,23 @@
       <div id="editorTab2" class="hidden space-y-4">
         <!-- Botones CREAR POLIGONO y DETECTAR LOTES -->
         <div class="grid grid-cols-3 gap-1.5">
-          <button onclick="startDrawingPolygon()" class="py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-emerald-400 hover:from-sky-400 hover:to-emerald-300 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1 transition">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 22 8.5 18 21 6 21 2 8.5 12 2"/></svg>
+          <button onclick="startDrawingPolygon()"
+            class="py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-emerald-400 hover:from-sky-400 hover:to-emerald-300 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1 transition">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="12 2 22 8.5 18 21 6 21 2 8.5 12 2" />
+            </svg>
             <span>➕ Crear</span>
           </button>
-          <button onclick="detectLotsDirectlyFromDrawer()" class="py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-sky-400 hover:from-amber-300 hover:to-sky-300 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1 transition">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <button onclick="detectLotsDirectlyFromDrawer()"
+            class="py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-sky-400 hover:from-amber-300 hover:to-sky-300 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1 transition">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
             <span>⚡ Detectar</span>
           </button>
-          <button onclick="pegarLadosContiguosDrawer()" class="py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-bold transition flex items-center justify-center gap-1" title="Unir bordes de polígonos contiguos">
+          <button onclick="pegarLadosContiguosDrawer()"
+            class="py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-bold transition flex items-center justify-center gap-1"
+            title="Unir bordes de polígonos contiguos">
             <span>🧲 Pegar</span>
           </button>
         </div>
@@ -670,68 +800,107 @@
             <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
               <span>🏷️ Datos Interiores del Lote</span>
             </h3>
-            <span id="editingLotBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30">Ninguno</span>
+            <span id="editingLotBadge"
+              class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30">Ninguno</span>
           </div>
 
           <!-- BOTÓN SELECCIONAR TODOS LOS POLÍGONOS (Item 6) -->
-          <button id="btnSelectAllPolygons" onclick="toggleSelectAllPolygons()" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400/20 via-sky-400/20 to-emerald-400/20 hover:from-amber-400/35 hover:to-sky-400/35 border border-amber-400/50 text-amber-300 hover:text-white text-xs font-black uppercase tracking-wider transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
-            <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <button id="btnSelectAllPolygons" onclick="toggleSelectAllPolygons()"
+            class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400/20 via-sky-400/20 to-emerald-400/20 hover:from-amber-400/35 hover:to-sky-400/35 border border-amber-400/50 text-amber-300 hover:text-white text-xs font-black uppercase tracking-wider transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
             <span id="lblBtnSelectAllPolygons">SELECCIONAR TODOS LOS POLÍGONOS</span>
           </button>
 
           <!-- PANEL CUANDO TODOS LOS POLÍGONOS ESTÁN SELECCIONADOS -->
-          <div id="allPolygonsSelectedForm" class="hidden space-y-2.5 bg-slate-950/80 p-3 rounded-xl border border-amber-400/40">
+          <div id="allPolygonsSelectedForm"
+            class="hidden space-y-2.5 bg-slate-950/80 p-3 rounded-xl border border-amber-400/40">
             <div class="flex items-center justify-between text-xs font-black text-amber-300">
               <span id="lblAllPolygonsCount">0 Polígonos Totales</span>
               <span id="lblAllPolygonsArea" class="font-mono text-emerald-400 text-[11px]">0.00 m²</span>
             </div>
             <div class="text-[9.5px] text-slate-300 space-y-1 bg-slate-900/90 p-2 rounded-lg border border-white/5">
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white inline-block"></span> <strong>Punto Verde Central:</strong> Arrastrar para mover todos los polígonos</div>
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 border border-white inline-block"></span> <strong>4 Esquinas Ámbar:</strong> Redimensionar todos los polígonos</div>
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400 border border-white inline-block"></span> <strong>Puntos Cian Exteriores:</strong> Rotar todos los polígonos</div>
+              <div class="flex items-center gap-1.5"><span
+                  class="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white inline-block"></span> <strong>Punto
+                  Verde Central:</strong> Arrastrar para mover todos los polígonos</div>
+              <div class="flex items-center gap-1.5"><span
+                  class="w-2.5 h-2.5 rounded-full bg-amber-500 border border-white inline-block"></span> <strong>4
+                  Esquinas Ámbar:</strong> Redimensionar todos los polígonos</div>
+              <div class="flex items-center gap-1.5"><span
+                  class="w-2.5 h-2.5 rounded-full bg-cyan-400 border border-white inline-block"></span> <strong>Puntos
+                  Cian Exteriores:</strong> Rotar todos los polígonos</div>
             </div>
             <!-- Micro-ajustes de precisión para todos los polígonos -->
             <div class="space-y-1 pt-1">
               <div class="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">Ajuste Fino de Posición</div>
               <div class="grid grid-cols-4 gap-1 text-[10px] font-bold">
-                <button onclick="moveAllLots(0, 2)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200" title="Mover al Norte">↑ N</button>
-                <button onclick="moveAllLots(0, -2)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200" title="Mover al Sur">↓ S</button>
-                <button onclick="moveAllLots(-2, 0)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200" title="Mover al Oeste">← O</button>
-                <button onclick="moveAllLots(2, 0)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200" title="Mover al Este">→ E</button>
+                <button onclick="moveAllLots(0, 2)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200"
+                  title="Mover al Norte">↑ N</button>
+                <button onclick="moveAllLots(0, -2)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200"
+                  title="Mover al Sur">↓ S</button>
+                <button onclick="moveAllLots(-2, 0)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200"
+                  title="Mover al Oeste">← O</button>
+                <button onclick="moveAllLots(2, 0)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200"
+                  title="Mover al Este">→ E</button>
               </div>
               <div class="grid grid-cols-4 gap-1 text-[10px] font-bold pt-0.5">
-                <button onclick="scaleAllLots(0.95, 0.95)" class="py-1 rounded-lg bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-amber-300" title="Reducir escala">-5%</button>
-                <button onclick="scaleAllLots(1.05, 1.05)" class="py-1 rounded-lg bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-amber-300" title="Aumentar escala">+5%</button>
-                <button onclick="rotateAllLots(-3)" class="py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-cyan-300" title="Girar antihorario">↺ -3°</button>
-                <button onclick="rotateAllLots(3)" class="py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-cyan-300" title="Girar horario">↻ +3°</button>
+                <button onclick="scaleAllLots(0.95, 0.95)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-amber-300"
+                  title="Reducir escala">-5%</button>
+                <button onclick="scaleAllLots(1.05, 1.05)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-amber-300"
+                  title="Aumentar escala">+5%</button>
+                <button onclick="rotateAllLots(-3)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-cyan-300"
+                  title="Girar antihorario">↺ -3°</button>
+                <button onclick="rotateAllLots(3)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-cyan-300"
+                  title="Girar horario">↻ +3°</button>
               </div>
             </div>
           </div>
 
-          <div id="noLotSelectedHint" class="text-[10.5px] text-slate-400 italic bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
-            Haz clic en un polígono del mapa o elígelo en la lista para ver y editar sus datos interiores, moverlo, redimensionarlo o rotarlo.
+          <div id="noLotSelectedHint"
+            class="text-[10.5px] text-slate-400 italic bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+            Haz clic en un polígono del mapa o elígelo en la lista para ver y editar sus datos interiores, moverlo,
+            redimensionarlo o rotarlo.
           </div>
 
           <div id="lotDataForm" class="hidden space-y-2.5">
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-[10px] font-semibold text-slate-300 mb-0.5">Código / N° Lote</label>
-                <input id="inpLotCode" type="text" oninput="updateSelectedLotData()" class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" placeholder="Ej. Mz. A - L-01" />
+                <input id="inpLotCode" type="text" oninput="updateSelectedLotData()"
+                  class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400"
+                  placeholder="Ej. Mz. A - L-01" />
               </div>
               <div>
                 <label class="block text-[10px] font-semibold text-slate-300 mb-0.5">Área (m²)</label>
-                <input id="inpLotArea" type="number" step="0.01" oninput="updateSelectedLotData()" class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
+                <input id="inpLotArea" type="number" step="0.01" oninput="updateSelectedLotData()"
+                  class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
               </div>
             </div>
 
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-[10px] font-semibold text-slate-300 mb-0.5">Precio (S/.)</label>
-                <input id="inpLotPrice" type="text" oninput="updateSelectedLotData()" class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" placeholder="Ej. 25000" />
+                <input id="inpLotPrice" type="text" oninput="updateSelectedLotData()"
+                  class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400"
+                  placeholder="Ej. 25000" />
               </div>
               <div>
                 <label class="block text-[10px] font-semibold text-slate-300 mb-0.5">Estado</label>
-                <select id="inpLotStatus" onchange="updateSelectedLotData()" class="w-full bg-slate-950 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400">
+                <select id="inpLotStatus" onchange="updateSelectedLotData()"
+                  class="w-full bg-slate-950 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400">
                   <option value="Disponible">Disponible</option>
                   <option value="Reservado">Reservado</option>
                   <option value="Vendido">Vendido</option>
@@ -741,20 +910,31 @@
 
             <!-- Ayuda de Puntos Interactivos del Polígono Individual -->
             <div class="text-[9.5px] text-slate-400 bg-slate-950/80 p-2 rounded-xl border border-white/5 space-y-1">
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white inline-block"></span> <strong>Verde Central:</strong> Arrastrar y mover polígono</div>
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 border border-white inline-block"></span> <strong>4 Esquinas Ámbar:</strong> Redimensionar polígono</div>
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400 border border-white inline-block"></span> <strong>Punto Cian Superior:</strong> Rotar polígono</div>
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400 border border-white inline-block"></span> <strong>Puntos Celestes:</strong> Editar vértices (clic borde añade)</div>
+              <div class="flex items-center gap-1.5"><span
+                  class="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white inline-block"></span> <strong>Verde
+                  Central:</strong> Arrastrar y mover polígono</div>
+              <div class="flex items-center gap-1.5"><span
+                  class="w-2.5 h-2.5 rounded-full bg-amber-500 border border-white inline-block"></span> <strong>4
+                  Esquinas Ámbar:</strong> Redimensionar polígono</div>
+              <div class="flex items-center gap-1.5"><span
+                  class="w-2.5 h-2.5 rounded-full bg-cyan-400 border border-white inline-block"></span> <strong>Punto
+                  Cian Superior:</strong> Rotar polígono</div>
+              <div class="flex items-center gap-1.5"><span
+                  class="w-2.5 h-2.5 rounded-full bg-sky-400 border border-white inline-block"></span> <strong>Puntos
+                  Celestes:</strong> Editar vértices (clic borde añade)</div>
             </div>
 
             <div class="grid grid-cols-3 gap-1.5 pt-1">
-              <button onclick="saveSelectedLotNow()" class="py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
+              <button onclick="saveSelectedLotNow()"
+                class="py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
                 💾 Guardar
               </button>
-              <button onclick="duplicateSelectedLot()" class="py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
+              <button onclick="duplicateSelectedLot()"
+                class="py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
                 📋 Duplicar
               </button>
-              <button onclick="deleteSelectedLot()" class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
+              <button onclick="deleteSelectedLot()"
+                class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
                 🗑️ Eliminar
               </button>
             </div>
@@ -779,22 +959,26 @@
             <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
               <span>✏️ Textos y Rótulos Adicionales</span>
             </h3>
-            <span id="editorTextCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">0</span>
+            <span id="editorTextCountBadge"
+              class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">0</span>
           </div>
 
           <div class="space-y-2">
             <div>
               <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Contenido del Texto</label>
-              <input id="inpEditorTextContent" type="text" placeholder="Ej. Manzana A / Calle Principal" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
+              <input id="inpEditorTextContent" type="text" placeholder="Ej. Manzana A / Calle Principal"
+                class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Tamaño (px)</label>
-                <input id="inpEditorTextSize" type="number" value="16" min="8" max="72" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
+                <input id="inpEditorTextSize" type="number" value="16" min="8" max="72"
+                  class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
               </div>
               <div>
                 <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Color</label>
-                <select id="selEditorTextColor" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400">
+                <select id="selEditorTextColor"
+                  class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400">
                   <option value="#ffffff" selected>Blanco</option>
                   <option value="#fbbf24">Amarillo</option>
                   <option value="#38bdf8">Cian</option>
@@ -811,13 +995,16 @@
           </div>
 
           <div class="grid grid-cols-3 gap-1.5 pt-1">
-            <button onclick="addTextToMap()" class="py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+            <button onclick="addTextToMap()"
+              class="py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
               ➕ Agregar
             </button>
-            <button onclick="editSelectedText()" class="py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+            <button onclick="editSelectedText()"
+              class="py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
               ✏️ Modificar
             </button>
-            <button onclick="deleteSelectedText()" class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+            <button onclick="deleteSelectedText()"
+              class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
               🗑️ Borrar
             </button>
           </div>
@@ -832,13 +1019,15 @@
             <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
               <span>📏 Líneas y Delimitaciones Adicionales</span>
             </h3>
-            <span id="editorLineCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">0</span>
+            <span id="editorLineCountBadge"
+              class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">0</span>
           </div>
 
           <div class="grid grid-cols-3 gap-1.5">
             <div>
               <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Color</label>
-              <select id="selEditorLineColor" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
+              <select id="selEditorLineColor"
+                class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
                 <option value="#38bdf8" selected>Cian</option>
                 <option value="#fbbf24">Amarillo</option>
                 <option value="#10b981">Verde</option>
@@ -848,7 +1037,8 @@
             </div>
             <div>
               <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Grosor</label>
-              <select id="selEditorLineWidth" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
+              <select id="selEditorLineWidth"
+                class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
                 <option value="1.5">1.5 px</option>
                 <option value="2.5" selected>2.5 px</option>
                 <option value="4">4 px</option>
@@ -856,7 +1046,8 @@
             </div>
             <div>
               <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Estilo</label>
-              <select id="selEditorLineDash" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
+              <select id="selEditorLineDash"
+                class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
                 <option value="solid" selected>Continua</option>
                 <option value="dashed">Punteada</option>
               </select>
@@ -870,19 +1061,24 @@
             <div>🟢 Mover trazo completo · 🟡 Escalar · 🔵 Rotar · 🔴 Borrar</div>
           </div>
 
-          <div id="lineDraftStatusContainer" class="hidden p-2 rounded-xl bg-sky-500/15 border border-sky-400/40 text-[10.5px] text-sky-200 flex items-center justify-between">
+          <div id="lineDraftStatusContainer"
+            class="hidden p-2 rounded-xl bg-sky-500/15 border border-sky-400/40 text-[10.5px] text-sky-200 flex items-center justify-between">
             <span id="lineDraftStatusText">Marcando vértices en mapa (0 puntos)...</span>
-            <button onclick="cancelDrawingLine()" type="button" class="text-rose-400 hover:text-rose-300 font-bold text-[10px] px-1.5 py-0.5 rounded bg-black/40">Cancelar</button>
+            <button onclick="cancelDrawingLine()" type="button"
+              class="text-rose-400 hover:text-rose-300 font-bold text-[10px] px-1.5 py-0.5 rounded bg-black/40">Cancelar</button>
           </div>
 
           <div class="grid grid-cols-3 gap-1.5 pt-1">
-            <button onclick="toggleStartDrawLine()" id="btnStartDrawLine" class="py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+            <button onclick="toggleStartDrawLine()" id="btnStartDrawLine"
+              class="py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
               ➕ Trazar
             </button>
-            <button onclick="editSelectedLine()" class="py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+            <button onclick="editSelectedLine()"
+              class="py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
               ✏️ Modificar
             </button>
-            <button onclick="deleteSelectedLine()" class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+            <button onclick="deleteSelectedLine()"
+              class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
               🗑️ Borrar
             </button>
           </div>
@@ -896,15 +1092,21 @@
   </aside>
 
   <!-- 7. MODAL SUPABASE (nova_propiedades) -->
-  <div id="supabaseModal" class="hidden fixed inset-0 z-[800] bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="supabaseModal"
+    class="hidden fixed inset-0 z-[800] bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="glass-panel rounded-3xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
       <div class="px-5 py-4 border-b border-white/10 flex items-center justify-between">
         <div>
-          <h3 class="text-sm font-extrabold text-white">Conexión Supabase · <span class="text-emerald-400">nova_propiedades</span></h3>
+          <h3 class="text-sm font-extrabold text-white">Conexión Supabase · <span
+              class="text-emerald-400">nova_propiedades</span></h3>
           <p class="text-[11px] text-slate-400">Sincronización bidireccional de terrenos, lotizaciones y polígonos</p>
         </div>
-        <button onclick="closeSupabaseModal()" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        <button onclick="closeSupabaseModal()"
+          class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
       </div>
 
@@ -912,21 +1114,35 @@
         <div class="space-y-2.5">
           <div>
             <label class="block text-[11px] font-semibold text-slate-300 mb-1">Supabase Project URL</label>
-            <input id="inpSbUrl" type="url" value="https://zrtfayhgoeoqwakbuakn.supabase.co" class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400 font-mono" placeholder="https://tu-proyecto.supabase.co" />
+            <input id="inpSbUrl" type="url" value="https://zrtfayhgoeoqwakbuakn.supabase.co"
+              class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400 font-mono"
+              placeholder="https://tu-proyecto.supabase.co" />
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-slate-300 mb-1">Supabase Anon Key</label>
-            <input id="inpSbKey" type="password" value="sb_publishable_jxOPrOHvCaGhZvy-4CY2RQ_NWSNxVqo" class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400 font-mono" placeholder="sb_publishable_..." />
+            <input id="inpSbKey" type="password" value="sb_publishable_jxOPrOHvCaGhZvy-4CY2RQ_NWSNxVqo"
+              class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400 font-mono"
+              placeholder="sb_publishable_..." />
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
-          <button onclick="saveToSupabase()" class="py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1.5">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          <button onclick="saveToSupabase()"
+            class="py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
             <span>Guardar en Supabase</span>
           </button>
-          <button onclick="loadFromSupabase()" class="py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1.5">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <button onclick="loadFromSupabase()"
+            class="py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
             <span>Sincronizar y Cargar</span>
           </button>
         </div>
@@ -934,11 +1150,16 @@
         <!-- Script SQL completo y verificado para copiar y ejecutar en Supabase -->
         <div class="space-y-1.5 pt-2 border-t border-white/10">
           <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold text-slate-300">Script SQL Integral para <code class="text-emerald-300">nova_propiedades</code></span>
-            <button onclick="copySqlScript()" class="text-[11px] font-bold text-sky-400 hover:text-sky-300 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-400/30">Copiar SQL</button>
+            <span class="text-[11px] font-bold text-slate-300">Script SQL Integral para <code
+                class="text-emerald-300">nova_propiedades</code></span>
+            <button onclick="copySqlScript()"
+              class="text-[11px] font-bold text-sky-400 hover:text-sky-300 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-400/30">Copiar
+              SQL</button>
           </div>
-          <p class="text-[10px] text-slate-400">Si agregas nuevos campos, ejecuta este script en el SQL Editor de Supabase para habilitar todas las columnas automáticamente:</p>
-          <textarea id="sqlScriptArea" readonly rows="11" class="w-full bg-slate-950/90 border border-white/10 rounded-xl p-3 text-[10.5px] font-mono text-emerald-300 focus:outline-none custom-scroll">-- 1. TABLA BASE UNIFICADA
+          <p class="text-[10px] text-slate-400">Si agregas nuevos campos, ejecuta este script en el SQL Editor de
+            Supabase para habilitar todas las columnas automáticamente:</p>
+          <textarea id="sqlScriptArea" readonly rows="11"
+            class="w-full bg-slate-950/90 border border-white/10 rounded-xl p-3 text-[10.5px] font-mono text-emerald-300 focus:outline-none custom-scroll">-- 1. TABLA BASE UNIFICADA
 CREATE TABLE IF NOT EXISTS public.nova_propiedades (
   id TEXT PRIMARY KEY,
   title TEXT,
@@ -1020,14 +1241,15 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     </div>
   </div>
 
-    <!-- BOTÓN FLOTANTE PERSISTENTE DE WHATSAPP BUSINESS -->
+  <!-- BOTÓN FLOTANTE PERSISTENTE DE WHATSAPP BUSINESS -->
   <div class="fixed bottom-24 right-4 sm:bottom-28 sm:right-4 z-[605] flex flex-col items-end gap-2">
     <span onclick="openWhatsAppInquiry()"
       class="cursor-pointer bg-white text-slate-900 font-bold text-xs px-3.5 py-1.5 rounded-full shadow-2xl border border-slate-200 flex items-center gap-1.5 animate-bounce">
       <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
       QUIERO ESTA PROPIEDAD
     </span>
-    <button onclick="openWhatsAppInquiry()" id="whatsappFloatBtn" aria-label="Contactar por WhatsApp Business" title="QUIERO ESTA PROPIEDAD"
+    <button onclick="openWhatsAppInquiry()" id="whatsappFloatBtn" aria-label="Contactar por WhatsApp Business"
+      title="QUIERO ESTA PROPIEDAD"
       class="w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white flex items-center justify-center shadow-[0_4px_24px_rgba(37,211,102,0.5)] hover:scale-110 transition-all duration-300">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-8 h-8 fill-white">
         <path
@@ -1036,9 +1258,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     </button>
   </div>
 
-<!-- 8. NOTIFICACIONES TOAST (SIN alert/confirm) -->
-  <div id="toastBox" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-[900] pointer-events-none opacity-0 transition-opacity duration-300">
-    <div id="toastText" class="glass-panel rounded-2xl px-4 py-2.5 text-xs font-bold text-white border-sky-400/40"></div>
+  <!-- 8. NOTIFICACIONES TOAST (SIN alert/confirm) -->
+  <div id="toastBox"
+    class="fixed bottom-20 left-1/2 -translate-x-1/2 z-[900] pointer-events-none opacity-0 transition-opacity duration-300">
+    <div id="toastText" class="glass-panel rounded-2xl px-4 py-2.5 text-xs font-bold text-white border-sky-400/40">
+    </div>
   </div>
 
   <script>
@@ -1273,12 +1497,12 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         // Fila Superior (4 lotes escalonados)
         { id: 'lot-1', code: 'Lote 1', area: 200, price: 28000, status: 'Disponible', coords: toGeoRect(-22.5, 11.5, 13.5, 15) },
         { id: 'lot-2', code: 'Lote 2', area: 180, price: 25500, status: 'Disponible', coords: toGeoRect(-8.0, 12.5, 13.5, 15) },
-        { id: 'lot-3', code: 'Lote 3', area: 160, price: 23000, status: 'Reservado',  coords: toGeoRect(6.5, 13.5, 13.5, 15) },
+        { id: 'lot-3', code: 'Lote 3', area: 160, price: 23000, status: 'Reservado', coords: toGeoRect(6.5, 13.5, 13.5, 15) },
         { id: 'lot-4', code: 'Lote 4', area: 150, price: 22000, status: 'Disponible', coords: toGeoRect(21.0, 14.5, 13.5, 15) },
         // Fila Inferior (3 lotes frente al pasaje de acceso)
-        { id: 'lot-5', code: 'Lote 5', area: 140, price: 21500, status: 'Vendido',    coords: toGeoRect(-15.5, -10.5, 14.5, 14.5) },
+        { id: 'lot-5', code: 'Lote 5', area: 140, price: 21500, status: 'Vendido', coords: toGeoRect(-15.5, -10.5, 14.5, 14.5) },
         { id: 'lot-6', code: 'Lote 6', area: 130, price: 20000, status: 'Disponible', coords: toGeoRect(0.0, -9.5, 14.5, 14.5) },
-        { id: 'lot-7', code: 'Lote 7', area: 120, price: 19500, status: 'Reservado',  coords: toGeoRect(15.5, -8.5, 14.5, 14.5) }
+        { id: 'lot-7', code: 'Lote 7', area: 120, price: 19500, status: 'Reservado', coords: toGeoRect(15.5, -8.5, 14.5, 14.5) }
       ];
     }
 
@@ -1321,7 +1545,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             localStorage.setItem('nova_map_projects', JSON.stringify(cleaned));
           }
         }
-      } catch(e) {}
+      } catch (e) { }
     })();
 
     function loadProjectsLocal() {
@@ -1579,7 +1803,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             }).addTo(roadsOverlayLayer);
           }
         });
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // =========================================================================
@@ -1909,11 +2133,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const lotsHtml = isOpen ? `
           <div class="mt-1.5 pt-1.5 border-t border-white/10 space-y-1">
             ${lots.length === 0
-              ? `<div class="text-[10px] text-slate-400 px-2 py-1">Sin lotes trazados aún.</div>`
-              : lots.map(lot => {
-                  const st = getStatusStyle(lot.status);
-                  const isSel = isCurrent && lot.id === selectedLotId;
-                  return `
+            ? `<div class="text-[10px] text-slate-400 px-2 py-1">Sin lotes trazados aún.</div>`
+            : lots.map(lot => {
+              const st = getStatusStyle(lot.status);
+              const isSel = isCurrent && lot.id === selectedLotId;
+              return `
                     <button onclick="flyToLotFromSidebar('${escapeHtml(proj.id)}', '${escapeHtml(lot.id)}')" class="w-full px-2 py-1.5 rounded-lg text-left flex items-center justify-between gap-2 transition ${isSel ? 'bg-sky-500/25 border border-sky-400/50' : 'hover:bg-white/10 border border-transparent'}">
                       <div class="flex items-center gap-1.5 min-w-0">
                         <span class="w-2 h-2 rounded-full shrink-0" style="background:${st.fill}"></span>
@@ -1923,8 +2147,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                       <span class="text-[10px] font-bold text-amber-200 shrink-0">S/.${Number(lot.price || 0).toLocaleString('en-US')}</span>
                     </button>
                   `;
-                }).join('')
-            }
+            }).join('')
+          }
           </div>
         ` : '';
 
@@ -2847,7 +3071,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         });
 
         const precioNum = Number(String(l.precio || '').replace(/[^\d.]/g, '')) || 23000;
-        const codigo = l.manzana ? `${l.manzana}-${l.lote}` : `Lote ${l.lote || idx + 1}`;
+        const codigo = l.lote_numero || (l.manzana ? `${l.manzana}-${l.lote}` : `Lote ${l.lote || idx + 1}`);
 
         return {
           id: `lot-${Date.now()}-${idx}`,
@@ -2879,24 +3103,25 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       }
       if (Array.isArray(payload.customLines)) {
         currentProject.custom_lines = payload.customLines.map(l => {
-          const east1 = (l.x1 - imgW / 2) * mPerPx;
-          const north1 = -(l.y1 - imgH / 2) * mPerPx;
-          const rx1 = east1 * cosA + north1 * sinA;
-          const ry1 = -east1 * sinA + north1 * cosA;
-          const ll1 = offsetMetersToLatLng(refLat, refLng, rx1, ry1);
+          const ptsRaw = (Array.isArray(l.pointsPx) && l.pointsPx.length >= 2)
+            ? l.pointsPx
+            : [[l.x1, l.y1], [l.x2, l.y2]];
 
-          const east2 = (l.x2 - imgW / 2) * mPerPx;
-          const north2 = -(l.y2 - imgH / 2) * mPerPx;
-          const rx2 = east2 * cosA + north2 * sinA;
-          const ry2 = -east2 * sinA + north2 * cosA;
-          const ll2 = offsetMetersToLatLng(refLat, refLng, rx2, ry2);
+          const pointsLatLng = ptsRaw.map(([px, py]) => {
+            const east = (px - imgW / 2) * mPerPx;
+            const north = -(py - imgH / 2) * mPerPx;
+            const rx = east * cosA + north * sinA;
+            const ry = -east * sinA + north * cosA;
+            return offsetMetersToLatLng(refLat, refLng, rx, ry);
+          });
 
           return {
             id: l.id || `line-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-            lat1: ll1.lat,
-            lng1: ll1.lng,
-            lat2: ll2.lat,
-            lng2: ll2.lng,
+            points: pointsLatLng,
+            lat1: pointsLatLng[0]?.lat || 0,
+            lng1: pointsLatLng[0]?.lng || 0,
+            lat2: pointsLatLng[pointsLatLng.length - 1]?.lat || 0,
+            lng2: pointsLatLng[pointsLatLng.length - 1]?.lng || 0,
             width: l.width || 2.5,
             color: l.color || '#38bdf8',
             dash: l.dash || 'solid'
@@ -2986,8 +3211,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         let totalLenM = 0;
         for (let i = 0; i < pts.length - 1; i++) {
           totalLenM += Math.hypot(
-            (pts[i+1].lng - pts[i].lng) * 111320 * Math.cos(pts[i].lat * Math.PI / 180),
-            (pts[i+1].lat - pts[i].lat) * 110540
+            (pts[i + 1].lng - pts[i].lng) * 111320 * Math.cos(pts[i].lat * Math.PI / 180),
+            (pts[i + 1].lat - pts[i].lat) * 110540
           );
         }
         const lenTxt = totalLenM >= 1000 ? (totalLenM / 1000).toFixed(2) + ' km' : totalLenM.toFixed(1) + ' m';
@@ -3085,8 +3310,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       showToast('Texto eliminado.');
     }
 
-    let isDrawingCustomLine = false;
-    let customLineDraftPoints = [];
+    isDrawingCustomLine = false;
+    customLineDraftPoints = [];
     let draftPolyline = null;
     let draftMarkers = [];
 
@@ -4576,7 +4801,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const inpKey = document.getElementById('inpSbKey');
         if (inpUrl && !inpUrl.value) inpUrl.value = cfg.url;
         if (inpKey && !inpKey.value) inpKey.value = cfg.key;
-      } catch (e) {}
+      } catch (e) { }
       document.getElementById('supabaseModal').classList.remove('hidden');
     }
 
@@ -4599,7 +4824,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         localStorage.setItem('supabase_url', url);
         localStorage.setItem('supabase_key', key);
         localStorage.setItem(SB_CONF_KEY, JSON.stringify({ url, key }));
-      } catch (e) {}
+      } catch (e) { }
       if (!window.supabase || !window.supabase.createClient) {
         showToast('Librería de Supabase no disponible.');
         return null;
@@ -4779,7 +5004,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                 if (Array.isArray(meta.lotes) && meta.lotes.length) lotes = meta.lotes;
                 if (meta.calco_config) calco_config = meta.calco_config;
               }
-            } catch (e) {}
+            } catch (e) { }
           }
 
           // Si es el proyecto principal de Huaypo / Fortunato / Guadalupe y aún no tiene lotes en la base de datos,
@@ -5161,7 +5386,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           material.needsUpdate = true;
         };
         loader.load(googleUrl, applyTex, undefined, () => {
-          loader.load(esriUrl, applyTex, undefined, () => {});
+          loader.load(esriUrl, applyTex, undefined, () => { });
         });
       }
 
@@ -5188,7 +5413,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             material.map = tex;
             material.opacity = 0.94;
             material.needsUpdate = true;
-          } catch (e) {}
+          } catch (e) { }
         };
         img.src = url;
       }
@@ -5212,7 +5437,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const rings = [
           { z: 15, radius: 2, segs: 12, yBias: -1.6 },
           { z: 17, radius: 2, segs: 10, yBias: -0.5 },
-          { z: 19, radius: 2, segs: 8,  yBias: 0.0 }
+          { z: 19, radius: 2, segs: 8, yBias: 0.0 }
         ];
 
         rings.forEach(ring => {
@@ -6018,6 +6243,15 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           fill: #38bdf8; stroke: #ffffff; stroke-width: 1.5; cursor: move;
         }
         .line-handle:hover { fill: #f59e0b; }
+        .line-vertex-dot { fill: #38bdf8; stroke: #ffffff; stroke-width: 1.5; cursor: move; }
+        .line-vertex-dot:hover { fill: #f59e0b; stroke-width: 2; }
+        .line-midpoint-dot { fill: #0284c7; stroke: #ffffff; stroke-width: 1.2; cursor: pointer; }
+        .line-midpoint-dot:hover { fill: #38bdf8; }
+        .line-centroid-dot { fill: #10b981; stroke: #ffffff; stroke-width: 2; cursor: move; }
+        .line-centroid-dot:hover { fill: #34d399; }
+        .text-scale-handle { fill: #f59e0b; stroke: #ffffff; stroke-width: 1.5; cursor: nwse-resize; }
+        .text-scale-handle:hover { fill: #fbbf24; }
+        .btn-sm { padding: 5px 8px; font-size: 11px; border-radius: 6px; }
         .item-list { max-height: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
         .item-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; font-size: 11px; cursor: pointer; }
         .item-row.selected { border-color: #38bdf8; background: rgba(56,189,248,0.12); }
@@ -6085,10 +6319,10 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                 <!-- PESTAÑAS: DETECTAR LOTES VS TEXTO Y LÍNEA -->
                 <div class="lotizador-tabs">
                   <button class="lotizador-tab-btn active" id="tabBtnLotes">⚡ DETECTAR LOTES</button>
-                  <button class="lotizador-tab-btn" id="tabBtnTextLines">✏️ TEXTO Y LÍNEA (AGREGAR, EDITAR, BORRAR)</button>
+                  <button class="lotizador-tab-btn" id="tabBtnTextLines">✏️ LÍNEAS Y TEXTOS</button>
                 </div>
 
-                <!-- PANEL 1: LOTES / POLÍGONOS -->
+                <!-- PANEL PRINCIPAL DE LOTIZADOR (SECCIONES 1, 2, 3 Y 4) -->
                 <div id="panelLotes" class="tab-panel">
                   <div class="card">
                     <h3>1. Imagen y Detección</h3>
@@ -6119,19 +6353,16 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                     <div class="status-bar" id="statusBar">Sube una imagen para comenzar. Clic en borde agrega vértice · Anticlick en vértice lo elimina.</div>
                   </div>
 
+                  <!-- 3. DATOS DEL LOTE (CAMPO UNIFICADO N° DE LOTE CON ASIMILACIÓN DIRECTA) -->
                   <div class="card" id="inspectorCard" style="display:none;">
-                    <div class="row" style="justify-content:space-between;">
+                    <div class="row" style="justify-content:space-between; align-items:center;">
                       <h3 style="margin:0;">3. Datos del Lote</h3>
-                      <span class="badge" id="badgeLoteId">L-01</span>
+                      <span class="badge" id="badgeLoteId">Lote 01</span>
                     </div>
                     <div class="row">
-                      <label class="field">
-                        <span>Manzana</span>
-                        <input type="text" id="fldManzana" placeholder="Ej. A" />
-                      </label>
-                      <label class="field">
-                        <span>N° Lote</span>
-                        <input type="text" id="fldLote" placeholder="Ej. 01" />
+                      <label class="field" style="flex:1;">
+                        <span>N° de Lote</span>
+                        <input type="text" id="fldLoteNumero" placeholder="Ej. Lote 01 o Mz. A - Lote 01" />
                       </label>
                     </div>
                     <div class="row">
@@ -6158,92 +6389,119 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                       <button class="btn btn-danger" id="btnDeletePoly" style="flex:1;">🗑️ Eliminar polígono</button>
                     </div>
                   </div>
+
+                  <!-- 4. LINEAS Y TEXTOS (MULTIVÉRTICE Y TEXTOS EDITABLES, MOVILES, ESCALABLES Y ELIMINABLES) -->
+                  <div class="card" id="section4LineasTextos">
+                    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:6px;">
+                      <h3 style="margin:0;">4. Líneas y Textos</h3>
+                      <div style="display:flex;gap:4px;">
+                        <span class="badge" id="badgeS4LineCount">0 líneas</span>
+                        <span class="badge" id="badgeS4TextCount">0 textos</span>
+                      </div>
+                    </div>
+
+                    <!-- Sub-selector de Sección 4: LÍNEAS MULTIVÉRTICE vs TEXTOS -->
+                    <div style="display:flex; gap:4px; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:6px;">
+                      <button type="button" class="btn btn-sm btn-active" id="s4SubTabLines" style="flex:1; font-weight:800;">📏 LÍNEAS (MULTIVÉRTICE)</button>
+                      <button type="button" class="btn btn-sm" id="s4SubTabTexts" style="flex:1; font-weight:800;">✏️ TEXTOS</button>
+                    </div>
+
+                    <!-- SUB-PANEL: LÍNEAS MULTIVÉRTICE -->
+                    <div id="s4PanelLines">
+                      <div class="row" style="gap:4px;">
+                        <button class="btn btn-primary" id="s4BtnAddLine" style="flex:1;" title="Iniciar trazo de línea con múltiples vértices">➕ Trazar Línea</button>
+                        <button class="btn btn-accent" id="s4BtnFinishLine" style="flex:1; display:none;" title="Finalizar trazo de línea multivertice">✅ Finalizar</button>
+                        <button class="btn btn-danger" id="s4BtnDeleteLine" style="flex:0.7;" disabled title="Eliminar línea seleccionada">🗑️ Borrar</button>
+                      </div>
+                      <div id="s4LineDraftNotice" style="display:none; font-size:11px; color:#38bdf8; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:6px; padding:6px; margin-top:6px;">
+                        📍 Clic en el plano para cada vértice. Doble clic o pulsa "Finalizar" para terminar.
+                      </div>
+
+                      <div style="margin-top:8px; display:flex; flex-direction:column; gap:6px;">
+                        <div class="row">
+                          <label class="field">
+                            <span>Color de Línea</span>
+                            <select id="s4FldLineColor">
+                              <option value="#38bdf8" selected>Cian (#38bdf8)</option>
+                              <option value="#fbbf24">Amarillo (#fbbf24)</option>
+                              <option value="#10b981">Verde (#10b981)</option>
+                              <option value="#ffffff">Blanco (#ffffff)</option>
+                              <option value="#ef4444">Rojo (#ef4444)</option>
+                              <option value="#a855f7">Morado (#a855f7)</option>
+                            </select>
+                          </label>
+                          <label class="field">
+                            <span>Grosor</span>
+                            <select id="s4FldLineWidth">
+                              <option value="1">1 px</option>
+                              <option value="2" selected>2 px</option>
+                              <option value="3">3 px</option>
+                              <option value="4">4 px</option>
+                              <option value="6">6 px</option>
+                            </select>
+                          </label>
+                        </div>
+                        <div class="row">
+                          <label class="field">
+                            <span>Estilo de Trazo</span>
+                            <select id="s4FldLineStyle">
+                              <option value="solid" selected>Línea Continua</option>
+                              <option value="dashed">Discontinua / Punteada</option>
+                            </select>
+                          </label>
+                        </div>
+                        <div class="row" id="s4LineScaleControls" style="display:none; align-items:center; gap:6px;">
+                          <span style="font-size:10.5px; color:#94a3b8;">Redimensionar:</span>
+                          <button type="button" class="btn btn-sm" id="s4BtnLineScaleDown" title="Reducir línea (90%)">➖ 90%</button>
+                          <button type="button" class="btn btn-sm" id="s4BtnLineScaleUp" title="Aumentar línea (110%)">➕ 110%</button>
+                        </div>
+                      </div>
+                      <div style="font-size:10.5px; color:#94a3b8; margin-top:8px;">Líneas trazadas:</div>
+                      <div class="item-list" id="s4LinesList"></div>
+                    </div>
+
+                    <!-- SUB-PANEL: TEXTOS -->
+                    <div id="s4PanelTexts" style="display:none;">
+                      <div class="row" style="gap:4px;">
+                        <button class="btn btn-primary" id="s4BtnAddText" style="flex:1;" title="Colocar nuevo texto en el plano">➕ Agregar Texto</button>
+                        <button class="btn btn-danger" id="s4BtnDeleteText" style="flex:0.7;" disabled title="Borrar texto seleccionado">🗑️ Borrar</button>
+                      </div>
+                      <div style="margin-top:8px; display:flex; flex-direction:column; gap:6px;">
+                        <label class="field">
+                          <span>Contenido del Texto</span>
+                          <input type="text" id="s4FldCustomText" placeholder="Ej. Mz. A / Calle 1 / Área Verde" value="Mz. A" />
+                        </label>
+                        <div class="row">
+                          <label class="field">
+                            <span>Tamaño (px)</span>
+                            <div style="display:flex; gap:4px; align-items:center;">
+                              <input type="number" id="s4FldTextSize" min="8" max="90" value="16" style="flex:1;" />
+                              <button type="button" class="btn btn-sm" id="s4BtnTextSizeDown" title="Reducir tamaño (A-)">A-</button>
+                              <button type="button" class="btn btn-sm" id="s4BtnTextSizeUp" title="Aumentar tamaño (A+)">A+</button>
+                            </div>
+                          </label>
+                          <label class="field">
+                            <span>Color</span>
+                            <select id="s4FldTextColor">
+                              <option value="#ffffff" selected>Blanco (#ffffff)</option>
+                              <option value="#fbbf24">Amarillo (#fbbf24)</option>
+                              <option value="#38bdf8">Cian (#38bdf8)</option>
+                              <option value="#10b981">Verde (#10b981)</option>
+                              <option value="#f43f5e">Rojo / Rosa (#f43f5e)</option>
+                              <option value="#000000">Negro (#000000)</option>
+                            </select>
+                          </label>
+                        </div>
+                      </div>
+                      <div style="font-size:10.5px; color:#94a3b8; margin-top:8px;">Textos colocados:</div>
+                      <div class="item-list" id="s4TextsList"></div>
+                    </div>
+                  </div>
                 </div>
 
-                <!-- PANEL 2: TEXTO Y LÍNEAS -->
+                <!-- PANEL SECUNDARIO DE TEXTOS Y LÍNEAS (SINCRONIZADO) -->
                 <div id="panelTextLines" class="tab-panel hidden">
-                  <!-- RÓTULOS DE TEXTO -->
-                  <div class="card">
-                    <div class="row" style="justify-content:space-between;">
-                      <h3 style="margin:0;">1. Textos en el Plano</h3>
-                      <span class="badge" id="badgeTextCount">0 textos</span>
-                    </div>
-                    <div class="row" style="margin-top:8px; gap:4px;">
-                      <button class="btn btn-primary" id="btnAddText" style="flex:1;" title="Colocar nuevo texto en el plano">➕ Agregar</button>
-                      <button class="btn btn-warning" id="btnEditText" style="flex:1;" disabled title="Editar texto seleccionado">✏️ Editar</button>
-                      <button class="btn btn-danger" id="btnDeleteText" style="flex:1;" disabled title="Borrar texto seleccionado">🗑️ Borrar</button>
-                    </div>
-                    <div id="textFormGroup" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;">
-                      <label class="field">
-                        <span>Contenido del Texto</span>
-                        <input type="text" id="fldCustomText" placeholder="Ej. Mz. A / Calle 1 / Área Verde" value="Mz. A" />
-                      </label>
-                      <div class="row">
-                        <label class="field">
-                          <span>Tamaño (px)</span>
-                          <input type="number" id="fldTextSize" min="8" max="72" value="15" />
-                        </label>
-                        <label class="field">
-                          <span>Color</span>
-                          <select id="fldTextColor">
-                            <option value="#ffffff" selected>Blanco (#ffffff)</option>
-                            <option value="#fbbf24">Amarillo (#fbbf24)</option>
-                            <option value="#38bdf8">Cian (#38bdf8)</option>
-                            <option value="#10b981">Verde (#10b981)</option>
-                            <option value="#f43f5e">Rojo / Rosa (#f43f5e)</option>
-                            <option value="#000000">Negro (#000000)</option>
-                          </select>
-                        </label>
-                      </div>
-                    </div>
-                    <div style="font-size:10.5px;color:#94a3b8;margin-top:6px;">Textos colocados:</div>
-                    <div class="item-list" id="textsList"></div>
-                  </div>
-
-                  <!-- LÍNEAS Y DELIMITACIONES -->
-                  <div class="card">
-                    <div class="row" style="justify-content:space-between;">
-                      <h3 style="margin:0;">2. Líneas y Trazos</h3>
-                      <span class="badge" id="badgeLineCount">0 líneas</span>
-                    </div>
-                    <div class="row" style="margin-top:8px; gap:4px;">
-                      <button class="btn btn-primary" id="btnAddLine" style="flex:1;" title="Trazar nueva línea en el plano">➕ Trazar</button>
-                      <button class="btn btn-warning" id="btnEditLine" style="flex:1;" disabled title="Editar línea seleccionada">✏️ Editar</button>
-                      <button class="btn btn-danger" id="btnDeleteLine" style="flex:1;" disabled title="Borrar línea seleccionada">🗑️ Borrar</button>
-                    </div>
-                    <div id="lineFormGroup" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;">
-                      <div class="row">
-                        <label class="field">
-                          <span>Color de Línea</span>
-                          <select id="fldLineColor">
-                            <option value="#38bdf8" selected>Cian (#38bdf8)</option>
-                            <option value="#fbbf24">Amarillo (#fbbf24)</option>
-                            <option value="#10b981">Verde (#10b981)</option>
-                            <option value="#ffffff">Blanco (#ffffff)</option>
-                            <option value="#ef4444">Rojo (#ef4444)</option>
-                          </select>
-                        </label>
-                        <label class="field">
-                          <span>Grosor</span>
-                          <select id="fldLineWidth">
-                            <option value="1">1 px</option>
-                            <option value="2" selected>2 px</option>
-                            <option value="3">3 px</option>
-                            <option value="5">5 px</option>
-                          </select>
-                        </label>
-                      </div>
-                      <label class="field">
-                        <span>Estilo de Trazo</span>
-                        <select id="fldLineStyle">
-                          <option value="solid" selected>Línea Continua</option>
-                          <option value="dashed">Línea Discontinua / Punteada</option>
-                        </select>
-                      </label>
-                    </div>
-                    <div style="font-size:10.5px;color:#94a3b8;margin-top:6px;">Líneas trazadas:</div>
-                    <div class="item-list" id="linesList"></div>
-                  </div>
+                  <div class="status-bar" style="color:#38bdf8; font-weight:700;">✏️ Sección 4: Crea y edita líneas multivertice y textos personalizados en el plano.</div>
                 </div>
               </aside>
             </div>
@@ -6279,16 +6537,19 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           this.zoom = 1;
           this.draggingVertex = null;
 
-          // Pestañas y elementos interactivos personalizados (Textos y Líneas)
+          // Pestañas y elementos interactivos personalizados (Textos y Líneas Multivértice)
           this.currentTab = 'lotes';
+          this.s4SubTab = 'lines';
           this.customTexts = [];
           this.selectedTextId = null;
           this.customLines = [];
           this.selectedLineId = null;
-          this.actionState = null; // 'add_text' | 'add_line_start' | 'add_line_end' | 'drag_text' | 'drag_line_handle'
-          this.lineTempStart = null;
-          this.draggingLineHandle = null;
-          this.draggingTextId = null;
+          this.actionState = null; // 'add_text' | 'add_line_multivertex'
+          this.lineDraftPoints = [];
+          this.draggingLineVertex = null; // { lineId, idx }
+          this.draggingLineCentroid = null; // { lineId, startPt, startPoints }
+          this.draggingText = null; // { textId, startPt, startX, startY }
+          this.draggingTextResize = null; // { textId, startPt, startSize }
         }
 
         ensureMounted() {
@@ -6314,7 +6575,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           this.$('btnClose').addEventListener('click', () => this.cerrar());
           this.$('backdrop').addEventListener('click', (e) => { if (e.target === this.$('backdrop')) this.cerrar(); });
 
-          // Pestañas (Lotes / Polígonos vs Texto y Líneas)
+          // Pestañas superiores
           this.$('tabBtnLotes').addEventListener('click', () => this.switchTab('lotes'));
           this.$('tabBtnTextLines').addEventListener('click', () => this.switchTab('textLines'));
 
@@ -6353,18 +6614,22 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
           const svgEl = this.$('overlaySvg');
           svgEl.addEventListener('click', (e) => this.onSvgClick(e));
+          svgEl.addEventListener('dblclick', (e) => this.onSvgDblClick(e));
           svgEl.addEventListener('mousedown', (e) => this.onSvgMouseDown(e));
           svgEl.addEventListener('mousemove', (e) => this.onSvgMouseMove(e));
           window.addEventListener('mouseup', () => {
             this.draggingVertex = null;
-            this.draggingTextId = null;
-            this.draggingLineHandle = null;
+            this.draggingText = null;
+            this.draggingTextResize = null;
+            this.draggingLineVertex = null;
+            this.draggingLineCentroid = null;
           });
           svgEl.addEventListener('contextmenu', (e) => this.onSvgContextMenu(e));
 
-          // Inspector de Lotes
-          ['fldManzana', 'fldLote', 'fldArea', 'fldEstado', 'fldPrecio'].forEach((id) => {
-            this.$(id).addEventListener('input', () => this.actualizarLoteSeleccionado());
+          // Inspector de Lotes (Sección 3: N° de Lote unificado, Área, Estado y Precio)
+          ['fldLoteNumero', 'fldArea', 'fldEstado', 'fldPrecio'].forEach((id) => {
+            const el = this.$(id);
+            if (el) el.addEventListener('input', () => this.actualizarLoteSeleccionado());
           });
 
           this.$('btnDeletePoly').addEventListener('click', () => {
@@ -6374,21 +6639,30 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             this.renderOverlay();
           });
 
-          // Acciones de Texto
-          this.$('btnAddText').addEventListener('click', () => this.iniciarAgregarTexto());
-          this.$('btnEditText').addEventListener('click', () => this.actualizarTextoSeleccionado());
-          ['fldCustomText', 'fldTextSize', 'fldTextColor'].forEach((id) => {
-            this.$(id).addEventListener('input', () => this.actualizarTextoSeleccionado());
-          });
-          this.$('btnDeleteText').addEventListener('click', () => this.borrarTextoSeleccionado());
+          // Sub-pestañas de Sección 4
+          this.$('s4SubTabLines').addEventListener('click', () => this.switchS4SubTab('lines'));
+          this.$('s4SubTabTexts').addEventListener('click', () => this.switchS4SubTab('texts'));
 
-          // Acciones de Línea
-          this.$('btnAddLine').addEventListener('click', () => this.iniciarTrazarLinea());
-          this.$('btnEditLine').addEventListener('click', () => this.actualizarLineaSeleccionada());
-          ['fldLineColor', 'fldLineWidth', 'fldLineStyle'].forEach((id) => {
-            this.$(id).addEventListener('change', () => this.actualizarLineaSeleccionada());
+          // Acciones de Líneas Multivértice (Sección 4)
+          this.$('s4BtnAddLine').addEventListener('click', () => this.iniciarTrazarLinea());
+          this.$('s4BtnFinishLine').addEventListener('click', () => this.finalizarTrazoLinea());
+          this.$('s4BtnDeleteLine').addEventListener('click', () => this.borrarLineaSeleccionada());
+          ['s4FldLineColor', 's4FldLineWidth', 's4FldLineStyle'].forEach((id) => {
+            const el = this.$(id);
+            if (el) el.addEventListener('change', () => this.actualizarLineaSeleccionada());
           });
-          this.$('btnDeleteLine').addEventListener('click', () => this.borrarLineaSeleccionada());
+          this.$('s4BtnLineScaleDown').addEventListener('click', () => this.escalarLineaSeleccionada(0.9));
+          this.$('s4BtnLineScaleUp').addEventListener('click', () => this.escalarLineaSeleccionada(1.1));
+
+          // Acciones de Textos (Sección 4)
+          this.$('s4BtnAddText').addEventListener('click', () => this.iniciarAgregarTexto());
+          this.$('s4BtnDeleteText').addEventListener('click', () => this.borrarTextoSeleccionado());
+          ['s4FldCustomText', 's4FldTextSize', 's4FldTextColor'].forEach((id) => {
+            const el = this.$(id);
+            if (el) el.addEventListener('input', () => this.actualizarTextoSeleccionado());
+          });
+          this.$('s4BtnTextSizeDown').addEventListener('click', () => this.escalarTextoSeleccionado(-2));
+          this.$('s4BtnTextSizeUp').addEventListener('click', () => this.escalarTextoSeleccionado(2));
 
           // Exportar
           this.$('btnCopySvg').addEventListener('click', () => this.copiarSvg());
@@ -6400,11 +6674,25 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           this.currentTab = tabName;
           this.$('tabBtnLotes').classList.toggle('active', tabName === 'lotes');
           this.$('tabBtnTextLines').classList.toggle('active', tabName === 'textLines');
-          this.$('panelLotes').classList.toggle('hidden', tabName !== 'lotes');
-          this.$('panelTextLines').classList.toggle('hidden', tabName !== 'textLines');
+          this.$('panelLotes').classList.remove('hidden');
+          const panelSec = this.$('panelTextLines');
+          if (panelSec) panelSec.classList.add('hidden');
+
           if (tabName === 'textLines') {
-            this.renderTextLinesList();
+            const s4 = this.$('section4LineasTextos');
+            if (s4 && s4.scrollIntoView) {
+              s4.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
           }
+          this.renderSection4UI();
+        }
+
+        switchS4SubTab(tab) {
+          this.s4SubTab = tab;
+          this.$('s4SubTabLines').classList.toggle('btn-active', tab === 'lines');
+          this.$('s4SubTabTexts').classList.toggle('btn-active', tab === 'texts');
+          this.$('s4PanelLines').style.display = tab === 'lines' ? 'block' : 'none';
+          this.$('s4PanelTexts').style.display = tab === 'texts' ? 'block' : 'none';
         }
 
         pegarLadosContiguos() {
@@ -6426,24 +6714,25 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           this.setStatus('🧲 Lados de polígonos contiguos perfectamente pegados y unificados sin huecos.');
         }
 
-        // ================= GESTIÓN DE TEXTOS =================
+        // ================= GESTIÓN DE TEXTOS (SECCIÓN 4) =================
         iniciarAgregarTexto() {
-          const txt = (this.$('fldCustomText').value || '').trim() || 'Mz. A';
+          const txt = (this.$('s4FldCustomText')?.value || '').trim() || 'Mz. A';
           this.actionState = 'add_text';
           this.setStatus(`Haz clic sobre el plano para colocar el texto: "${txt}"`);
         }
 
         colocarTexto(pt) {
-          const text = (this.$('fldCustomText').value || '').trim() || 'Mz. A';
-          const size = parseInt(this.$('fldTextSize').value, 10) || 15;
-          const color = this.$('fldTextColor').value || '#ffffff';
+          const text = (this.$('s4FldCustomText')?.value || '').trim() || 'Mz. A';
+          const size = parseInt(this.$('s4FldTextSize')?.value, 10) || 16;
+          const color = this.$('s4FldTextColor')?.value || '#ffffff';
           const id = `txt-${Date.now().toString(36).slice(-4)}`;
           const item = { id, text, x: pt[0], y: pt[1], size, color };
           this.customTexts.push(item);
           this.selectedTextId = id;
           this.actionState = null;
+          this.switchS4SubTab('texts');
           this.renderOverlay();
-          this.renderTextLinesList();
+          this.renderSection4UI();
           this.setStatus(`Texto "${text}" colocado.`);
         }
 
@@ -6453,74 +6742,106 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           this.selectedId = null;
           const t = this.customTexts.find(x => x.id === id);
           if (t) {
-            this.switchTab('textLines');
-            this.$('fldCustomText').value = t.text;
-            this.$('fldTextSize').value = t.size;
-            this.$('fldTextColor').value = t.color;
-            this.$('btnEditText').disabled = false;
-            this.$('btnDeleteText').disabled = false;
+            this.switchS4SubTab('texts');
+            if (this.$('s4FldCustomText')) this.$('s4FldCustomText').value = t.text;
+            if (this.$('s4FldTextSize')) this.$('s4FldTextSize').value = t.size;
+            if (this.$('s4FldTextColor')) this.$('s4FldTextColor').value = t.color;
+            if (this.$('s4BtnDeleteText')) this.$('s4BtnDeleteText').disabled = false;
           }
           this.renderOverlay();
-          this.renderTextLinesList();
+          this.renderSection4UI();
         }
 
         actualizarTextoSeleccionado() {
           if (!this.selectedTextId) return;
           const t = this.customTexts.find(x => x.id === this.selectedTextId);
           if (!t) return;
-          t.text = this.$('fldCustomText').value;
-          t.size = parseInt(this.$('fldTextSize').value, 10) || 15;
-          t.color = this.$('fldTextColor').value;
+          if (this.$('s4FldCustomText')) t.text = this.$('s4FldCustomText').value;
+          if (this.$('s4FldTextSize')) t.size = parseInt(this.$('s4FldTextSize').value, 10) || 16;
+          if (this.$('s4FldTextColor')) t.color = this.$('s4FldTextColor').value;
           this.renderOverlay();
-          this.renderTextLinesList();
+          this.renderSection4UI();
+        }
+
+        escalarTextoSeleccionado(delta) {
+          if (!this.selectedTextId) return;
+          const t = this.customTexts.find(x => x.id === this.selectedTextId);
+          if (!t) return;
+          t.size = Math.max(8, Math.min(100, t.size + delta));
+          if (this.$('s4FldTextSize')) this.$('s4FldTextSize').value = t.size;
+          this.renderOverlay(true);
+          this.renderSection4UI();
+          this.setStatus(`Tamaño de texto redimensionado a ${t.size}px.`);
         }
 
         borrarTextoSeleccionado() {
           if (!this.selectedTextId) return;
           this.customTexts = this.customTexts.filter(x => x.id !== this.selectedTextId);
           this.selectedTextId = null;
-          this.$('btnEditText').disabled = true;
-          this.$('btnDeleteText').disabled = true;
+          if (this.$('s4BtnDeleteText')) this.$('s4BtnDeleteText').disabled = true;
           this.renderOverlay();
-          this.renderTextLinesList();
+          this.renderSection4UI();
           this.setStatus('Texto eliminado.');
         }
 
-        // ================= GESTIÓN DE LÍNEAS =================
+        // ================= GESTIÓN DE LÍNEAS MULTIVÉRTICE (SECCIÓN 4) =================
         iniciarTrazarLinea() {
-          this.actionState = 'add_line_start';
-          this.lineTempStart = null;
-          this.setStatus('Haz clic en el plano para marcar el punto INICIAL de la línea.');
+          this.actionState = 'add_line_multivertex';
+          this.lineDraftPoints = [];
+          this.selectedLineId = null;
+          const finishBtn = this.$('s4BtnFinishLine');
+          if (finishBtn) finishBtn.style.display = 'inline-flex';
+          const notice = this.$('s4LineDraftNotice');
+          if (notice) notice.style.display = 'block';
+          this.switchS4SubTab('lines');
+          this.setStatus('📍 Haz clic en el plano para colocar los vértices. Doble clic o pulsa "Finalizar" para terminar.');
+          this.renderOverlay(true);
         }
 
-        gestionarClickLinea(pt) {
-          if (this.actionState === 'add_line_start') {
-            this.lineTempStart = pt;
-            this.actionState = 'add_line_end';
-            this.setStatus('Haz clic en el plano para marcar el punto FINAL de la línea.');
-          } else if (this.actionState === 'add_line_end') {
-            const color = this.$('fldLineColor').value || '#38bdf8';
-            const width = parseInt(this.$('fldLineWidth').value, 10) || 2;
-            const dash = this.$('fldLineStyle').value || 'solid';
+        finalizarTrazoLinea() {
+          if (this.lineDraftPoints && this.lineDraftPoints.length >= 2) {
+            const pts = [...this.lineDraftPoints];
             const id = `line-${Date.now().toString(36).slice(-4)}`;
+            const color = this.$('s4FldLineColor')?.value || '#38bdf8';
+            const width = parseInt(this.$('s4FldLineWidth')?.value, 10) || 2;
+            const dash = this.$('s4FldLineStyle')?.value || 'solid';
+
             const newLine = {
               id,
-              x1: this.lineTempStart[0],
-              y1: this.lineTempStart[1],
-              x2: pt[0],
-              y2: pt[1],
+              points: pts,
+              x1: pts[0][0],
+              y1: pts[0][1],
+              x2: pts[pts.length - 1][0],
+              y2: pts[pts.length - 1][1],
               color,
               width,
               dash
             };
+
             this.customLines.push(newLine);
             this.selectedLineId = id;
+            this.lineDraftPoints = [];
             this.actionState = null;
-            this.lineTempStart = null;
+
+            const finishBtn = this.$('s4BtnFinishLine');
+            if (finishBtn) finishBtn.style.display = 'none';
+            const notice = this.$('s4LineDraftNotice');
+            if (notice) notice.style.display = 'none';
+
             this.renderOverlay();
-            this.renderTextLinesList();
-            this.setStatus('Línea trazada con éxito.');
+            this.renderSection4UI();
+            this.setStatus(`✅ Línea trazada con ${pts.length} vértices.`);
+          } else {
+            this.setStatus('⚠️ Se requieren al menos 2 vértices para crear la línea.');
           }
+        }
+
+        syncLineBounds(line) {
+          if (!line || !Array.isArray(line.points) || !line.points.length) return;
+          line.x1 = line.points[0][0];
+          line.y1 = line.points[0][1];
+          line.x2 = line.points[line.points.length - 1][0];
+          line.y2 = line.points[line.points.length - 1][1];
         }
 
         seleccionarLinea(id) {
@@ -6529,126 +6850,139 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           this.selectedId = null;
           const l = this.customLines.find(x => x.id === id);
           if (l) {
-            this.switchTab('textLines');
-            this.$('fldLineColor').value = l.color;
-            this.$('fldLineWidth').value = l.width;
-            this.$('fldLineStyle').value = l.dash;
-            this.$('btnEditLine').disabled = false;
-            this.$('btnDeleteLine').disabled = false;
+            this.switchS4SubTab('lines');
+            if (this.$('s4FldLineColor')) this.$('s4FldLineColor').value = l.color;
+            if (this.$('s4FldLineWidth')) this.$('s4FldLineWidth').value = l.width;
+            if (this.$('s4FldLineStyle')) this.$('s4FldLineStyle').value = l.dash;
+            if (this.$('s4BtnDeleteLine')) this.$('s4BtnDeleteLine').disabled = false;
+            const scaleRow = this.$('s4LineScaleControls');
+            if (scaleRow) scaleRow.style.display = 'flex';
           }
           this.renderOverlay();
-          this.renderTextLinesList();
+          this.renderSection4UI();
         }
 
         actualizarLineaSeleccionada() {
           if (!this.selectedLineId) return;
           const l = this.customLines.find(x => x.id === this.selectedLineId);
           if (!l) return;
-          l.color = this.$('fldLineColor').value;
-          l.width = parseInt(this.$('fldLineWidth').value, 10) || 2;
-          l.dash = this.$('fldLineStyle').value;
+          if (this.$('s4FldLineColor')) l.color = this.$('s4FldLineColor').value;
+          if (this.$('s4FldLineWidth')) l.width = parseInt(this.$('s4FldLineWidth').value, 10) || 2;
+          if (this.$('s4FldLineStyle')) l.dash = this.$('s4FldLineStyle').value;
           this.renderOverlay();
-          this.renderTextLinesList();
+          this.renderSection4UI();
+        }
+
+        escalarLineaSeleccionada(factor) {
+          if (!this.selectedLineId) return;
+          const l = this.customLines.find(x => x.id === this.selectedLineId);
+          if (!l || !Array.isArray(l.points) || l.points.length < 2) return;
+          const [cx, cy] = calcularCentroide(l.points);
+          l.points = l.points.map(([px, py]) => [
+            Math.round(cx + (px - cx) * factor),
+            Math.round(cy + (py - cy) * factor)
+          ]);
+          this.syncLineBounds(l);
+          this.renderOverlay(true);
+          this.setStatus(`Línea redimensionada al ${Math.round(factor * 100)}%.`);
         }
 
         borrarLineaSeleccionada() {
           if (!this.selectedLineId) return;
           this.customLines = this.customLines.filter(x => x.id !== this.selectedLineId);
           this.selectedLineId = null;
-          this.$('btnEditLine').disabled = true;
-          this.$('btnDeleteLine').disabled = true;
+          if (this.$('s4BtnDeleteLine')) this.$('s4BtnDeleteLine').disabled = true;
+          const scaleRow = this.$('s4LineScaleControls');
+          if (scaleRow) scaleRow.style.display = 'none';
           this.renderOverlay();
-          this.renderTextLinesList();
+          this.renderSection4UI();
           this.setStatus('Línea eliminada.');
         }
 
-        renderTextLinesList() {
-          this.$('badgeTextCount').textContent = `${this.customTexts.length} textos`;
-          this.$('badgeLineCount').textContent = `${this.customLines.length} líneas`;
+        renderSection4UI() {
+          const lCount = this.customLines.length;
+          const tCount = this.customTexts.length;
+          if (this.$('badgeS4LineCount')) this.$('badgeS4LineCount').textContent = `${lCount} líneas`;
+          if (this.$('badgeS4TextCount')) this.$('badgeS4TextCount').textContent = `${tCount} textos`;
 
-          // Lista de Textos
-          const tBody = this.$('textsList');
-          if (tBody) {
-            if (!this.customTexts.length) {
-              tBody.innerHTML = '<div style="font-size:10px;color:#64748b;padding:4px 0;">Sin textos en el plano.</div>';
+          // Lista de Líneas en Sección 4
+          const lBody = this.$('s4LinesList');
+          if (lBody) {
+            if (!lCount) {
+              lBody.innerHTML = '<div style="font-size:10px;color:#64748b;padding:4px 0;">Sin líneas trazadas.</div>';
             } else {
-              tBody.innerHTML = this.customTexts.map(t => {
-                const isSel = t.id === this.selectedTextId;
+              lBody.innerHTML = this.customLines.map((l, i) => {
+                const isSel = l.id === this.selectedLineId;
+                const vCount = (l.points && l.points.length) ? l.points.length : 2;
                 return `
-                  <div class="item-row ${isSel ? 'selected' : ''}" data-item-text="${t.id}">
-                    <span style="font-weight:700;color:${t.color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;">${escapeHtml(t.text)} (${t.size}px)</span>
+                  <div class="item-row ${isSel ? 'selected' : ''}" data-s4-line="${l.id}">
+                    <span style="font-weight:700;color:${l.color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px;">Línea #${i + 1} (${vCount} vértices · ${l.width}px)</span>
                     <div style="display:flex;gap:4px;align-items:center;">
-                      <button type="button" data-edit-text="${t.id}" title="Editar este texto" style="background:rgba(245,158,11,0.25);color:#fbbf24;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✏️</button>
-                      <button type="button" data-del-text="${t.id}" title="Eliminar este texto" style="background:rgba(239,68,68,0.25);color:#fca5a5;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✕</button>
+                      <button type="button" data-s4-edit-line="${l.id}" title="Seleccionar y editar" style="background:rgba(56,189,248,0.2);color:#7dd3fc;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✏️</button>
+                      <button type="button" data-s4-del-line="${l.id}" title="Eliminar línea" style="background:rgba(239,68,68,0.25);color:#fca5a5;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✕</button>
                     </div>
                   </div>
                 `;
               }).join('');
 
-              tBody.querySelectorAll('[data-item-text]').forEach(el => {
+              lBody.querySelectorAll('[data-s4-line]').forEach(el => {
                 el.addEventListener('click', (e) => {
-                  if (e.target.closest('[data-del-text]') || e.target.closest('[data-edit-text]')) return;
-                  this.seleccionarTexto(el.getAttribute('data-item-text'));
+                  if (e.target.closest('[data-s4-del-line]') || e.target.closest('[data-s4-edit-line]')) return;
+                  this.seleccionarLinea(el.getAttribute('data-s4-line'));
                 });
               });
-
-              tBody.querySelectorAll('[data-edit-text]').forEach(btn => {
+              lBody.querySelectorAll('[data-s4-edit-line]').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                   e.stopPropagation();
-                  this.seleccionarTexto(btn.getAttribute('data-edit-text'));
-                  const fld = this.$('fldCustomText');
-                  if (fld) { fld.focus(); fld.select(); }
+                  this.seleccionarLinea(btn.getAttribute('data-s4-edit-line'));
                 });
               });
-
-              tBody.querySelectorAll('[data-del-text]').forEach(btn => {
+              lBody.querySelectorAll('[data-s4-del-line]').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                   e.stopPropagation();
-                  this.selectedTextId = btn.getAttribute('data-del-text');
-                  this.borrarTextoSeleccionado();
+                  this.selectedLineId = btn.getAttribute('data-s4-del-line');
+                  this.borrarLineaSeleccionada();
                 });
               });
             }
           }
 
-          // Lista de Líneas
-          const lBody = this.$('linesList');
-          if (lBody) {
-            if (!this.customLines.length) {
-              lBody.innerHTML = '<div style="font-size:10px;color:#64748b;padding:4px 0;">Sin líneas trazadas.</div>';
+          // Lista de Textos en Sección 4
+          const tBody = this.$('s4TextsList');
+          if (tBody) {
+            if (!tCount) {
+              tBody.innerHTML = '<div style="font-size:10px;color:#64748b;padding:4px 0;">Sin textos en el plano.</div>';
             } else {
-              lBody.innerHTML = this.customLines.map((l, i) => {
-                const isSel = l.id === this.selectedLineId;
+              tBody.innerHTML = this.customTexts.map(t => {
+                const isSel = t.id === this.selectedTextId;
                 return `
-                  <div class="item-row ${isSel ? 'selected' : ''}" data-item-line="${l.id}">
-                    <span style="font-weight:700;color:${l.color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;">Línea #${i + 1} (${l.width}px · ${l.dash === 'dashed' ? 'Puntos' : 'Sólida'})</span>
+                  <div class="item-row ${isSel ? 'selected' : ''}" data-s4-text="${t.id}">
+                    <span style="font-weight:700;color:${t.color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px;">${escapeHtml(t.text)} (${t.size}px)</span>
                     <div style="display:flex;gap:4px;align-items:center;">
-                      <button type="button" data-edit-line="${l.id}" title="Editar esta línea" style="background:rgba(245,158,11,0.25);color:#fbbf24;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✏️</button>
-                      <button type="button" data-del-line="${l.id}" title="Eliminar esta línea" style="background:rgba(239,68,68,0.25);color:#fca5a5;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✕</button>
+                      <button type="button" data-s4-edit-text="${t.id}" title="Editar texto" style="background:rgba(245,158,11,0.25);color:#fbbf24;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✏️</button>
+                      <button type="button" data-s4-del-text="${t.id}" title="Eliminar texto" style="background:rgba(239,68,68,0.25);color:#fca5a5;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✕</button>
                     </div>
                   </div>
                 `;
               }).join('');
 
-              lBody.querySelectorAll('[data-item-line]').forEach(el => {
+              tBody.querySelectorAll('[data-s4-text]').forEach(el => {
                 el.addEventListener('click', (e) => {
-                  if (e.target.closest('[data-del-line]') || e.target.closest('[data-edit-line]')) return;
-                  this.seleccionarLinea(el.getAttribute('data-item-line'));
+                  if (e.target.closest('[data-s4-del-text]') || e.target.closest('[data-s4-edit-text]')) return;
+                  this.seleccionarTexto(el.getAttribute('data-s4-text'));
                 });
               });
-
-              lBody.querySelectorAll('[data-edit-line]').forEach(btn => {
+              tBody.querySelectorAll('[data-s4-edit-text]').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                   e.stopPropagation();
-                  this.seleccionarLinea(btn.getAttribute('data-edit-line'));
+                  this.seleccionarTexto(btn.getAttribute('data-s4-edit-text'));
                 });
               });
-
-              lBody.querySelectorAll('[data-del-line]').forEach(btn => {
+              tBody.querySelectorAll('[data-s4-del-text]').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                   e.stopPropagation();
-                  this.selectedLineId = btn.getAttribute('data-del-line');
-                  this.borrarLineaSeleccionada();
+                  this.selectedTextId = btn.getAttribute('data-s4-del-text');
+                  this.borrarTextoSeleccionado();
                 });
               });
             }
@@ -6678,7 +7012,6 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           img.crossOrigin = 'anonymous';
           img.onload = () => this.procesarElementoImagen(img, url);
           img.onerror = () => {
-            // Intento con proxy para evitar bloqueo por CORS de la URL externa
             const proxyUrl = 'https://images.weserv.nl/?url=' + encodeURIComponent(url.replace(/^https?:\/\//, ''));
             const fallbackImg = new Image();
             fallbackImg.crossOrigin = 'anonymous';
@@ -6731,11 +7064,113 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
           this.setStatus(`Imagen cargada (${this.imgNaturalW}×${this.imgNaturalH}px). Pulsa "Detectar lotes".`);
           this.renderOverlay();
+          this.renderSection4UI();
+        }
+
+        // ASIMILACIÓN COMPLETA DE DATOS DE LA IMAGEN (N° DE LOTE, ÁREA, ESTADO DISPONIBLE/RESERVADO/VENDIDO Y PRECIO)
+        asimilarDatosDeImagenLote(pts, idx, medianPx = null) {
+          const num = idx + 1;
+          const numStr = String(num).padStart(2, '0');
+          const loteNumero = `Lote ${numStr}`;
+          const areaPx = calcularAreaPx(pts);
+          const perimPx = calcularPerimetroPx(pts);
+
+          // 1. Asimilación de Área en m²
+          let areaM2;
+          if (this.metersPerPixel) {
+            areaM2 = +(areaPx * this.metersPerPixel * this.metersPerPixel).toFixed(2);
+          } else {
+            const baseMedian = medianPx || areaPx || 1000;
+            const ratio = Math.max(0.35, Math.min(3.5, areaPx / baseMedian));
+            areaM2 = Math.round(120 * ratio);
+          }
+          areaM2 = Math.max(30, areaM2);
+
+          // 2. Asimilación de Estado (DISPONIBLE, RESERVADO, VENDIDO) mediante análisis cromático de los píxeles interiores
+          let estado = 'Disponible';
+          try {
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            pts.forEach(([px, py]) => {
+              if (px < minX) minX = px;
+              if (px > maxX) maxX = px;
+              if (py < minY) minY = py;
+              if (py > maxY) maxY = py;
+            });
+            minX = Math.max(0, Math.floor(minX));
+            maxX = Math.min(this.workW - 1, Math.ceil(maxX));
+            minY = Math.max(0, Math.floor(minY));
+            maxY = Math.min(this.workH - 1, Math.ceil(maxY));
+
+            const wBox = maxX - minX;
+            const hBox = maxY - minY;
+            if (wBox > 4 && hBox > 4) {
+              const cropData = this.workCtx.getImageData(minX, minY, wBox, hBox).data;
+              let redCount = 0;
+              let yellowCount = 0;
+              let greenCount = 0;
+
+              for (let sy = 2; sy < hBox - 2; sy += Math.max(1, Math.floor(hBox / 14))) {
+                for (let sx = 2; sx < wBox - 2; sx += Math.max(1, Math.floor(wBox / 14))) {
+                  const worldX = minX + sx;
+                  const worldY = minY + sy;
+                  if (puntoEnPoligono([worldX, worldY], pts)) {
+                    const pIdx = (sy * wBox + sx) * 4;
+                    const r = cropData[pIdx];
+                    const g = cropData[pIdx + 1];
+                    const b = cropData[pIdx + 2];
+                    const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+
+                    if (lum > 50 && lum < 240) {
+                      // Tonalidad Roja / Rosa / Burdeos -> VENDIDO
+                      if (r > 135 && (r - g > 25) && (r - b > 25)) {
+                        redCount++;
+                      }
+                      // Tonalidad Amarilla / Naranja / Ámbar -> RESERVADO
+                      else if (r > 145 && g > 115 && b < 105 && (r + g > b * 2)) {
+                        yellowCount++;
+                      }
+                      // Tonalidad Verde -> DISPONIBLE
+                      else if (g > 120 && g > r + 15 && g > b + 15) {
+                        greenCount++;
+                      }
+                    }
+                  }
+                }
+              }
+
+              if (redCount >= 3 && redCount >= yellowCount) {
+                estado = 'Vendido';
+              } else if (yellowCount >= 3 && yellowCount > redCount) {
+                estado = 'Reservado';
+              } else {
+                estado = 'Disponible';
+              }
+            }
+          } catch (e) {
+            console.warn('Asimilación cromática del lote', e);
+          }
+
+          // 3. Asimilación de Precio (S/.) en función del área y valor de mercado
+          const precioSoles = Math.round(areaM2 * 190);
+
+          return {
+            id: `L-${numStr}-${Date.now().toString(36).slice(-3)}`,
+            lote_numero: loteNumero,
+            lote: loteNumero,
+            manzana: 'A',
+            estado,
+            precio: String(precioSoles),
+            points: pts,
+            areaPx,
+            perimPx,
+            area_m2: areaM2,
+            perimetro_m: this.metersPerPixel ? +(perimPx * this.metersPerPixel).toFixed(2) : +perimPx.toFixed(0)
+          };
         }
 
         ejecutarDeteccion() {
           try {
-            this.setStatus('Procesando imagen, detectando polígonos y pegando lados contiguos...');
+            this.setStatus('Procesando imagen, detectando polígonos, ordenando secuencialmente y asimilando datos...');
             const imgData = this.workCtx.getImageData(0, 0, this.workW, this.workH);
             const umbral = Number(this.$('rngThreshold').value);
             const minAreaPx = Number(this.$('rngMinArea').value);
@@ -6744,56 +7179,47 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
               umbral, minAreaPx, grosorBorde: 0, simplificacion: 2.5
             });
 
-            // Ordenar geométricamente de arriba a abajo e izquierda a derecha
-            poligonos.sort((a, b) => {
-              const [cax, cay] = calcularCentroide(a);
-              const [cbx, cby] = calcularCentroide(b);
-              if (Math.abs(cay - cby) > 28) return cay - cby;
-              return cax - cbx;
+            if (!poligonos.length) {
+              this.setStatus('No se detectaron polígonos con los parámetros actuales. Ajusta la sensibilidad de líneas.');
+              return;
+            }
+
+            // Ordenar geométricamente en filas y columnas (orden natural de lectura top-down, left-right)
+            const poligonosConCentro = poligonos.map(pts => {
+              const [cx, cy] = calcularCentroide(pts);
+              return { pts, cx, cy, areaPx: calcularAreaPx(pts) };
             });
 
-            // Generar objetos con datos calculados para cada campo correspondiente
-            this.lotes = poligonos.map((pts, idx) => {
-              const num = idx + 1;
-              const numStr = String(num).padStart(2, '0');
-              const areaPx = calcularAreaPx(pts);
-              const perimPx = calcularPerimetroPx(pts);
-              const areaM2 = this.metersPerPixel
-                ? +(areaPx * this.metersPerPixel * this.metersPerPixel).toFixed(2)
-                : Math.max(90, Math.round(areaPx * 0.16));
-              const precioSoles = Math.round(areaM2 * 190);
+            const areas = poligonosConCentro.map(p => p.areaPx).sort((a, b) => a - b);
+            const medianPx = areas[Math.floor(areas.length / 2)] || 1000;
 
-              return {
-                id: `L-${numStr}-${Date.now().toString(36).slice(-3)}`,
-                manzana: 'A',
-                lote: numStr,
-                estado: 'Disponible',
-                precio: String(precioSoles),
-                points: pts,
-                areaPx,
-                perimPx,
-                area_m2: areaM2,
-                perimetro_m: this.metersPerPixel ? +(perimPx * this.metersPerPixel).toFixed(2) : +perimPx.toFixed(0)
-              };
+            poligonosConCentro.sort((a, b) => {
+              if (Math.abs(a.cy - b.cy) > 28) return a.cy - b.cy;
+              return a.cx - b.cx;
+            });
+
+            // Asimilar datos de cada lote desde la imagen
+            this.lotes = poligonosConCentro.map((item, idx) => {
+              return this.asimilarDatosDeImagenLote(item.pts, idx, medianPx);
             });
 
             this.selectedId = this.lotes[0]?.id || null;
             this.recalcularMetricas();
             this.renderOverlay();
+            this.renderSection4UI();
 
-            // Actualizar inmediatamente los datos en los campos correspondientes de la interfaz
+            // Sincronizar inmediatamente los datos asimilados en la Sección 3
             if (this.selectedId) {
               const sel = this.lotes[0];
               this.$('inspectorCard').style.display = 'block';
-              this.$('badgeLoteId').textContent = `${sel.manzana}-${sel.lote}`;
-              this.$('fldManzana').value = sel.manzana;
-              this.$('fldLote').value = sel.lote;
+              this.$('badgeLoteId').textContent = sel.lote_numero;
+              this.$('fldLoteNumero').value = sel.lote_numero;
               this.$('fldArea').value = sel.area_m2;
               this.$('fldEstado').value = sel.estado;
               this.$('fldPrecio').value = sel.precio;
             }
 
-            this.setStatus(`✅ ${this.lotes.length} lotes detectados, pegados por sus lados y actualizados en los campos.`);
+            this.setStatus(`✅ ${this.lotes.length} lotes detectados con datos asimilados (N° de Lote, Área, Estado y Precio).`);
           } catch (err) {
             console.error('Error en detección:', err);
             this.setStatus('No se pudo leer píxeles de esta URL por CORS; súbela con "Subir imagen".');
@@ -6844,28 +7270,62 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         onSvgMouseDown(e) {
           const pt = this.obtenerPuntoSvg(e);
 
-          // 1. Manejo de extremos de línea (line-handle)
-          const lineHandle = e.target.closest('[data-line-handle]');
-          if (lineHandle && e.button === 0) {
+          // 1. Manejo de vértice individual de línea multivértice
+          const lineVertEl = e.target.closest('[data-line-vertex-idx]');
+          if (lineVertEl && e.button === 0) {
             e.stopPropagation();
-            this.draggingLineHandle = {
-              lineId: lineHandle.getAttribute('data-line-id'),
-              handle: lineHandle.getAttribute('data-line-handle')
+            this.draggingLineVertex = {
+              lineId: lineVertEl.getAttribute('data-line-id'),
+              idx: Number(lineVertEl.getAttribute('data-line-vertex-idx'))
             };
+            this.seleccionarLinea(this.draggingLineVertex.lineId);
             return;
           }
 
-          // 2. Manejo de texto arrastrable
+          // 2. Manejo de centroide de línea (Mover línea completa)
+          const lineCentroidEl = e.target.closest('[data-line-centroid-id]');
+          if (lineCentroidEl && e.button === 0) {
+            e.stopPropagation();
+            const lineId = lineCentroidEl.getAttribute('data-line-centroid-id');
+            const l = this.customLines.find(x => x.id === lineId);
+            if (l && Array.isArray(l.points)) {
+              this.draggingLineCentroid = {
+                lineId,
+                startPt: pt,
+                startPoints: l.points.map(p => [...p])
+              };
+              this.seleccionarLinea(lineId);
+            }
+            return;
+          }
+
+          // 3. Manejo de redimensionamiento de texto (Scale handle)
+          const textScaleEl = e.target.closest('[data-text-scale-id]');
+          if (textScaleEl && e.button === 0) {
+            e.stopPropagation();
+            const textId = textScaleEl.getAttribute('data-text-scale-id');
+            const t = this.customTexts.find(x => x.id === textId);
+            if (t) {
+              this.draggingTextResize = { textId, startPt: pt, startSize: t.size };
+              this.seleccionarTexto(textId);
+            }
+            return;
+          }
+
+          // 4. Manejo de texto arrastrable (Mover texto)
           const textEl = e.target.closest('[data-plan-text-id]');
           if (textEl && e.button === 0) {
             e.stopPropagation();
             const textId = textEl.getAttribute('data-plan-text-id');
-            this.seleccionarTexto(textId);
-            this.draggingTextId = textId;
+            const t = this.customTexts.find(x => x.id === textId);
+            if (t) {
+              this.draggingText = { textId, startPt: pt, startX: t.x, startY: t.y };
+              this.seleccionarTexto(textId);
+            }
             return;
           }
 
-          // 3. Vértice de polígono
+          // 5. Vértice de polígono de lote
           const vEl = e.target.closest('[data-vertex-idx]');
           if (vEl && e.button === 0) {
             e.stopPropagation();
@@ -6876,32 +7336,60 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         onSvgMouseMove(e) {
           const pt = this.obtenerPuntoSvg(e);
 
-          // Mover extremo de línea seleccionada
-          if (this.draggingLineHandle) {
-            const line = this.customLines.find(l => l.id === this.draggingLineHandle.lineId);
-            if (line) {
-              if (this.draggingLineHandle.handle === 'p1') {
-                line.x1 = pt[0]; line.y1 = pt[1];
-              } else {
-                line.x2 = pt[0]; line.y2 = pt[1];
-              }
+          // A. Mover vértice individual de línea multivértice
+          if (this.draggingLineVertex) {
+            const line = this.customLines.find(l => l.id === this.draggingLineVertex.lineId);
+            if (line && Array.isArray(line.points) && line.points[this.draggingLineVertex.idx]) {
+              line.points[this.draggingLineVertex.idx] = pt;
+              this.syncLineBounds(line);
               this.renderOverlay(true);
             }
             return;
           }
 
-          // Mover texto seleccionado
-          if (this.draggingTextId) {
-            const t = this.customTexts.find(x => x.id === this.draggingTextId);
+          // B. Mover línea completa desde su centroide
+          if (this.draggingLineCentroid) {
+            const line = this.customLines.find(l => l.id === this.draggingLineCentroid.lineId);
+            if (line && Array.isArray(line.points)) {
+              const dx = pt[0] - this.draggingLineCentroid.startPt[0];
+              const dy = pt[1] - this.draggingLineCentroid.startPt[1];
+              line.points = this.draggingLineCentroid.startPoints.map(([px, py]) => [
+                Math.round(px + dx),
+                Math.round(py + dy)
+              ]);
+              this.syncLineBounds(line);
+              this.renderOverlay(true);
+            }
+            return;
+          }
+
+          // C. Redimensionar tamaño de texto arrastrando esquina
+          if (this.draggingTextResize) {
+            const t = this.customTexts.find(x => x.id === this.draggingTextResize.textId);
             if (t) {
-              t.x = pt[0];
-              t.y = pt[1];
+              const dist = Math.hypot(pt[0] - t.x, pt[1] - t.y);
+              const newSize = Math.max(8, Math.min(100, Math.round(dist * 0.45)));
+              t.size = newSize;
+              if (this.$('s4FldTextSize')) this.$('s4FldTextSize').value = newSize;
               this.renderOverlay(true);
             }
             return;
           }
 
-          // Mover vértice de polígono seleccionado
+          // D. Mover posición de texto arrastrando
+          if (this.draggingText) {
+            const t = this.customTexts.find(x => x.id === this.draggingText.textId);
+            if (t) {
+              const dx = pt[0] - this.draggingText.startPt[0];
+              const dy = pt[1] - this.draggingText.startPt[1];
+              t.x = Math.round(this.draggingText.startX + dx);
+              t.y = Math.round(this.draggingText.startY + dy);
+              this.renderOverlay(true);
+            }
+            return;
+          }
+
+          // E. Mover vértice de polígono de lote seleccionado
           if (this.draggingVertex !== null && this.selectedId) {
             const lote = this.lotes.find((l) => l.id === this.selectedId);
             if (!lote) return;
@@ -6911,40 +7399,91 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         }
 
         onSvgContextMenu(e) {
-          const vEl = e.target.closest('[data-vertex-idx]');
-          if (!vEl || !this.selectedId) return;
-          e.preventDefault();
-          const idx = Number(vEl.getAttribute('data-vertex-idx'));
-          const lote = this.lotes.find((l) => l.id === this.selectedId);
-          if (!lote) return;
-          if (lote.points.length <= 3) {
-            this.setStatus('Un polígono necesita al menos 3 vértices.');
+          // Anticlick en vértice de línea multivértice para eliminarlo
+          const lineVertEl = e.target.closest('[data-line-vertex-idx]');
+          if (lineVertEl) {
+            e.preventDefault();
+            e.stopPropagation();
+            const lineId = lineVertEl.getAttribute('data-line-id');
+            const idx = Number(lineVertEl.getAttribute('data-line-vertex-idx'));
+            const line = this.customLines.find(l => l.id === lineId);
+            if (line && Array.isArray(line.points)) {
+              if (line.points.length <= 2) {
+                this.setStatus('La línea necesita al menos 2 vértices.');
+                return;
+              }
+              line.points.splice(idx, 1);
+              this.syncLineBounds(line);
+              this.renderOverlay(true);
+              this.setStatus('Vértice de línea eliminado.');
+            }
             return;
           }
-          lote.points.splice(idx, 1);
-          this.renderOverlay(true);
-          this.setStatus('Vértice eliminado.');
+
+          // Anticlick en vértice de polígono de lote
+          const vEl = e.target.closest('[data-vertex-idx]');
+          if (vEl && this.selectedId) {
+            e.preventDefault();
+            e.stopPropagation();
+            const idx = Number(vEl.getAttribute('data-vertex-idx'));
+            const lote = this.lotes.find((l) => l.id === this.selectedId);
+            if (!lote) return;
+            if (lote.points.length <= 3) {
+              this.setStatus('Un polígono necesita al menos 3 vértices.');
+              return;
+            }
+            lote.points.splice(idx, 1);
+            this.renderOverlay(true);
+            this.setStatus('Vértice eliminado.');
+          }
+        }
+
+        onSvgDblClick(e) {
+          if (this.actionState === 'add_line_multivertex') {
+            e.preventDefault();
+            e.stopPropagation();
+            this.finalizarTrazoLinea();
+          }
         }
 
         onSvgClick(e) {
           const pt = this.obtenerPuntoSvg(e);
 
-          // Si estamos en modo agregar texto
+          // A. Si estamos en modo trazo multivértice
+          if (this.actionState === 'add_line_multivertex') {
+            this.lineDraftPoints.push(pt);
+            this.setStatus(`📍 Vértice #${this.lineDraftPoints.length} marcado (${pt[0]}, ${pt[1]}). Clic para continuar trazo, doble clic o botón "Finalizar".`);
+            this.renderOverlay(true);
+            return;
+          }
+
+          // B. Si estamos en modo agregar texto
           if (this.actionState === 'add_text') {
             this.colocarTexto(pt);
             return;
           }
 
-          // Si estamos en modo agregar línea
-          if (this.actionState === 'add_line_start' || this.actionState === 'add_line_end') {
-            this.gestionarClickLinea(pt);
+          if (e.target.closest('[data-vertex-idx]')) return;
+          if (e.target.closest('[data-line-vertex-idx]')) return;
+          if (e.target.closest('[data-line-centroid-id]')) return;
+          if (e.target.closest('[data-text-scale-id]')) return;
+
+          // C. Clic en punto medio de línea multivértice para insertar vértice
+          const midEl = e.target.closest('[data-line-midpoint-idx]');
+          if (midEl) {
+            const lineId = midEl.getAttribute('data-line-id');
+            const insertAfter = Number(midEl.getAttribute('data-line-midpoint-idx'));
+            const line = this.customLines.find(l => l.id === lineId);
+            if (line && Array.isArray(line.points)) {
+              line.points.splice(insertAfter + 1, 0, pt);
+              this.syncLineBounds(line);
+              this.seleccionarLinea(lineId);
+              this.setStatus('➕ Vértice insertado en la línea.');
+            }
             return;
           }
 
-          if (e.target.closest('[data-vertex-idx]')) return;
-          if (e.target.closest('[data-line-handle]')) return;
-
-          // Clic en texto personalizado
+          // D. Clic en texto personalizado
           const textEl = e.target.closest('[data-plan-text-id]');
           if (textEl) {
             const textId = textEl.getAttribute('data-plan-text-id');
@@ -6952,7 +7491,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             return;
           }
 
-          // Clic en línea personalizada
+          // E. Clic en línea personalizada
           const lineEl = e.target.closest('[data-plan-line-id]');
           if (lineEl) {
             const lineId = lineEl.getAttribute('data-plan-line-id');
@@ -6960,7 +7499,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             return;
           }
 
-          // Clic en borde para agregar vértice al lote seleccionado
+          // F. Clic en borde para agregar vértice al lote seleccionado
           const edgeEl = e.target.closest('[data-edge-lote]');
           if (edgeEl) {
             const lote = this.lotes.find((l) => l.id === this.selectedId);
@@ -6982,13 +7521,12 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             return;
           }
 
-          // Clic en un polígono de lote
+          // G. Clic en un polígono de lote
           const polyEl = e.target.closest('[data-lote-id]');
           if (polyEl) {
             this.selectedId = polyEl.getAttribute('data-lote-id');
             this.selectedTextId = null;
             this.selectedLineId = null;
-            this.switchTab('lotes');
             this.renderOverlay();
           }
         }
@@ -6996,11 +7534,13 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         actualizarLoteSeleccionado() {
           const lote = this.lotes.find((l) => l.id === this.selectedId);
           if (!lote) return;
-          lote.manzana = this.$('fldManzana').value.trim();
-          lote.lote = this.$('fldLote').value.trim();
-          lote.area_m2 = parseFloat(this.$('fldArea').value) || 0;
-          lote.estado = this.$('fldEstado').value;
-          lote.precio = this.$('fldPrecio').value.trim();
+          const loteNumeroVal = this.$('fldLoteNumero')?.value.trim() || 'Lote 01';
+          lote.lote_numero = loteNumeroVal;
+          lote.lote = loteNumeroVal;
+          lote.area_m2 = parseFloat(this.$('fldArea')?.value) || 0;
+          lote.estado = this.$('fldEstado')?.value || 'Disponible';
+          lote.precio = this.$('fldPrecio')?.value.trim() || '0';
+          if (this.$('badgeLoteId')) this.$('badgeLoteId').textContent = loteNumeroVal;
           this.renderOverlay(true);
         }
 
@@ -7026,18 +7566,45 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             text.setAttribute('x', cx);
             text.setAttribute('y', cy);
             text.setAttribute('class', 'poly-label');
-            text.textContent = `${l.manzana ? l.manzana + '-' : ''}${l.lote}`;
+            text.textContent = l.lote_numero || l.lote;
             svg.appendChild(text);
           }
 
-          // 2. Renderizar Líneas Personalizadas
+          // 2. Renderizar Trazo en Curso de Línea Multivértice (Draft)
+          if (this.actionState === 'add_line_multivertex' && this.lineDraftPoints && this.lineDraftPoints.length > 0) {
+            const draftPts = this.lineDraftPoints.map(p => p.join(',')).join(' ');
+            const draftLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            draftLine.setAttribute('points', draftPts);
+            draftLine.setAttribute('fill', 'none');
+            draftLine.setAttribute('stroke', '#38bdf8');
+            draftLine.setAttribute('stroke-width', '2.5');
+            draftLine.setAttribute('stroke-dasharray', '5,4');
+            svg.appendChild(draftLine);
+
+            this.lineDraftPoints.forEach(([dx, dy], idx) => {
+              const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+              c.setAttribute('cx', dx);
+              c.setAttribute('cy', dy);
+              c.setAttribute('r', '5');
+              c.setAttribute('fill', '#38bdf8');
+              c.setAttribute('stroke', '#ffffff');
+              c.setAttribute('stroke-width', '1.5');
+              svg.appendChild(c);
+            });
+          }
+
+          // 3. Renderizar Líneas Personalizadas (Multivértice con nodos de movimiento, redimensionamiento y edición)
           for (const line of this.customLines) {
             const isSel = line.id === this.selectedLineId;
-            const lEl = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            lEl.setAttribute('x1', line.x1);
-            lEl.setAttribute('y1', line.y1);
-            lEl.setAttribute('x2', line.x2);
-            lEl.setAttribute('y2', line.y2);
+            const pts = (Array.isArray(line.points) && line.points.length >= 2)
+              ? line.points
+              : [[line.x1, line.y1], [line.x2, line.y2]];
+            const ptsStr = pts.map(p => p.join(',')).join(' ');
+
+            // Línea visual
+            const lEl = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            lEl.setAttribute('points', ptsStr);
+            lEl.setAttribute('fill', 'none');
             lEl.setAttribute('stroke', isSel ? '#38bdf8' : line.color);
             lEl.setAttribute('stroke-width', isSel ? Math.max(3, line.width + 1.5) : line.width);
             if (line.dash === 'dashed') lEl.setAttribute('stroke-dasharray', '6,4');
@@ -7045,25 +7612,61 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             lEl.setAttribute('class', `custom-plan-line ${isSel ? 'selected' : ''}`);
             svg.appendChild(lEl);
 
-            // Nodos en extremos si está seleccionada
-            if (isSel) {
-              const h1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-              h1.setAttribute('cx', line.x1); h1.setAttribute('cy', line.y1); h1.setAttribute('r', '6');
-              h1.setAttribute('class', 'line-handle');
-              h1.setAttribute('data-line-id', line.id);
-              h1.setAttribute('data-line-handle', 'p1');
-              svg.appendChild(h1);
+            // Hit-area ancha para clic y selección fácil
+            const hitEl = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            hitEl.setAttribute('points', ptsStr);
+            hitEl.setAttribute('fill', 'none');
+            hitEl.setAttribute('stroke', 'transparent');
+            hitEl.setAttribute('stroke-width', '14');
+            hitEl.setAttribute('data-plan-line-id', line.id);
+            hitEl.style.cursor = 'pointer';
+            svg.appendChild(hitEl);
 
-              const h2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-              h2.setAttribute('cx', line.x2); h2.setAttribute('cy', line.y2); h2.setAttribute('r', '6');
-              h2.setAttribute('class', 'line-handle');
-              h2.setAttribute('data-line-id', line.id);
-              h2.setAttribute('data-line-handle', 'p2');
-              svg.appendChild(h2);
+            // Nodos interactivos si la línea está seleccionada
+            if (isSel) {
+              // A. Nodos en CADA vértice individual (para mover o eliminar con clic derecho)
+              pts.forEach(([vx, vy], vIdx) => {
+                const vCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                vCircle.setAttribute('cx', vx);
+                vCircle.setAttribute('cy', vy);
+                vCircle.setAttribute('r', '5.5');
+                vCircle.setAttribute('class', 'line-vertex-dot');
+                vCircle.setAttribute('data-line-id', line.id);
+                vCircle.setAttribute('data-line-vertex-idx', String(vIdx));
+                vCircle.style.cursor = 'move';
+                vCircle.setAttribute('title', `Vértice #${vIdx + 1} (Arrastra para mover · Clic derecho para borrar)`);
+                svg.appendChild(vCircle);
+              });
+
+              // B. Puntos medios para insertar vértices (+)
+              for (let i = 0; i < pts.length - 1; i++) {
+                const mx = Math.round((pts[i][0] + pts[i + 1][0]) / 2);
+                const my = Math.round((pts[i][1] + pts[i + 1][1]) / 2);
+                const midDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                midDot.setAttribute('cx', mx);
+                midDot.setAttribute('cy', my);
+                midDot.setAttribute('r', '4');
+                midDot.setAttribute('class', 'line-midpoint-dot');
+                midDot.setAttribute('data-line-id', line.id);
+                midDot.setAttribute('data-line-midpoint-idx', String(i));
+                midDot.setAttribute('title', 'Clic para insertar nuevo vértice');
+                svg.appendChild(midDot);
+              }
+
+              // C. Nodo central verde (Centroide para mover la línea completa)
+              const [cx, cy] = calcularCentroide(pts);
+              const centroidDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+              centroidDot.setAttribute('cx', cx);
+              centroidDot.setAttribute('cy', cy);
+              centroidDot.setAttribute('r', '6.5');
+              centroidDot.setAttribute('class', 'line-centroid-dot');
+              centroidDot.setAttribute('data-line-centroid-id', line.id);
+              centroidDot.setAttribute('title', 'Arrastra para mover la línea completa');
+              svg.appendChild(centroidDot);
             }
           }
 
-          // 3. Renderizar Textos Personalizados
+          // 4. Renderizar Textos Personalizados (Movibles, Redimensionables y Editables)
           for (const txt of this.customTexts) {
             const isSel = txt.id === this.selectedTextId;
             const tEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -7081,9 +7684,38 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             tEl.setAttribute('class', `custom-plan-text ${isSel ? 'selected' : ''}`);
             tEl.textContent = txt.text;
             svg.appendChild(tEl);
+
+            // Si está seleccionado, dibujar recuadro de redimensionamiento
+            if (isSel) {
+              const textLen = (txt.text || '').length;
+              const boxW = Math.max(26, textLen * txt.size * 0.65 + 14);
+              const boxH = Math.max(20, txt.size * 1.35 + 8);
+
+              const boxRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+              boxRect.setAttribute('x', txt.x - boxW / 2);
+              boxRect.setAttribute('y', txt.y - boxH / 2);
+              boxRect.setAttribute('width', boxW);
+              boxRect.setAttribute('height', boxH);
+              boxRect.setAttribute('fill', 'none');
+              boxRect.setAttribute('stroke', '#38bdf8');
+              boxRect.setAttribute('stroke-width', '1.2');
+              boxRect.setAttribute('stroke-dasharray', '3,3');
+              boxRect.setAttribute('pointer-events', 'none');
+              svg.appendChild(boxRect);
+
+              // Nodo de redimensionamiento de tamaño de texto
+              const scaleCorner = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+              scaleCorner.setAttribute('cx', txt.x + boxW / 2);
+              scaleCorner.setAttribute('cy', txt.y + boxH / 2);
+              scaleCorner.setAttribute('r', '5.5');
+              scaleCorner.setAttribute('class', 'text-scale-handle');
+              scaleCorner.setAttribute('data-text-scale-id', txt.id);
+              scaleCorner.setAttribute('title', 'Arrastra para redimensionar tamaño de texto');
+              svg.appendChild(scaleCorner);
+            }
           }
 
-          // 4. Hit-area y Vértices del Lote Seleccionado
+          // 5. Hit-area y Vértices del Lote Seleccionado
           const selLote = this.lotes.find((l) => l.id === this.selectedId);
           if (selLote && selLote.points.length >= 3) {
             const closedPts = [...selLote.points, selLote.points[0]].map((p) => p.join(',')).join(' ');
@@ -7111,17 +7743,16 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           this.$('btnDownloadJson').disabled = !hasContent;
           this.$('btnApply').disabled = !hasContent;
 
-          // Inspector de Lotes
+          // Inspector de Lotes (Sección 3: N° de Lote unificado, Área, Estado y Precio)
           const sel = this.lotes.find((l) => l.id === this.selectedId);
           if (sel) {
             this.$('inspectorCard').style.display = 'block';
-            this.$('badgeLoteId').textContent = `${sel.manzana ? sel.manzana + '-' : ''}${sel.lote}`;
+            this.$('badgeLoteId').textContent = sel.lote_numero;
             if (!skipInspectorInputs) {
-              this.$('fldManzana').value = sel.manzana;
-              this.$('fldLote').value = sel.lote;
-              this.$('fldArea').value = sel.area_m2;
-              this.$('fldEstado').value = sel.estado;
-              this.$('fldPrecio').value = sel.precio;
+              if (this.$('fldLoteNumero')) this.$('fldLoteNumero').value = sel.lote_numero;
+              if (this.$('fldArea')) this.$('fldArea').value = sel.area_m2;
+              if (this.$('fldEstado')) this.$('fldEstado').value = sel.estado;
+              if (this.$('fldPrecio')) this.$('fldPrecio').value = sel.precio;
             }
           } else {
             this.$('inspectorCard').style.display = 'none';
@@ -7132,7 +7763,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           const scaleToOriginal = this.imgNaturalW / (this.workW || 1);
           const metersPerPixelOrig = this.metersPerPixel ? (this.metersPerPixel / scaleToOriginal) : null;
 
-          const lotesExport = this.lotes.map((l) => {
+          const lotesExport = this.lotes.map((l, idx) => {
             const pointsPx = l.points.map(([x, y]) => [
               Math.round(x * scaleToOriginal),
               Math.round(y * scaleToOriginal)
@@ -7142,11 +7773,20 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
               +((y / this.workH) * 100).toFixed(3)
             ]);
             const [cx, cy] = calcularCentroide(pointsPx);
+            const loteNum = l.lote_numero || l.lote || `Lote ${idx + 1}`;
 
             return {
-              id: l.id, manzana: l.manzana, lote: l.lote, estado: l.estado,
-              area_m2: l.area_m2, perimetro_m: l.perimetro_m, precio: l.precio,
-              centroidPx: [cx, cy], pointsPx, pointsPct,
+              id: l.id,
+              lote_numero: loteNum,
+              lote: loteNum,
+              manzana: l.manzana || '',
+              estado: l.estado,
+              area_m2: l.area_m2,
+              perimetro_m: l.perimetro_m,
+              precio: l.precio,
+              centroidPx: [cx, cy],
+              pointsPx,
+              pointsPct,
               svgPoints: pointsPx.map((p) => p.join(',')).join(' ')
             };
           });
@@ -7160,25 +7800,37 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             color: t.color
           }));
 
-          const customLinesExport = (this.customLines || []).map(l => ({
-            id: l.id,
-            x1: Math.round(l.x1 * scaleToOriginal),
-            y1: Math.round(l.y1 * scaleToOriginal),
-            x2: Math.round(l.x2 * scaleToOriginal),
-            y2: Math.round(l.y2 * scaleToOriginal),
-            width: l.width,
-            color: l.color,
-            dash: l.dash
-          }));
+          const customLinesExport = (this.customLines || []).map(l => {
+            const pts = (Array.isArray(l.points) && l.points.length >= 2)
+              ? l.points
+              : [[l.x1, l.y1], [l.x2, l.y2]];
+            const pointsPx = pts.map(([x, y]) => [
+              Math.round(x * scaleToOriginal),
+              Math.round(y * scaleToOriginal)
+            ]);
+
+            return {
+              id: l.id,
+              pointsPx,
+              x1: pointsPx[0][0],
+              y1: pointsPx[0][1],
+              x2: pointsPx[pointsPx.length - 1][0],
+              y2: pointsPx[pointsPx.length - 1][1],
+              width: l.width,
+              color: l.color,
+              dash: l.dash
+            };
+          });
 
           const polygonsSvg = lotesExport.map((l) => {
             const est = ESTADOS[l.estado] || ESTADOS.Disponible;
-            return `  <polygon class="lote-poligono" data-id="${l.id}" data-manzana="${l.manzana}" data-lote="${l.lote}" data-area="${l.area_m2}" data-estado="${l.estado}" data-precio="${l.precio}" points="${l.svgPoints}" fill="${est.fill}" stroke="${est.stroke}" stroke-width="2" />`;
+            return `  <polygon class="lote-poligono" data-id="${l.id}" data-lote="${l.lote_numero}" data-area="${l.area_m2}" data-estado="${l.estado}" data-precio="${l.precio}" points="${l.svgPoints}" fill="${est.fill}" stroke="${est.stroke}" stroke-width="2" />`;
           }).join('\n');
 
-          const linesSvg = customLinesExport.map(l =>
-            `  <line data-id="${l.id}" x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" stroke="${l.color}" stroke-width="${l.width}" stroke-dasharray="${l.dash === 'dashed' ? '6,4' : 'none'}" />`
-          ).join('\n');
+          const linesSvg = customLinesExport.map(l => {
+            const ptsStr = l.pointsPx.map(p => p.join(',')).join(' ');
+            return `  <polyline data-id="${l.id}" points="${ptsStr}" fill="none" stroke="${l.color}" stroke-width="${l.width}" stroke-dasharray="${l.dash === 'dashed' ? '6,4' : 'none'}" />`;
+          }).join('\n');
 
           const textsSvg = customTextsExport.map(t =>
             `  <text data-id="${t.id}" x="${t.x}" y="${t.y}" font-size="${t.size}" fill="${t.color}" font-weight="bold" stroke="#000" stroke-width="2" text-anchor="middle" dominant-baseline="central">${escapeHtml(t.text)}</text>`
@@ -7237,4 +7889,5 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     })(window);
   </script>
 </body>
+
 </html>
