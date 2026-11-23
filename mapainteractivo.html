@@ -531,8 +531,9 @@
         <div class="space-y-2">
           <div class="flex items-center justify-between gap-2">
             <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Proyecto Activo</label>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5">
               <button onclick="createNewProject()" class="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 transition">+ Nuevo</button>
+              <button onclick="depurarYLimpiarDatosUI()" type="button" class="px-2 py-0.5 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[10.5px] font-bold transition flex items-center gap-1" title="Depurar y limpiar datos de proyectos y lotes">🧹 Depurar</button>
               <button onclick="saveCurrentProjectNow()" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-bold transition">Guardar</button>
             </div>
           </div>
@@ -925,14 +926,17 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-2.5">
-          <button onclick="saveToSupabase()" class="py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1.5">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-            <span>Guardar en Supabase</span>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="saveToSupabase()" class="py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            <span>Guardar</span>
           </button>
-          <button onclick="loadFromSupabase()" class="py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1.5">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            <span>Sincronizar y Cargar</span>
+          <button onclick="loadFromSupabase()" class="py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Cargar BD</span>
+          </button>
+          <button onclick="depurarYLimpiarDatosUI()" type="button" class="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/20 text-sky-300 text-xs font-extrabold transition flex items-center justify-center gap-1" title="Depurar y limpiar datos locales y remotos">
+            <span>🧹 Depurar</span>
           </button>
         </div>
 
@@ -1289,8 +1293,12 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
     function createDefaultProject() {
       return {
-        id: 'proj-fortunato',
-        nombre: 'Proyecto Fortunato',
+        id: 'prop-guadalupe',
+        nombre: 'Proyecto Guadalupe – Laguna Huaypo',
+        title: 'Proyecto Guadalupe – Laguna Huaypo',
+        location: 'Chinchero / Huaypo, Cusco',
+        price: 'Desde $30,200 USD',
+        area: '836 m² Matriz (7 Lotes)',
         lat: DEFAULT_LAT,
         lng: DEFAULT_LNG,
         plano_url: DEFAULT_PLAN_URL,
@@ -1307,27 +1315,148 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       };
     }
 
-    function isExcludedProject(p) {
-      if (!p) return true;
-      const id = String(p.id || '').toLowerCase();
-      const nombre = String(p.nombre || p.title || p.titulo || '').toLowerCase();
-      return id.includes('maluma') || nombre.includes('maluma') || id.includes('carrusel') || nombre.includes('carrusel');
+    function createDefaultProjectsList() {
+      return [
+        createDefaultProject(),
+        {
+          id: 'prop-3',
+          nombre: 'Finca El Manantial – Urubamba',
+          title: 'Finca El Manantial – Urubamba',
+          location: 'Urubamba, Valle Sagrado',
+          price: '$135,000 USD',
+          area: '2,500 m²',
+          lat: -13.3039,
+          lng: -72.1158,
+          plano_url: '',
+          lotes: [],
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 'prop-1',
+          nombre: 'Refugio Bosque Los Pinos – Oxapampa',
+          title: 'Refugio Bosque Los Pinos – Oxapampa',
+          location: 'Oxapampa, Pasco',
+          price: '$85,000 USD',
+          area: '1,200 m²',
+          lat: -10.5775,
+          lng: -75.4017,
+          plano_url: '',
+          lotes: [],
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 'prop-2',
+          nombre: 'Villa Cordillera Alta – Cieneguilla',
+          title: 'Villa Cordillera Alta – Cieneguilla',
+          location: 'Cieneguilla, Lima',
+          price: '$240,000 USD',
+          area: '240 m²',
+          lat: -12.0911,
+          lng: -76.7725,
+          plano_url: '',
+          lotes: [],
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 'prop-4',
+          nombre: 'Lote Mirador del Valle – Lunahuaná',
+          title: 'Lote Mirador del Valle – Lunahuaná',
+          location: 'Lunahuaná, Cañete',
+          price: '$62,000 USD',
+          area: '850 m²',
+          lat: -12.9608,
+          lng: -76.1361,
+          plano_url: '',
+          lotes: [],
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 'prop-5',
+          nombre: 'Cabaña Vista Ocaso – Pozuzo',
+          title: 'Cabaña Vista Ocaso – Pozuzo',
+          location: 'Pozuzo, Pasco',
+          price: '$195,000 USD',
+          area: '1,800 m²',
+          lat: -10.0667,
+          lng: -75.5500,
+          plano_url: '',
+          lotes: [],
+          updated_at: new Date().toISOString()
+        }
+      ];
     }
 
-    // Purga inmediata de cualquier registro residual de Maluma en localStorage del navegador
-    (function purgeMalumaResidualStorage() {
+    function isExcludedProject(p) {
+      if (!p) return true;
+      const id = String(p.id || '').toLowerCase().trim();
+      const nombre = String(p.nombre || p.title || p.titulo || '').toLowerCase().trim();
+      return id.includes('maluma') || nombre.includes('maluma') || 
+             id.includes('carrusel') || nombre.includes('carrusel') ||
+             id.includes('nube') || nombre.includes('nube') ||
+             nombre.includes('(0 lotes)') || nombre === '0 lotes';
+    }
+
+    // Purga y depuración integral de almacenamiento local
+    (function purgeResidualStorage() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('nova_map_projects');
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed)) {
-            const cleaned = parsed.filter(p => !isExcludedProject(p));
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
-            localStorage.setItem('nova_map_projects', JSON.stringify(cleaned));
+        [STORAGE_KEY, 'nova_map_projects', 'agencia_nova_proyectos_v9'].forEach(k => {
+          const raw = localStorage.getItem(k);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              const cleaned = parsed.filter(p => !isExcludedProject(p));
+              localStorage.setItem(k, JSON.stringify(cleaned));
+            }
           }
-        }
+        });
       } catch(e) {}
     })();
+
+    function depurarYLimpiarDatosUI() {
+      // 1. Filtrar registros inválidos o excluidos
+      projects = (projects || []).filter(p => !isExcludedProject(p));
+
+      // 2. Si no hay proyectos o falta el lote matriz principal, insertar catálogo inicial
+      const defaults = createDefaultProjectsList();
+      const hasMain = projects.some(p => p.id === 'prop-guadalupe' || p.id === 'proj-fortunato');
+      if (!hasMain) {
+        projects.unshift(createDefaultProject());
+      }
+
+      // 3. Garantizar integridad de coordenadas y lotes
+      projects.forEach(p => {
+        if (!p.lat || isNaN(p.lat)) p.lat = DEFAULT_LAT;
+        if (!p.lng || isNaN(p.lng)) p.lng = DEFAULT_LNG;
+        if (!Array.isArray(p.lotes)) p.lotes = [];
+        if ((p.id === 'prop-guadalupe' || p.id === 'proj-fortunato') && !p.lotes.length) {
+          p.lotes = buildFortunatoLots(p.lat, p.lng);
+        }
+      });
+
+      // 4. Guardar datos depurados
+      saveProjectsLocal();
+
+      // 5. Purga preventiva remota en Supabase
+      try {
+        const client = getSupabaseClient();
+        if (client) {
+          client.from('nova_propiedades').delete().ilike('title', '%maluma%').then(() => {}).catch(() => {});
+          client.from('nova_propiedades').delete().ilike('nombre', '%maluma%').then(() => {}).catch(() => {});
+          client.from('nova_propiedades').delete().ilike('title', '%carrusel%').then(() => {}).catch(() => {});
+          client.from('nova_propiedades').delete().ilike('nombre', '%carrusel%').then(() => {}).catch(() => {});
+          client.from('nova_propiedades').delete().ilike('title', '%nube%').then(() => {}).catch(() => {});
+        }
+      } catch(e) {}
+
+      currentProject = projects[0];
+      selectedLotId = null;
+      renderAllProjectsAndLots();
+      syncProjectFormUI();
+      syncLotDataForm();
+      renderProjectsSidebar();
+      flyToProject(currentProject);
+      showToast('✨ Depuración completada: proyectos limpios y datos sincronizados.');
+    }
 
     function loadProjectsLocal() {
       try {
@@ -1337,6 +1466,10 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           if (Array.isArray(parsed) && parsed.length > 0) {
             projects = parsed.filter(p => !isExcludedProject(p));
             if (projects.length > 0) {
+              const mainProj = projects.find(p => p.id === 'prop-guadalupe' || p.id === 'proj-fortunato');
+              if (mainProj && (!mainProj.lotes || !mainProj.lotes.length)) {
+                mainProj.lotes = buildFortunatoLots(mainProj.lat || DEFAULT_LAT, mainProj.lng || DEFAULT_LNG);
+              }
               currentProject = projects[0];
               saveProjectsLocal();
               return;
@@ -1346,7 +1479,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       } catch (err) {
         console.warn('localStorage no disponible:', err);
       }
-      projects = [createDefaultProject()];
+      projects = createDefaultProjectsList();
       currentProject = projects[0];
       saveProjectsLocal();
     }
@@ -2169,7 +2302,10 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     // 8. NAVEGACIÓN ENTRE PROYECTOS Y ENCUADRE TOTAL
     // =========================================================================
     function switchProject(projectId, shouldFly) {
-      const found = projects.find(p => p.id === projectId);
+      const found = projects.find(p => p.id === projectId || 
+        (projectId === 'prop-guadalupe' && p.id === 'proj-fortunato') ||
+        (projectId === 'proj-fortunato' && p.id === 'prop-guadalupe') ||
+        (p.nombre && p.nombre.toLowerCase().includes(String(projectId).toLowerCase())));
       if (!found) return;
       currentProject = found;
       selectedLotId = null;
@@ -4441,7 +4577,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       if (!client) return;
       try {
         showToast('Guardando en Supabase...');
-        const rows = projects.map(p => {
+        const rows = (projects || []).filter(p => !isExcludedProject(p)).map(p => {
           const coordsStr = `${Number(p.lat).toFixed(6)}, ${Number(p.lng).toFixed(6)}`;
           const metadataPayload = {
             calco_config: p.calco_config || {},
@@ -4636,13 +4772,13 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           };
         });
 
-        // Asegurar que Proyecto Fortunato esté en la lista si no vino de la BD
-        if (!loadedProjects.some(p => p.id === 'proj-fortunato' || p.id === 'prop-1')) {
+        // Asegurar que Proyecto Guadalupe / Fortunato esté en la lista si no vino de la BD
+        if (!loadedProjects.some(p => p.id === 'prop-guadalupe' || p.id === 'proj-fortunato')) {
           loadedProjects.unshift(createDefaultProject());
         }
 
         projects = loadedProjects;
-        currentProject = projects.find(p => p.id === 'proj-fortunato' || p.id === 'prop-1') || projects[0];
+        currentProject = projects.find(p => p.id === 'prop-guadalupe' || p.id === 'proj-fortunato') || projects[0];
         saveProjectsLocal();
         syncProjectFormUI();
         renderAllProjectsAndLots();
