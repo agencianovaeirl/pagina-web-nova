@@ -1108,6 +1108,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     let selectedCustomLineId = null;
     let isDrawingCustomLine = false;
     let customLineDraftPoints = [];
+    let draftPolyline = null;
+    let draftMarkers = [];
 
     // Distritos precargados de la región Cusco (SOLO nombres de distrito, sin POIs)
     const BASE_DISTRICTS = [
@@ -3085,11 +3087,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       showToast('Texto eliminado.');
     }
 
-    let isDrawingCustomLine = false;
-    let customLineDraftPoints = [];
-    let draftPolyline = null;
-    let draftMarkers = [];
-
+    // =========================================================================
+    // TRAZO Y GESTIÓN DE LÍNEAS ADICIONALES (MULTIVÉRTICE) EN EL MAPA
+    // =========================================================================
     function toggleStartDrawLine() {
       if (isDrawingCustomLine) {
         finishDrawingLineOnMap();
