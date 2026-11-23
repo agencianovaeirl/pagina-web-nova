@@ -1974,14 +1974,14 @@
 
         // Contact form submit logic -> directly to WhatsApp
         function handleFormSubmit(e) {
-            if (e && e.preventDefault) e.preventDefault();
-            const name = document.getElementById('formName')?.value || 'Cliente';
-            const phone = document.getElementById('formPhone')?.value || '';
-            const service = document.getElementById('formService')?.value || 'Servicios NOVA';
-            const location = document.getElementById('formLocation')?.value || 'Cusco';
-            const message = document.getElementById('formMessage')?.value || '';
+            e.preventDefault();
+            const name = document.getElementById('formName').value;
+            const phone = document.getElementById('formPhone').value;
+            const service = document.getElementById('formService').value;
+            const location = document.getElementById('formLocation').value;
+            const message = document.getElementById('formMessage').value;
 
-            const text = `Hola Agencia NOVA, mi nombre es *${name}*${phone ? ' (Tel: ' + phone + ')' : ''}.%0A` +
+            const text = `Hola Agencia NOVA, mi nombre es *${name}* (Tel: ${phone}).%0A` +
                 `Estoy interesado en: *${service}*%0A` +
                 `Zona / Ciudad: *${location}*%0A` +
                 `Consulta: ${encodeURIComponent(message || 'Solicito más información.')}`;

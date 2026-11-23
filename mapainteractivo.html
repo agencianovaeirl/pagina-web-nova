@@ -531,9 +531,8 @@
         <div class="space-y-2">
           <div class="flex items-center justify-between gap-2">
             <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Proyecto Activo</label>
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-2">
               <button onclick="createNewProject()" class="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 transition">+ Nuevo</button>
-              <button onclick="depurarYLimpiarDatosUI()" type="button" class="px-2 py-0.5 rounded-lg bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[10.5px] font-bold transition flex items-center gap-1" title="Depurar y limpiar datos de proyectos y lotes">🧹 Depurar</button>
               <button onclick="saveCurrentProjectNow()" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-bold transition">Guardar</button>
             </div>
           </div>
@@ -544,12 +543,12 @@
         <div class="space-y-2.5 pt-2 border-t border-white/10">
           <div>
             <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Nombre del Proyecto</label>
-            <input id="inpProjectName" type="text" oninput="handleProjectNameChange(this.value)" class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400" placeholder="Ej. Proyecto Fortunato" />
+            <input id="inpProjectName" type="text" onchange="handleProjectInputChange()" class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400" placeholder="Ej. Proyecto Fortunato" />
           </div>
 
           <div>
             <label class="block text-[10.5px] font-bold text-sky-300 mb-1">UBICACIÓN GPS (Latitud, Longitud)</label>
-            <input id="inpGpsLocation" type="text" oninput="handleProjectGpsChange(this.value)" onchange="handleProjectGpsChange(this.value)" class="w-full bg-slate-900/90 border border-sky-400/40 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-400" placeholder="-13.421719, -72.089713" />
+            <input id="inpGpsLocation" type="text" onchange="handleProjectInputChange()" class="w-full bg-slate-900/90 border border-sky-400/40 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-400" placeholder="-13.421719, -72.089713" />
           </div>
         </div>
 
@@ -575,25 +574,24 @@
           </div>
 
           <!-- CUADRO VISOR / VISTA PREVIA DE LA IMAGEN DEL PLANO (AGRANDADO) -->
-          <div id="drawerPlanPreviewContainer" class="rounded-2xl border border-white/15 bg-slate-950/95 p-3 flex flex-col gap-2.5 shadow-xl">
+          <div id="drawerPlanPreviewContainer" class="rounded-2xl border border-white/15 bg-slate-950 p-3 flex flex-col gap-2.5 shadow-xl">
             <div class="flex items-center justify-between text-[11px]">
-              <div class="flex items-center gap-1.5">
-                <span class="text-amber-400 font-bold">🖼️</span>
-                <span class="font-extrabold text-white">Vista de la Imagen del Plano</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span id="lblDrawerPlanDimensions" class="font-mono text-sky-300 text-[10px]">Resolución: -</span>
-                <button type="button" onclick="togglePlanPreviewExpanded()" id="btnTogglePlanPreview" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-slate-300 text-[10px] font-bold transition flex items-center gap-1" title="Ampliar vista del plano">
-                  <span>🔍</span> <span id="lblBtnPlanZoom">Expandir</span>
-                </button>
+              <span class="font-extrabold text-amber-300 flex items-center gap-1.5">
+                <span>🔍 Vista de la Imagen del Plano</span>
+              </span>
+              <div class="flex items-center gap-1">
+                <span id="lblDrawerPlanDimensions" class="font-mono text-sky-300 text-[10px] mr-1">Resolución: -</span>
+                <button type="button" onclick="zoomDrawerPlanPreview(-0.25)" class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center justify-center transition" title="Alejar">-</button>
+                <button type="button" onclick="zoomDrawerPlanPreview(0.25)" class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center justify-center transition" title="Acercar">+</button>
+                <button type="button" onclick="resetDrawerPlanPreviewZoom()" class="px-1.5 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-sky-300 flex items-center justify-center transition" title="Restablecer tamaño">100%</button>
               </div>
             </div>
-            <div id="drawerPlanPreviewViewport" class="relative w-full h-80 sm:h-96 min-h-[320px] max-h-[520px] rounded-xl overflow-hidden bg-slate-950 border border-white/10 flex items-center justify-center transition-all duration-300">
-              <img id="imgDrawerPlanPreview" src="" alt="Vista previa del plano" class="hidden max-w-full max-h-full object-contain select-none cursor-zoom-in" onclick="togglePlanPreviewExpanded()" />
+            <div id="drawerPlanViewport" class="relative w-full h-80 sm:h-96 min-h-[320px] max-h-[440px] rounded-xl overflow-auto bg-slate-900 border border-white/10 flex items-center justify-center custom-scroll select-none">
+              <img id="imgDrawerPlanPreview" src="" alt="Vista previa del plano" class="hidden max-w-none transition-transform duration-200 cursor-grab active:cursor-grabbing origin-center" style="transform: scale(1);" />
               <div id="imgDrawerPlanPlaceholder" class="text-xs text-slate-500 flex flex-col items-center gap-2 text-center p-6">
                 <span class="text-3xl">🗺️</span>
-                <span class="font-bold text-slate-300 text-sm">Ningún plano cargado aún</span>
-                <span class="text-[11px] text-slate-500">Pega una URL o sube una imagen arriba para visualizar el plano con máxima nitidez</span>
+                <span class="font-bold text-slate-300">Ningún plano cargado aún</span>
+                <span class="text-[11px] text-slate-500 max-w-xs">Pega la URL de una imagen o sube el plano en formato JPG / PNG para visualizarlo en alta definición y detectar sus polígonos</span>
               </div>
             </div>
           </div>
@@ -675,32 +673,38 @@
             <span id="editingLotBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30">Ninguno</span>
           </div>
 
-          <!-- BOTÓN SELECCIONAR TODOS LOS POLÍGONOS -->
-          <button type="button" onclick="selectAllPolygons()" id="btnSelectAllPolygons" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 transition active:scale-95 cursor-pointer">
-            <svg class="w-4 h-4 text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            <span>SELECCIONAR TODOS LOS POLIGONOS</span>
+          <!-- BOTÓN SELECCIONAR TODOS LOS POLÍGONOS (Item 6) -->
+          <button id="btnSelectAllPolygons" onclick="toggleSelectAllPolygons()" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400/20 via-sky-400/20 to-emerald-400/20 hover:from-amber-400/35 hover:to-sky-400/35 border border-amber-400/50 text-amber-300 hover:text-white text-xs font-black uppercase tracking-wider transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span id="lblBtnSelectAllPolygons">SELECCIONAR TODOS LOS POLÍGONOS</span>
           </button>
 
-          <!-- Banner y Controles cuando Toda la Lotización está Seleccionada -->
-          <div id="allPolygonsActiveBanner" class="hidden text-[10.5px] text-amber-200 bg-amber-500/15 border border-amber-400/40 p-2.5 rounded-xl space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="font-extrabold text-amber-300 uppercase tracking-wide">🌐 Toda la Lotización Activa</span>
-              <button type="button" onclick="deselectAllPolygons()" class="text-[9.5px] px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-slate-300 font-bold">Desactivar</button>
+          <!-- PANEL CUANDO TODOS LOS POLÍGONOS ESTÁN SELECCIONADOS -->
+          <div id="allPolygonsSelectedForm" class="hidden space-y-2.5 bg-slate-950/80 p-3 rounded-xl border border-amber-400/40">
+            <div class="flex items-center justify-between text-xs font-black text-amber-300">
+              <span id="lblAllPolygonsCount">0 Polígonos Totales</span>
+              <span id="lblAllPolygonsArea" class="font-mono text-emerald-400 text-[11px]">0.00 m²</span>
             </div>
-            <div class="text-[10px] text-slate-300 leading-tight">
-              Puntos activos en mapa: <strong class="text-emerald-400">Verde central</strong> para mover, <strong class="text-amber-400">4 esquinas ámbar</strong> para redimensionar y <strong class="text-cyan-300">4 exteriores cian</strong> para rotar toda la lotización.
+            <div class="text-[9.5px] text-slate-300 space-y-1 bg-slate-900/90 p-2 rounded-lg border border-white/5">
+              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white inline-block"></span> <strong>Punto Verde Central:</strong> Arrastrar para mover todos los polígonos</div>
+              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 border border-white inline-block"></span> <strong>4 Esquinas Ámbar:</strong> Redimensionar todos los polígonos</div>
+              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400 border border-white inline-block"></span> <strong>Puntos Cian Exteriores:</strong> Rotar todos los polígonos</div>
             </div>
-            <div class="grid grid-cols-4 gap-1 text-[10px] font-bold pt-1">
-              <button onclick="moveAllLots(0, 2)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200">↑ N</button>
-              <button onclick="moveAllLots(0, -2)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200">↓ S</button>
-              <button onclick="moveAllLots(-2, 0)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200">← O</button>
-              <button onclick="moveAllLots(2, 0)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200">→ E</button>
-            </div>
-            <div class="grid grid-cols-4 gap-1 text-[10px] font-bold">
-              <button onclick="scaleAllLots(0.95, 0.95)" class="py-1 rounded-lg bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-amber-300">-5%</button>
-              <button onclick="scaleAllLots(1.05, 1.05)" class="py-1 rounded-lg bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-amber-300">+5%</button>
-              <button onclick="rotateAllLots(-3)" class="py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-cyan-300">↺ -3°</button>
-              <button onclick="rotateAllLots(3)" class="py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-cyan-300">↻ +3°</button>
+            <!-- Micro-ajustes de precisión para todos los polígonos -->
+            <div class="space-y-1 pt-1">
+              <div class="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">Ajuste Fino de Posición</div>
+              <div class="grid grid-cols-4 gap-1 text-[10px] font-bold">
+                <button onclick="moveAllLots(0, 2)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200" title="Mover al Norte">↑ N</button>
+                <button onclick="moveAllLots(0, -2)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200" title="Mover al Sur">↓ S</button>
+                <button onclick="moveAllLots(-2, 0)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200" title="Mover al Oeste">← O</button>
+                <button onclick="moveAllLots(2, 0)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200" title="Mover al Este">→ E</button>
+              </div>
+              <div class="grid grid-cols-4 gap-1 text-[10px] font-bold pt-0.5">
+                <button onclick="scaleAllLots(0.95, 0.95)" class="py-1 rounded-lg bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-amber-300" title="Reducir escala">-5%</button>
+                <button onclick="scaleAllLots(1.05, 1.05)" class="py-1 rounded-lg bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-amber-300" title="Aumentar escala">+5%</button>
+                <button onclick="rotateAllLots(-3)" class="py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-cyan-300" title="Girar antihorario">↺ -3°</button>
+                <button onclick="rotateAllLots(3)" class="py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-cyan-300" title="Girar horario">↻ +3°</button>
+              </div>
             </div>
           </div>
 
@@ -735,7 +739,7 @@
               </div>
             </div>
 
-            <!-- Ayuda de Puntos Interactivos del Polígono -->
+            <!-- Ayuda de Puntos Interactivos del Polígono Individual -->
             <div class="text-[9.5px] text-slate-400 bg-slate-950/80 p-2 rounded-xl border border-white/5 space-y-1">
               <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white inline-block"></span> <strong>Verde Central:</strong> Arrastrar y mover polígono</div>
               <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 border border-white inline-block"></span> <strong>4 Esquinas Ámbar:</strong> Redimensionar polígono</div>
@@ -859,36 +863,26 @@
             </div>
           </div>
 
-          <!-- Puntos interactivos de la línea -->
-          <div class="text-[9.5px] text-slate-300 bg-slate-950/70 p-2.5 rounded-xl border border-white/10 space-y-1">
-            <div class="font-extrabold text-sky-300">Trazado Multi-Vértices:</div>
-            <div>🔷 Vértices individuales arrastrables · 🟢 Mover línea completa · 🔵 Rotar · 🔴 Borrar</div>
+          <!-- Puntos interactivos de la línea (Multivértice) -->
+          <div class="text-[9.5px] text-slate-400 bg-slate-950/70 p-2 rounded-xl border border-white/5 space-y-1">
+            <div class="text-sky-300 font-bold">📐 Trazo Multivértice Activo:</div>
+            <div>🔷 Vértices individuales arrastrables (clic derecho borra punto)</div>
+            <div>🟢 Mover trazo completo · 🟡 Escalar · 🔵 Rotar · 🔴 Borrar</div>
           </div>
 
-          <!-- Banner activo al trazar línea multi-vértices -->
-          <div id="drawingLineBanner" class="hidden p-2 rounded-xl bg-sky-500/20 border border-sky-400/40 text-[10.5px] text-sky-200 flex items-center justify-between gap-1.5">
-            <div class="truncate">
-              <span class="font-extrabold" id="lblLinePointsCount">Vértices: 0</span>
-              <span class="text-slate-400 text-[9.5px] block">Clic en mapa para añadir punto</span>
-            </div>
-            <div class="flex items-center gap-1">
-              <button type="button" onclick="finishDrawingLineOnMap()" class="px-2.5 py-1 rounded-lg bg-sky-400 text-slate-950 font-black text-[10px] hover:bg-sky-300 transition">
-                ✔️ Listo
-              </button>
-              <button type="button" onclick="cancelDrawingLineOnMap()" class="px-2 py-1 rounded-lg bg-red-500/20 text-red-300 font-bold text-[10px] hover:bg-red-500/30 transition">
-                ✕
-              </button>
-            </div>
+          <div id="lineDraftStatusContainer" class="hidden p-2 rounded-xl bg-sky-500/15 border border-sky-400/40 text-[10.5px] text-sky-200 flex items-center justify-between">
+            <span id="lineDraftStatusText">Marcando vértices en mapa (0 puntos)...</span>
+            <button onclick="cancelDrawingLine()" type="button" class="text-rose-400 hover:text-rose-300 font-bold text-[10px] px-1.5 py-0.5 rounded bg-black/40">Cancelar</button>
           </div>
 
           <div class="grid grid-cols-3 gap-1.5 pt-1">
-            <button onclick="startDrawingLineOnMap()" id="btnStartDrawLine" class="py-2.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+            <button onclick="toggleStartDrawLine()" id="btnStartDrawLine" class="py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
               ➕ Trazar
             </button>
-            <button onclick="editSelectedLine()" class="py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+            <button onclick="editSelectedLine()" class="py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
               ✏️ Modificar
             </button>
-            <button onclick="deleteSelectedLine()" class="py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+            <button onclick="deleteSelectedLine()" class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
               🗑️ Borrar
             </button>
           </div>
@@ -926,17 +920,14 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-2">
-          <button onclick="saveToSupabase()" class="py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-            <span>Guardar</span>
+        <div class="grid grid-cols-2 gap-2.5">
+          <button onclick="saveToSupabase()" class="py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            <span>Guardar en Supabase</span>
           </button>
-          <button onclick="loadFromSupabase()" class="py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            <span>Cargar BD</span>
-          </button>
-          <button onclick="depurarYLimpiarDatosUI()" type="button" class="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/20 text-sky-300 text-xs font-extrabold transition flex items-center justify-center gap-1" title="Depurar y limpiar datos locales y remotos">
-            <span>🧹 Depurar</span>
+          <button onclick="loadFromSupabase()" class="py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Sincronizar y Cargar</span>
           </button>
         </div>
 
@@ -1054,7 +1045,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     // =========================================================================
     // 1. CONSTANTES Y ESTADO GLOBAL
     // =========================================================================
-    const STORAGE_KEY = 'agencia_nova_proyectos_v15';
+    const STORAGE_KEY = 'agencia_nova_proyectos_v10';
     const SB_CONF_KEY = 'agencia_nova_supabase_cfg_v1';
 
     // Credenciales predeterminadas de Supabase (idénticas a terrenos.html)
@@ -1085,8 +1076,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     let activeEditorTab = 1;
     let showCalco = false;
 
-    // Piloto Automático (desactivado al inicio para carga limpia e inmediata del mapa)
-    let autoPilotActive = false;
+    // Piloto Automático (ACTIVO al iniciar)
+    let autoPilotActive = true;
     let autoPilotRafId = null;
     let autoPilotPhase = 0;
     let autoPilotLastTs = 0;
@@ -1165,42 +1156,26 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       };
     }
 
-    function getCoordLatLng(pt) {
-      if (!pt) return { lat: DEFAULT_LAT, lng: DEFAULT_LNG };
-      if (Array.isArray(pt)) {
-        return { lat: Number(pt[0]) || DEFAULT_LAT, lng: Number(pt[1]) || DEFAULT_LNG };
-      }
-      return {
-        lat: Number(pt.lat !== undefined ? pt.lat : (pt.latitude || pt.y)) || DEFAULT_LAT,
-        lng: Number(pt.lng !== undefined ? pt.lng : (pt.longitude || pt.x)) || DEFAULT_LNG
-      };
-    }
-
     function latLngToOffsetMeters(refLat, refLng, lat, lng) {
-      const rLat = Number(refLat) || DEFAULT_LAT;
-      const rLng = Number(refLng) || DEFAULT_LNG;
-      const pLat = Number(lat) || DEFAULT_LAT;
-      const pLng = Number(lng) || DEFAULT_LNG;
       return {
-        east: (pLng - rLng) * metersPerDegLng(rLat),
-        north: (pLat - rLat) * 111320
+        east: (lng - refLng) * metersPerDegLng(refLat),
+        north: (lat - refLat) * 111320
       };
     }
 
     function getPolygonCentroid(coords) {
       if (!coords || !coords.length) return { lat: DEFAULT_LAT, lng: DEFAULT_LNG };
-      const pts = coords.map(getCoordLatLng);
-      if (pts.length < 3) {
+      if (coords.length < 3) {
         let sumLat = 0, sumLng = 0;
-        for (let i = 0; i < pts.length; i++) { sumLat += pts[i].lat; sumLng += pts[i].lng; }
-        return { lat: sumLat / pts.length, lng: sumLng / pts.length };
+        for (let i = 0; i < coords.length; i++) { sumLat += coords[i].lat; sumLng += coords[i].lng; }
+        return { lat: sumLat / coords.length, lng: sumLng / coords.length };
       }
-      const refLat = pts[0].lat;
-      const refLng = pts[0].lng;
+      const refLat = coords[0].lat;
+      const refLng = coords[0].lng;
       let signedArea = 0, cx = 0, cy = 0;
-      for (let i = 0; i < pts.length; i++) {
-        const p0 = pts[i];
-        const p1 = pts[(i + 1) % pts.length];
+      for (let i = 0; i < coords.length; i++) {
+        const p0 = coords[i];
+        const p1 = coords[(i + 1) % coords.length];
         const x0 = p0.lng - refLng, y0 = p0.lat - refLat;
         const x1 = p1.lng - refLng, y1 = p1.lat - refLat;
         const a = x0 * y1 - x1 * y0;
@@ -1209,39 +1184,30 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         cy += (y0 + y1) * a;
       }
       signedArea *= 0.5;
-      if (Math.abs(signedArea) < 1e-14 || isNaN(signedArea)) {
+      if (Math.abs(signedArea) < 1e-14) {
         let sumLat = 0, sumLng = 0;
-        for (let i = 0; i < pts.length; i++) { sumLat += pts[i].lat; sumLng += pts[i].lng; }
-        return { lat: sumLat / pts.length, lng: sumLng / pts.length };
+        for (let i = 0; i < coords.length; i++) { sumLat += coords[i].lat; sumLng += coords[i].lng; }
+        return { lat: sumLat / coords.length, lng: sumLng / coords.length };
       }
-      const finalLat = refLat + cy / (6 * signedArea);
-      const finalLng = refLng + cx / (6 * signedArea);
-      return {
-        lat: isNaN(finalLat) ? refLat : finalLat,
-        lng: isNaN(finalLng) ? refLng : finalLng
-      };
+      return { lat: refLat + cy / (6 * signedArea), lng: refLng + cx / (6 * signedArea) };
     }
 
     function scaleCoordsAroundCenter(coords, center, scaleX, scaleY) {
-      const c = getCoordLatLng(center);
       return coords.map(pt => {
-        const p = getCoordLatLng(pt);
-        const off = latLngToOffsetMeters(c.lat, c.lng, p.lat, p.lng);
-        return offsetMetersToLatLng(c.lat, c.lng, off.east * scaleX, off.north * scaleY);
+        const off = latLngToOffsetMeters(center.lat, center.lng, pt.lat, pt.lng);
+        return offsetMetersToLatLng(center.lat, center.lng, off.east * scaleX, off.north * scaleY);
       });
     }
 
     function rotateCoordsAroundCenter(coords, center, degClockwise) {
-      const c = getCoordLatLng(center);
       const rad = (degClockwise * Math.PI) / 180;
       const cosA = Math.cos(rad);
       const sinA = Math.sin(rad);
       return coords.map(pt => {
-        const p = getCoordLatLng(pt);
-        const off = latLngToOffsetMeters(c.lat, c.lng, p.lat, p.lng);
+        const off = latLngToOffsetMeters(center.lat, center.lng, pt.lat, pt.lng);
         const rx = off.east * cosA + off.north * sinA;
         const ry = -off.east * sinA + off.north * cosA;
-        return offsetMetersToLatLng(c.lat, c.lng, rx, ry);
+        return offsetMetersToLatLng(center.lat, center.lng, rx, ry);
       });
     }
 
@@ -1318,12 +1284,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
     function createDefaultProject() {
       return {
-        id: 'prop-guadalupe',
-        nombre: 'Proyecto Guadalupe – Laguna Huaypo',
-        title: 'Proyecto Guadalupe – Laguna Huaypo',
-        location: 'Chinchero / Huaypo, Cusco',
-        price: 'Desde $30,200 USD',
-        area: '836 m² Matriz (7 Lotes)',
+        id: 'proj-fortunato',
+        nombre: 'Proyecto Fortunato',
         lat: DEFAULT_LAT,
         lng: DEFAULT_LNG,
         plano_url: DEFAULT_PLAN_URL,
@@ -1340,155 +1302,36 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       };
     }
 
-    function createDefaultProjectsList() {
-      return [
-        createDefaultProject(),
-        {
-          id: 'prop-3',
-          nombre: 'Finca El Manantial – Urubamba',
-          title: 'Finca El Manantial – Urubamba',
-          location: 'Urubamba, Valle Sagrado',
-          price: '$135,000 USD',
-          area: '2,500 m²',
-          lat: -13.3039,
-          lng: -72.1158,
-          plano_url: '',
-          lotes: [],
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: 'prop-1',
-          nombre: 'Refugio Bosque Los Pinos – Oxapampa',
-          title: 'Refugio Bosque Los Pinos – Oxapampa',
-          location: 'Oxapampa, Pasco',
-          price: '$85,000 USD',
-          area: '1,200 m²',
-          lat: -10.5775,
-          lng: -75.4017,
-          plano_url: '',
-          lotes: [],
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: 'prop-2',
-          nombre: 'Villa Cordillera Alta – Cieneguilla',
-          title: 'Villa Cordillera Alta – Cieneguilla',
-          location: 'Cieneguilla, Lima',
-          price: '$240,000 USD',
-          area: '240 m²',
-          lat: -12.0911,
-          lng: -76.7725,
-          plano_url: '',
-          lotes: [],
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: 'prop-4',
-          nombre: 'Lote Mirador del Valle – Lunahuaná',
-          title: 'Lote Mirador del Valle – Lunahuaná',
-          location: 'Lunahuaná, Cañete',
-          price: '$62,000 USD',
-          area: '850 m²',
-          lat: -12.9608,
-          lng: -76.1361,
-          plano_url: '',
-          lotes: [],
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: 'prop-5',
-          nombre: 'Cabaña Vista Ocaso – Pozuzo',
-          title: 'Cabaña Vista Ocaso – Pozuzo',
-          location: 'Pozuzo, Pasco',
-          price: '$195,000 USD',
-          area: '1,800 m²',
-          lat: -10.0667,
-          lng: -75.5500,
-          plano_url: '',
-          lotes: [],
-          updated_at: new Date().toISOString()
-        }
-      ];
-    }
-
     function isExcludedProject(p) {
       if (!p) return true;
-      const id = String(p.id || '').toLowerCase().trim();
-      const nombre = String(p.nombre || p.title || p.titulo || '').toLowerCase().trim();
-      return id.includes('maluma') || nombre.includes('maluma') || 
-             id.includes('carrusel') || nombre.includes('carrusel') ||
-             id.includes('nube') || nombre.includes('nube') ||
-             nombre.includes('(0 lotes)') || nombre === '0 lotes';
+      const id = String(p.id || '').toLowerCase();
+      const nombre = String(p.nombre || p.title || p.titulo || '').toLowerCase();
+      return id.includes('maluma') || nombre.includes('maluma') || id.includes('carrusel') || nombre.includes('carrusel');
     }
 
-    // Purga y migración limpia de almacenamiento local
-    (function purgeResidualStorage() {
+    // Purga inmediata de cualquier registro residual de Maluma en localStorage del navegador
+    (function purgeMalumaResidualStorage() {
       try {
-        ['agencia_nova_proyectos_v10', 'agencia_nova_proyectos_v11', 'agencia_nova_proyectos_v12', 'agencia_nova_proyectos_v9', 'agencia_nova_proyectos_v8', 'nova_map_projects'].forEach(k => {
-          localStorage.removeItem(k);
-        });
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('nova_map_projects');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            const cleaned = parsed.filter(p => !isExcludedProject(p));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
+            localStorage.setItem('nova_map_projects', JSON.stringify(cleaned));
+          }
+        }
       } catch(e) {}
     })();
-
-    function depurarYLimpiarDatosUI() {
-      // 1. Filtrar registros inválidos o excluidos
-      projects = (projects || []).filter(p => !isExcludedProject(p));
-
-      // 2. Si no hay proyectos o falta el lote matriz principal, insertar catálogo inicial
-      const defaults = createDefaultProjectsList();
-      const hasMain = projects.some(p => p.id === 'prop-guadalupe' || p.id === 'proj-fortunato');
-      if (!hasMain) {
-        projects.unshift(createDefaultProject());
-      }
-
-      // 3. Garantizar integridad de coordenadas y lotes
-      projects.forEach(p => {
-        if (!p.lat || isNaN(p.lat)) p.lat = DEFAULT_LAT;
-        if (!p.lng || isNaN(p.lng)) p.lng = DEFAULT_LNG;
-        if (!Array.isArray(p.lotes)) p.lotes = [];
-        if ((p.id === 'prop-guadalupe' || p.id === 'proj-fortunato') && !p.lotes.length) {
-          p.lotes = buildFortunatoLots(p.lat, p.lng);
-        }
-      });
-
-      // 4. Guardar datos depurados
-      saveProjectsLocal();
-
-      // 5. Purga preventiva remota en Supabase
-      try {
-        const client = getSupabaseClient();
-        if (client) {
-          client.from('nova_propiedades').delete().ilike('title', '%maluma%').then(() => {}).catch(() => {});
-          client.from('nova_propiedades').delete().ilike('nombre', '%maluma%').then(() => {}).catch(() => {});
-          client.from('nova_propiedades').delete().ilike('title', '%carrusel%').then(() => {}).catch(() => {});
-          client.from('nova_propiedades').delete().ilike('nombre', '%carrusel%').then(() => {}).catch(() => {});
-          client.from('nova_propiedades').delete().ilike('title', '%nube%').then(() => {}).catch(() => {});
-        }
-      } catch(e) {}
-
-      currentProject = projects[0];
-      selectedLotId = null;
-      renderAllProjectsAndLots();
-      syncProjectFormUI();
-      syncLotDataForm();
-      renderProjectsSidebar();
-      flyToProject(currentProject);
-      showToast('✨ Depuración completada: proyectos limpios y datos sincronizados.');
-    }
 
     function loadProjectsLocal() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length >= 3) {
+          if (Array.isArray(parsed) && parsed.length > 0) {
             projects = parsed.filter(p => !isExcludedProject(p));
-            // Asegurar que Proyecto Guadalupe tenga los 7 lotes válidos
-            const mainProj = projects.find(p => p.id === 'prop-guadalupe' || p.id === 'proj-fortunato');
-            if (mainProj && (!mainProj.lotes || !mainProj.lotes.length)) {
-              mainProj.lotes = buildFortunatoLots(Number(mainProj.lat) || DEFAULT_LAT, Number(mainProj.lng) || DEFAULT_LNG);
-            }
-            if (projects.length >= 3 && projects[0] && Number(projects[0].lat)) {
+            if (projects.length > 0) {
               currentProject = projects[0];
               saveProjectsLocal();
               return;
@@ -1498,7 +1341,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       } catch (err) {
         console.warn('localStorage no disponible:', err);
       }
-      projects = createDefaultProjectsList();
+      projects = [createDefaultProject()];
       currentProject = projects[0];
       saveProjectsLocal();
     }
@@ -1529,14 +1372,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     // =========================================================================
     function initMap2D() {
       try {
-        const initLat = Number(currentProject?.lat) || DEFAULT_LAT;
-        const initLng = Number(currentProject?.lng) || DEFAULT_LNG;
-
         map2d = L.map('map2d', {
-          center: [initLat, initLng],
-          zoom: 18,
+          center: [currentProject.lat, currentProject.lng],
+          zoom: 19,
           minZoom: 4,
-          maxZoom: 21,
+          maxZoom: 22,
           zoomControl: false,
           attributionControl: false,
           preferCanvas: false
@@ -1552,25 +1392,30 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         map2d.getPane('calcoPane').style.zIndex = 350;
         map2d.getPane('calcoPane').style.pointerEvents = 'none';
 
-        // 1. Capa Satélite Oficial Esri World Imagery (HD, 100% libre, sin 403 ni bloqueo en Vercel)
-        const baseEsriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-          maxZoom: 21,
-          maxNativeZoom: 18,
-          attribution: 'Tiles &copy; Esri World Imagery'
-        }).addTo(map2d);
+        // Respaldo automático por tesela hacia Esri World Imagery ante cualquier error
+        const attachEsriFallback = (layer) => {
+          layer.on('tileerror', (evt) => {
+            const tile = evt.tile;
+            const coords = evt.coords;
+            if (!tile || tile.dataset.esriFallbackDone) return;
+            tile.dataset.esriFallbackDone = '1';
+            const z = Math.min(coords.z, 18);
+            const scale = Math.pow(2, coords.z - z);
+            const x = Math.floor(coords.x / scale);
+            const y = Math.floor(coords.y / scale);
+            tile.src = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
+          });
+        };
 
-        // 2. Capa Google Earth Satélite superpuesta
+        // Capa base principal Google Earth Satélite (siempre activa en Satélite e Híbrido)
         googleSatLayer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s&hl=es&x={x}&y={y}&z={z}', {
           subdomains: ['0', '1', '2', '3'],
-          maxZoom: 21,
-          maxNativeZoom: 18
+          maxZoom: 22,
+          maxNativeZoom: 20,
+          keepBuffer: 6,
+          updateWhenIdle: false
         }).addTo(map2d);
-
-        googleSatLayer.on('tileerror', (evt) => {
-          if (evt.tile) {
-            evt.tile.style.display = 'none';
-          }
-        });
+        attachEsriFallback(googleSatLayer);
 
         // Capa de SOLO carreteras principales (sin calles locales) para Modo Híbrido
         roadsOverlayLayer = L.layerGroup();
@@ -1631,18 +1476,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
         // Forzar cálculo de tamaño inmediato y en resize
         map2d.invalidateSize();
-        setTimeout(() => { if (map2d) map2d.invalidateSize(); }, 100);
-        setTimeout(() => { if (map2d) map2d.invalidateSize(); }, 350);
-        setTimeout(() => { if (map2d) map2d.invalidateSize(); }, 800);
+        setTimeout(() => { if (map2d) map2d.invalidateSize(); }, 250);
         window.addEventListener('resize', () => {
           if (map2d && viewMode === '2d') map2d.invalidateSize();
         });
 
         renderAllProjectsAndLots();
         syncProjectFormUI();
-        if (currentProject) {
-          flyToProject(currentProject);
-        }
+        startAutoPilot();
       } catch (err) {
         console.error('Error iniciando mapa 2D:', err);
         showToast('Error al inicializar el mapa 2D.');
@@ -1755,17 +1596,16 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const isCurrent = currentProject && proj.id === currentProject.id;
 
         // 1. Pin flotante del proyecto
-        let pinLat = Number(proj.lat) || DEFAULT_LAT;
-        let pinLng = Number(proj.lng) || DEFAULT_LNG;
+        let pinLat = proj.lat;
+        let pinLng = proj.lng;
         if (Array.isArray(proj.lotes) && proj.lotes.length > 0) {
           let maxLat = -Infinity, sumLng = 0, cnt = 0;
           proj.lotes.forEach(l => (l.coords || []).forEach(c => {
-            const pt = getCoordLatLng(c);
-            if (pt.lat > maxLat) maxLat = pt.lat;
-            sumLng += pt.lng;
+            if (c.lat > maxLat) maxLat = c.lat;
+            sumLng += c.lng;
             cnt++;
           }));
-          if (cnt > 0 && isFinite(maxLat) && isFinite(sumLng)) {
+          if (cnt > 0) {
             pinLat = maxLat + 0.00012;
             pinLng = sumLng / cnt;
           }
@@ -1778,7 +1618,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             <div class="project-pin-wrap ${isCurrent ? 'is-active' : ''}">
               <div class="project-pin-pill">
                 <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span>${escapeHtml(proj.nombre || proj.title || 'Proyecto')}</span>
+                <span>${escapeHtml(proj.nombre)}</span>
                 <span class="text-[9.5px] font-semibold text-sky-300">${dispCount} disp.</span>
               </div>
               <div class="project-pin-stem"></div>
@@ -1798,15 +1638,12 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         // 2. Polígonos de cada lote (borde blanco constante 1.8px)
         (proj.lotes || []).forEach(lot => {
           if (!lot.coords || lot.coords.length < 3) return;
-          const validCoords = lot.coords.map(getCoordLatLng);
-          if (validCoords.length < 3) return;
-
           const isSelected = isCurrent && lot.id === selectedLotId;
           const matchesFilter = (filterStatus === 'ALL' || lot.status === filterStatus);
           const style = getStatusStyle(lot.status);
-          const centroid = getPolygonCentroid(validCoords);
+          const centroid = getPolygonCentroid(lot.coords);
 
-          const latLngs = validCoords.map(c => [c.lat, c.lng]);
+          const latLngs = lot.coords.map(c => [c.lat, c.lng]);
 
           const poly = L.polygon(latLngs, {
             color: '#ffffff',
@@ -1855,26 +1692,25 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           });
 
           labelIcon.options.iconAnchor = [0, 0];
-          const safeCentroidLat = isFinite(centroid.lat) ? centroid.lat : pinLat;
-          const safeCentroidLng = isFinite(centroid.lng) ? centroid.lng : pinLng;
-          const lblMarker = L.marker([safeCentroidLat, safeCentroidLng], {
+          const lblMarker = L.marker([centroid.lat, centroid.lng], {
             icon: labelIcon,
             interactive: false
           });
-          lblMarker._lotCoords = validCoords;
-          lblMarker._lotCentroid = { lat: safeCentroidLat, lng: safeCentroidLng };
+          lblMarker._lotCoords = lot.coords;
+          lblMarker._lotCentroid = centroid;
           labelsLayerGroup.addLayer(lblMarker);
         });
       });
 
-      // Renderizar líneas y delimitaciones del proyecto
+      // Renderizar líneas y delimitaciones del proyecto (Multivértice)
       if (customLinesLayerGroup) {
         customLinesLayerGroup.clearLayers();
         (currentProject?.custom_lines || []).forEach(line => {
-          const latlngs = getLineLatLngs(line);
-          if (latlngs.length < 2) return;
+          const pts = getLineLatLngPoints(line);
+          if (pts.length < 2) return;
           const isSel = line.id === selectedCustomLineId;
-          const pline = L.polyline(latlngs, {
+          const latLngs = pts.map(p => [p.lat, p.lng]);
+          const pline = L.polyline(latLngs, {
             color: isSel ? '#f59e0b' : (line.color || '#38bdf8'),
             weight: (line.width || 2.5) + (isSel ? 2 : 0),
             dashArray: line.dash === 'dashed' ? '6, 6' : undefined,
@@ -1938,9 +1774,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           return;
         }
 
-        const c = getCoordLatLng(centroid);
-        const cPt = map2d.latLngToLayerPoint([c.lat, c.lng]);
-        const pts = coords.map(getCoordLatLng).map(c => map2d.latLngToLayerPoint([c.lat, c.lng]));
+        const cPt = map2d.latLngToLayerPoint([centroid.lat, centroid.lng]);
+        const pts = coords.map(c => map2d.latLngToLayerPoint([c.lat, c.lng]));
 
         // Radio inscrito mínimo desde el centroide hasta cualquier borde del polígono
         let minEdgeDist = Infinity;
@@ -1975,11 +1810,12 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
     function toggleLotSelection(lotId) {
       if (autoPilotActive) stopAutoPilot();
+      if (isAllPolygonsSelected) {
+        isAllPolygonsSelected = false;
+        updateSelectAllPolygonsUI();
+      }
       selectedCustomTextId = null;
       selectedCustomLineId = null;
-      isAllPolygonsSelected = false;
-      const banner = document.getElementById('allPolygonsActiveBanner');
-      if (banner) banner.classList.add('hidden');
       if (selectedLotId === lotId && !isEditorOpen) {
         selectedLotId = null;
       } else {
@@ -1988,7 +1824,6 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       }
       renderAllProjectsAndLots();
       syncLotDataForm();
-      rebuildEditorHandles();
     }
 
     // =========================================================================
@@ -2126,16 +1961,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       const res = lots.filter(l => l.status === 'Reservado').length;
       const vend = lots.filter(l => l.status === 'Vendido').length;
 
-      const pName = document.getElementById('hudProjectName');
-      if (pName) pName.textContent = currentProject ? (currentProject.nombre || currentProject.title || 'Proyecto') : 'Sin Proyecto';
-      const cAll = document.getElementById('cntAll');
-      if (cAll) cAll.textContent = lots.length;
-      const cDisp = document.getElementById('cntDisp');
-      if (cDisp) cDisp.textContent = disp;
-      const cRes = document.getElementById('cntRes');
-      if (cRes) cRes.textContent = res;
-      const cVend = document.getElementById('cntVend');
-      if (cVend) cVend.textContent = vend;
+      document.getElementById('hudProjectName').textContent = currentProject ? currentProject.nombre : 'Sin Proyecto';
+      document.getElementById('cntAll').textContent = lots.length;
+      document.getElementById('cntDisp').textContent = disp;
+      document.getElementById('cntRes').textContent = res;
+      document.getElementById('cntVend').textContent = vend;
     }
 
     function setFilter(status) {
@@ -2335,10 +2165,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     // 8. NAVEGACIÓN ENTRE PROYECTOS Y ENCUADRE TOTAL
     // =========================================================================
     function switchProject(projectId, shouldFly) {
-      const found = projects.find(p => p.id === projectId || 
-        (projectId === 'prop-guadalupe' && p.id === 'proj-fortunato') ||
-        (projectId === 'proj-fortunato' && p.id === 'prop-guadalupe') ||
-        (p.nombre && p.nombre.toLowerCase().includes(String(projectId).toLowerCase())));
+      const found = projects.find(p => p.id === projectId);
       if (!found) return;
       currentProject = found;
       selectedLotId = null;
@@ -2351,27 +2178,18 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     function flyToProject(proj) {
       if (!proj) return;
       stopAutoPilot();
-      const pLat = Number(proj.lat) || DEFAULT_LAT;
-      const pLng = Number(proj.lng) || DEFAULT_LNG;
       if (viewMode === '3d') {
-        earth3D.flyToLatLng(pLat, pLng, 210);
+        earth3D.flyToLatLng(proj.lat, proj.lng, 210);
         return;
       }
       if (!map2d) return;
       const pts = [];
-      (proj.lotes || []).forEach(l => (l.coords || []).forEach(c => {
-        const pt = getCoordLatLng(c);
-        if (isFinite(pt.lat) && isFinite(pt.lng)) pts.push([pt.lat, pt.lng]);
-      }));
+      (proj.lotes || []).forEach(l => (l.coords || []).forEach(c => pts.push([c.lat, c.lng])));
       isProgrammaticMove = true;
       if (pts.length >= 3) {
-        try {
-          map2d.flyToBounds(L.latLngBounds(pts).pad(0.32), { maxZoom: 18, duration: 0.9 });
-        } catch(e) {
-          map2d.flyTo([pLat, pLng], 18, { duration: 0.9 });
-        }
+        map2d.flyToBounds(L.latLngBounds(pts).pad(0.32), { maxZoom: 19, duration: 0.9 });
       } else {
-        map2d.flyTo([pLat, pLng], 18, { duration: 0.9 });
+        map2d.flyTo([proj.lat, proj.lng], 19, { duration: 0.9 });
       }
       setTimeout(() => { isProgrammaticMove = false; }, 1000);
     }
@@ -2380,13 +2198,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       stopAutoPilot();
       const allPts = [];
       projects.forEach(p => {
-        const pLat = Number(p.lat) || DEFAULT_LAT;
-        const pLng = Number(p.lng) || DEFAULT_LNG;
-        if (isFinite(pLat) && isFinite(pLng)) allPts.push([pLat, pLng]);
-        (p.lotes || []).forEach(l => (l.coords || []).forEach(c => {
-          const pt = getCoordLatLng(c);
-          if (isFinite(pt.lat) && isFinite(pt.lng)) allPts.push([pt.lat, pt.lng]);
-        }));
+        allPts.push([p.lat, p.lng]);
+        (p.lotes || []).forEach(l => (l.coords || []).forEach(c => allPts.push([c.lat, c.lng])));
       });
       if (!allPts.length) return;
 
@@ -2579,6 +2392,20 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       showToast(isDrawerExpanded ? 'Cuadro de editor ampliado.' : 'Cuadro de editor en tamaño estándar.');
     }
 
+    let drawerPlanZoom = 1;
+
+    function zoomDrawerPlanPreview(delta) {
+      drawerPlanZoom = Math.max(0.5, Math.min(4, drawerPlanZoom + delta));
+      const img = document.getElementById('imgDrawerPlanPreview');
+      if (img) img.style.transform = `scale(${drawerPlanZoom.toFixed(2)})`;
+    }
+
+    function resetDrawerPlanPreviewZoom() {
+      drawerPlanZoom = 1;
+      const img = document.getElementById('imgDrawerPlanPreview');
+      if (img) img.style.transform = 'scale(1)';
+    }
+
     function updatePlanPreviewUI() {
       const imgEl = document.getElementById('imgDrawerPlanPreview');
       const placeholder = document.getElementById('imgDrawerPlanPlaceholder');
@@ -2610,51 +2437,6 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           badge.className = 'text-[9.5px] font-bold text-slate-400 px-2 py-0.5 rounded-full bg-slate-800 border border-white/10';
         }
         if (dimEl) dimEl.textContent = 'Resolución: -';
-      }
-    }
-
-    function handleProjectNameChange(val) {
-      if (!currentProject) return;
-      currentProject.nombre = val.trim() || 'Proyecto sin nombre';
-      const sel = document.getElementById('editorProjectSelect');
-      if (sel) {
-        const opt = sel.querySelector(`option[value="${currentProject.id}"]`);
-        if (opt) opt.textContent = `${currentProject.nombre} (${(currentProject.lotes || []).length} lotes)`;
-      }
-      renderProjectsSidebar();
-    }
-
-    function handleProjectGpsChange(val) {
-      if (!currentProject || !val) return;
-      const parts = val.split(',').map(s => parseFloat(s.trim()));
-      if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-        currentProject.lat = parts[0];
-        currentProject.lng = parts[1];
-        if (currentProject.calco_config) {
-          currentProject.calco_config.lat = parts[0];
-          currentProject.calco_config.lng = parts[1];
-        }
-        if (map2d) map2d.panTo([parts[0], parts[1]], { animate: true, duration: 0.8 });
-        renderCalcoOverlay();
-        rebuildEditorHandles();
-        saveProjectsLocal();
-      }
-    }
-
-    let isPlanPreviewExpanded = false;
-    function togglePlanPreviewExpanded() {
-      const vp = document.getElementById('drawerPlanPreviewViewport');
-      const btnTxt = document.getElementById('lblBtnPlanZoom');
-      if (!vp) return;
-      isPlanPreviewExpanded = !isPlanPreviewExpanded;
-      if (isPlanPreviewExpanded) {
-        vp.classList.remove('h-80', 'sm:h-96');
-        vp.classList.add('h-[480px]', 'sm:h-[620px]');
-        if (btnTxt) btnTxt.textContent = 'Reducir';
-      } else {
-        vp.classList.remove('h-[480px]', 'sm:h-[620px]');
-        vp.classList.add('h-80', 'sm:h-96');
-        if (btnTxt) btnTxt.textContent = 'Expandir';
       }
     }
 
@@ -2695,48 +2477,6 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       reader.readAsDataURL(file);
     }
 
-    let isAllPolygonsSelected = false;
-
-    function selectAllPolygons() {
-      if (!currentProject || !currentProject.lotes || currentProject.lotes.length === 0) {
-        showToast('No hay polígonos en el proyecto para seleccionar.');
-        return;
-      }
-      isAllPolygonsSelected = true;
-      selectedLotId = null;
-
-      const badge = document.getElementById('editingLotBadge');
-      if (badge) {
-        badge.textContent = `Todos (${currentProject.lotes.length} lotes)`;
-        badge.className = 'text-[10px] font-black px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 border border-amber-300 shadow';
-      }
-      const hint = document.getElementById('noLotSelectedHint');
-      if (hint) hint.classList.add('hidden');
-      const form = document.getElementById('lotDataForm');
-      if (form) form.classList.add('hidden');
-      const banner = document.getElementById('allPolygonsActiveBanner');
-      if (banner) banner.classList.remove('hidden');
-
-      rebuildEditorHandles();
-      renderAllProjectsAndLots();
-      showToast(`🌐 Toda la lotización (${currentProject.lotes.length} lotes) activa: usa los nodos en el mapa para mover, rotar o escalar.`);
-    }
-
-    function deselectAllPolygons() {
-      isAllPolygonsSelected = false;
-      const badge = document.getElementById('editingLotBadge');
-      if (badge) {
-        badge.textContent = 'Ninguno';
-        badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30';
-      }
-      const hint = document.getElementById('noLotSelectedHint');
-      if (hint) hint.classList.remove('hidden');
-      const banner = document.getElementById('allPolygonsActiveBanner');
-      if (banner) banner.classList.add('hidden');
-      rebuildEditorHandles();
-      renderAllProjectsAndLots();
-    }
-
     function detectLotsDirectlyFromDrawer() {
       if (!currentProject) {
         showToast('Selecciona un proyecto primero.');
@@ -2752,7 +2492,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       const umbral = Number(document.getElementById('rngThresholdDrawer')?.value || 185);
       const minAreaPx = Number(document.getElementById('rngMinAreaDrawer')?.value || 350);
 
-      showToast('⚡ Procesando plano y detectando polígonos...');
+      showToast('⚡ Procesando plano y detectando polígonos con máxima precisión...');
 
       const processImg = (img) => {
         try {
@@ -2776,16 +2516,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             simplificacion: 2.2
           });
 
-          // Respaldo multi-umbral si el umbral actual no detectó figuras
-          if (!rawPolys || rawPolys.length === 0) {
-            const fallbacks = [Math.max(60, umbral - 30), Math.min(235, umbral + 30), 160, 210, 135];
-            for (let fU of fallbacks) {
-              const testPolys = detectFn(imgData, { umbral: fU, minAreaPx, grosorBorde: 0, simplificacion: 2.2 });
-              if (testPolys && testPolys.length > 0) {
-                rawPolys = testPolys;
-                break;
-              }
-            }
+          // Si detectó muy pocos o ninguno, intentar con auto-ajuste de umbral
+          if ((!rawPolys || rawPolys.length < 2) && umbral !== 160) {
+            rawPolys = detectFn(imgData, {
+              umbral: 160,
+              minAreaPx: Math.max(120, minAreaPx * 0.7),
+              grosorBorde: 0,
+              simplificacion: 2.0
+            });
           }
 
           if (!rawPolys || !rawPolys.length) {
@@ -2804,40 +2542,64 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           const cosA = Math.cos(rad);
           const sinA = Math.sin(rad);
 
-          // Ordenar polígonos de arriba a abajo y de izquierda a derecha
-          rawPolys.sort((a, b) => {
-            let say = 0, sax = 0, sby = 0, sbx = 0;
-            a.forEach(([x, y]) => { sax += x; say += y; });
-            b.forEach(([x, y]) => { sbx += x; sby += y; });
-            const cay = say / a.length, cax = sax / a.length;
-            const cby = sby / b.length, cbx = sbx / b.length;
-            if (Math.abs(cay - cby) > (imgH * 0.04)) return cay - cby;
-            return cax - cbx;
+          // 1. Calcular centroide en píxeles y ordenar geométricamente (filas de arriba a abajo y luego de izquierda a derecha)
+          const polysWithCentroid = rawPolys.map((pts, originalIdx) => {
+            let sumX = 0, sumY = 0;
+            pts.forEach(([x, y]) => { sumX += x; sumY += y; });
+            const cx = sumX / pts.length;
+            const cy = sumY / pts.length;
+            return { pts, cx, cy, originalIdx };
           });
 
-          const priceM2 = currentProject.price_m2 || 160;
-          const nuevosLotes = rawPolys.map((pts, idx) => {
-            const coords = pts.map(([px, py]) => {
+          // Estimar altura promedio de lote para agrupación en manzanas/filas lógicas
+          let avgH = 40;
+          if (polysWithCentroid.length > 0) {
+            let totalH = 0;
+            polysWithCentroid.forEach(p => {
+              let minY = Infinity, maxY = -Infinity;
+              p.pts.forEach(([_, y]) => { if (y < minY) minY = y; if (y > maxY) maxY = y; });
+              totalH += (maxY - minY);
+            });
+            avgH = Math.max(18, totalH / polysWithCentroid.length);
+          }
+
+          const rowTolerance = avgH * 0.50;
+          polysWithCentroid.sort((a, b) => {
+            const rowDiff = a.cy - b.cy;
+            if (Math.abs(rowDiff) > rowTolerance) {
+              return rowDiff; // Arriba hacia abajo
+            }
+            return a.cx - b.cx; // Izquierda hacia derecha
+          });
+
+          // 2. Construir los lotes con sus campos interiores completamente calculados y poblados
+          const nuevosLotes = polysWithCentroid.map((item, idx) => {
+            const coords = item.pts.map(([px, py]) => {
               const east = (px - imgW / 2) * mPerPx;
               const north = -(py - imgH / 2) * mPerPx;
               const rx = east * cosA - north * sinA;
               const ry = east * sinA + north * cosA;
               return offsetMetersToLatLng(refLat, refLng, rx, ry);
             });
-            const areaM2 = Math.round(calculateCoordsAreaM2(coords)) || 140;
-            const code = `L-${String(idx + 1).padStart(2, '0')}`;
-            const price = Math.round(areaM2 * priceM2);
+
+            // Área geométrica exacta en m2
+            const areaM2 = Math.round(calculateCoordsAreaM2(coords) * 100) / 100;
+            const finalArea = areaM2 > 10 ? areaM2 : 120.00;
+            const code = `Lote ${idx + 1}`;
+            // Precio en soles proporcional al metraje estimado
+            const priceVal = Math.round(finalArea * 180);
+
             return {
               id: `lot-${Date.now()}-${idx + 1}`,
               code,
-              area: areaM2,
-              price,
+              area: finalArea,
+              price: priceVal,
               status: 'Disponible',
               coords
             };
           });
 
-          // Unir automáticamente los bordes contiguos
+          // Unir automáticamente los bordes contiguos para que no haya huecos
           snapPolygonCoords(nuevosLotes, 1.8);
 
           currentProject.lotes = nuevosLotes;
@@ -2845,13 +2607,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           saveProjectsLocal();
           renderAllProjectsAndLots();
           renderEditorLotsList();
-
-          // Seleccionar automáticamente el primer lote para poblar el formulario de datos interiores
-          if (nuevosLotes.length > 0) {
-            selectLotFromEditor(nuevosLotes[0].id);
-          }
           switchEditorTab(2);
-          showToast(`⚡ ¡${nuevosLotes.length} polígonos detectados, ordenados y cargados en los campos!`);
+
+          // Seleccionar de inmediato el primer lote para poblar el formulario de datos interiores
+          if (nuevosLotes.length > 0) {
+            selectLot(nuevosLotes[0].id);
+          }
+
+          showToast(`⚡ ¡${nuevosLotes.length} polígonos detectados, organizados en orden y con campos interiores listos!`);
           saveToSupabase();
         } catch (err) {
           console.error(err);
@@ -2970,54 +2733,68 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       showToast('Datos del lote guardados correctamente.');
     }
 
-    function applyProjectFormAndFly() {
+    function handleProjectInputChange() {
       if (!currentProject) return;
-      const nombre = document.getElementById('inpProjectName').value.trim();
-      const planoUrlEl = document.getElementById('inpPlanUrl'); const planoUrl = planoUrlEl ? planoUrlEl.value.trim() : (currentProject.plano_url || '');
-      const gpsRaw = document.getElementById('inpGpsLocation').value.trim();
+      const nombre = document.getElementById('inpProjectName')?.value.trim();
+      const planoUrlEl = document.getElementById('inpPlanUrl');
+      const planoUrl = planoUrlEl ? planoUrlEl.value.trim() : (currentProject.plano_url || '');
+      const gpsRaw = document.getElementById('inpGpsLocation')?.value.trim() || '';
 
       const parts = gpsRaw.split(/[\s,;]+/).map(Number).filter(n => !isNaN(n));
-      if (parts.length < 2 || Math.abs(parts[0]) > 90 || Math.abs(parts[1]) > 180) {
-        showToast('Ingresa una UBICACION GPS válida (Ej: -13.421719, -72.089713).');
-        return;
+      let newLat = currentProject.lat;
+      let newLng = currentProject.lng;
+      let hasValidGps = false;
+
+      if (parts.length >= 2 && Math.abs(parts[0]) <= 90 && Math.abs(parts[1]) <= 180) {
+        newLat = parts[0];
+        newLng = parts[1];
+        hasValidGps = true;
       }
 
-      const newLat = parts[0];
-      const newLng = parts[1];
-      const dLat = newLat - currentProject.lat;
-      const dLng = newLng - currentProject.lng;
+      const dLat = hasValidGps ? (newLat - (currentProject.lat || newLat)) : 0;
+      const dLng = hasValidGps ? (newLng - (currentProject.lng || newLng)) : 0;
 
-      if (nombre) currentProject.nombre = nombre;
+      if (nombre) {
+        currentProject.name = nombre;
+        currentProject.nombre = nombre;
+      }
       currentProject.plano_url = planoUrl;
-      currentProject.lat = newLat;
-      currentProject.lng = newLng;
+      if (hasValidGps) {
+        currentProject.lat = newLat;
+        currentProject.lng = newLng;
+        currentProject.center = [newLat, newLng];
 
-      if (!currentProject.calco_config) {
-        currentProject.calco_config = { lat: newLat, lng: newLng, widthM: 88, heightM: 58, rotationDeg: 0, opacity: 0.65 };
-      } else {
-        currentProject.calco_config.lat = newLat;
-        currentProject.calco_config.lng = newLng;
-      }
+        if (!currentProject.calco_config) {
+          currentProject.calco_config = { lat: newLat, lng: newLng, widthM: 88, heightM: 58, rotationDeg: 0, opacity: 0.65 };
+        } else {
+          currentProject.calco_config.lat = newLat;
+          currentProject.calco_config.lng = newLng;
+        }
 
-      if ((Math.abs(dLat) > 1e-7 || Math.abs(dLng) > 1e-7)) {
-        if (Array.isArray(currentProject.lotes)) {
-          currentProject.lotes.forEach(l => {
-            l.coords = (l.coords || []).map(pt => ({ lat: pt.lat + dLat, lng: pt.lng + dLng }));
-          });
-        }
-        if (Array.isArray(currentProject.custom_texts)) {
-          currentProject.custom_texts.forEach(t => {
-            if (typeof t.lat === 'number') t.lat += dLat;
-            if (typeof t.lng === 'number') t.lng += dLng;
-          });
-        }
-        if (Array.isArray(currentProject.custom_lines)) {
-          currentProject.custom_lines.forEach(l => {
-            if (typeof l.lat1 === 'number') l.lat1 += dLat;
-            if (typeof l.lat2 === 'number') l.lat2 += dLat;
-            if (typeof l.lng1 === 'number') l.lng1 += dLng;
-            if (typeof l.lng2 === 'number') l.lng2 += dLng;
-          });
+        if ((Math.abs(dLat) > 1e-7 || Math.abs(dLng) > 1e-7)) {
+          if (Array.isArray(currentProject.lotes)) {
+            currentProject.lotes.forEach(l => {
+              l.coords = (l.coords || []).map(pt => ({ lat: pt.lat + dLat, lng: pt.lng + dLng }));
+            });
+          }
+          if (Array.isArray(currentProject.custom_texts)) {
+            currentProject.custom_texts.forEach(t => {
+              if (typeof t.lat === 'number') t.lat += dLat;
+              if (typeof t.lng === 'number') t.lng += dLng;
+            });
+          }
+          if (Array.isArray(currentProject.custom_lines)) {
+            currentProject.custom_lines.forEach(l => {
+              if (Array.isArray(l.points)) {
+                l.points.forEach(p => { p.lat += dLat; p.lng += dLng; });
+              }
+              if (typeof l.lat1 === 'number') l.lat1 += dLat;
+              if (typeof l.lat2 === 'number') l.lat2 += dLat;
+              if (typeof l.lng1 === 'number') l.lng1 += dLng;
+              if (typeof l.lng2 === 'number') l.lng2 += dLng;
+            });
+          }
+          if (map2d) map2d.panTo([newLat, newLng]);
         }
       }
 
@@ -3025,16 +2802,13 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       saveProjectsLocal();
       syncProjectFormUI();
       updatePlanPreviewUI();
-      if (currentProject.plano_url) {
-        showCalco = true;
-        const chk = document.getElementById('chkShowCalco');
-        if (chk) chk.checked = true;
-      }
+      populateProjectSelect();
       renderAllProjectsAndLots();
-      if (isEditorOpen && showCalco) renderCalcoOverlay();
-      flyToProject(currentProject);
-      saveToSupabase();
-      showToast('Proyecto y coordenadas actualizados. Cámara centrada en GPS.');
+    }
+
+    function applyProjectFormAndFly() {
+      handleProjectInputChange();
+      if (currentProject) flyToProject(currentProject);
     }
 
     function integrarPoligonosDesdeModulo(payload) {
@@ -3172,6 +2946,28 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       `).join('');
     }
 
+    function getLineLatLngPoints(line) {
+      if (!line) return [];
+      if (Array.isArray(line.points) && line.points.length >= 2) {
+        return line.points.map(p => ({ lat: Number(p.lat), lng: Number(p.lng) }));
+      }
+      if (typeof line.lat1 === 'number' && typeof line.lat2 === 'number') {
+        return [{ lat: line.lat1, lng: line.lng1 }, { lat: line.lat2, lng: line.lng2 }];
+      }
+      return [];
+    }
+
+    function syncLineBoundsAndProps(line) {
+      const pts = getLineLatLngPoints(line);
+      if (pts.length >= 2) {
+        line.points = pts;
+        line.lat1 = pts[0].lat;
+        line.lng1 = pts[0].lng;
+        line.lat2 = pts[pts.length - 1].lat;
+        line.lng2 = pts[pts.length - 1].lng;
+      }
+    }
+
     function renderEditorLinesList() {
       const container = document.getElementById('editorLinesList');
       const badge = document.getElementById('editorLineCountBadge');
@@ -3185,15 +2981,26 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         return;
       }
 
-      container.innerHTML = currentProject.custom_lines.map((l, idx) => `
-        <div onclick="selectCustomLine('${l.id}')" class="p-1.5 rounded-lg border cursor-pointer flex items-center justify-between gap-1 transition ${l.id === selectedCustomLineId ? 'bg-sky-500/20 border-sky-400 text-sky-200' : 'bg-slate-900/60 border-white/5 text-slate-300 hover:bg-white/5'}">
-          <div class="truncate flex items-center gap-1.5">
-            <span class="w-2.5 h-0.5 inline-block" style="background:${l.color || '#38bdf8'}"></span>
-            <span class="text-xs">Línea ${idx + 1} (${l.dash || 'continua'})</span>
+      container.innerHTML = currentProject.custom_lines.map((l, idx) => {
+        const pts = getLineLatLngPoints(l);
+        let totalLenM = 0;
+        for (let i = 0; i < pts.length - 1; i++) {
+          totalLenM += Math.hypot(
+            (pts[i+1].lng - pts[i].lng) * 111320 * Math.cos(pts[i].lat * Math.PI / 180),
+            (pts[i+1].lat - pts[i].lat) * 110540
+          );
+        }
+        const lenTxt = totalLenM >= 1000 ? (totalLenM / 1000).toFixed(2) + ' km' : totalLenM.toFixed(1) + ' m';
+        return `
+          <div onclick="selectCustomLine('${l.id}')" class="p-1.5 rounded-lg border cursor-pointer flex items-center justify-between gap-1 transition ${l.id === selectedCustomLineId ? 'bg-sky-500/20 border-sky-400 text-sky-200' : 'bg-slate-900/60 border-white/5 text-slate-300 hover:bg-white/5'}">
+            <div class="truncate flex items-center gap-1.5">
+              <span class="w-2.5 h-0.5 inline-block" style="background:${l.color || '#38bdf8'}"></span>
+              <span class="text-xs font-semibold">Línea ${idx + 1} (${pts.length} pts · ${lenTxt})</span>
+            </div>
+            <button onclick="event.stopPropagation(); deleteSelectedLine('${l.id}')" class="text-red-400 hover:text-red-300 p-0.5 font-bold" title="Borrar">✕</button>
           </div>
-          <button onclick="event.stopPropagation(); deleteSelectedLine('${l.id}')" class="text-red-400 hover:text-red-300 p-0.5" title="Borrar">✕</button>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function addTextToMap() {
@@ -3278,117 +3085,118 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       showToast('Texto eliminado.');
     }
 
-    function getLineLatLngs(line) {
-      if (!line) return [];
-      if (Array.isArray(line.points) && line.points.length >= 2) {
-        return line.points.map(p => [p.lat, p.lng]);
-      }
-      if (typeof line.lat1 === 'number' && typeof line.lat2 === 'number') {
-        return [[line.lat1, line.lng1], [line.lat2, line.lng2]];
-      }
-      return [];
-    }
-
-    function ensureLinePoints(line) {
-      if (!line) return [];
-      if (!Array.isArray(line.points) || line.points.length < 2) {
-        if (typeof line.lat1 === 'number' && typeof line.lat2 === 'number') {
-          line.points = [{ lat: line.lat1, lng: line.lng1 }, { lat: line.lat2, lng: line.lng2 }];
-        } else {
-          line.points = [];
-        }
-      }
-      return line.points;
-    }
-
     let isDrawingCustomLine = false;
     let customLineDraftPoints = [];
-    let customLineDraftPolyline = null;
-    let customLineDraftMarkers = [];
+    let draftPolyline = null;
+    let draftMarkers = [];
+
+    function toggleStartDrawLine() {
+      if (isDrawingCustomLine) {
+        finishDrawingLineOnMap();
+      } else {
+        startDrawingLineOnMap();
+      }
+    }
 
     function startDrawingLineOnMap() {
       if (!currentProject || !map2d) return;
       isDrawingCustomLine = true;
       customLineDraftPoints = [];
-      if (customLineDraftPolyline) {
-        map2d.removeLayer(customLineDraftPolyline);
-        customLineDraftPolyline = null;
-      }
-      customLineDraftMarkers.forEach(m => map2d.removeLayer(m));
-      customLineDraftMarkers = [];
+      clearLineDraft();
 
-      const banner = document.getElementById('drawingLineBanner');
-      if (banner) banner.classList.remove('hidden');
-      const lbl = document.getElementById('lblLinePointsCount');
-      if (lbl) lbl.textContent = 'Vértices: 0';
       const btn = document.getElementById('btnStartDrawLine');
-      if (btn) btn.classList.add('ring-2', 'ring-sky-400');
+      if (btn) {
+        btn.innerHTML = '<span>⏹️ Terminar</span>';
+        btn.className = 'py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-[10.5px] transition flex items-center justify-center gap-1 shadow-lg shadow-emerald-500/30 ring-2 ring-emerald-300';
+      }
+      const stContainer = document.getElementById('lineDraftStatusContainer');
+      const stText = document.getElementById('lineDraftStatusText');
+      if (stContainer) stContainer.classList.remove('hidden');
+      if (stText) stText.textContent = 'Haz clic en el mapa para marcar vértices (0 pts)...';
 
-      showToast('Haz clic en el mapa para marcar vértices de la línea. Pulsa "✔️ Listo" al terminar.');
-      map2d.on('click', handleMapClickLine);
+      map2d.getContainer().style.cursor = 'crosshair';
+      map2d.on('click', onLineMapClick);
+      map2d.on('dblclick', onLineMapDblClick);
+      showToast('📐 Haz clic en el mapa para trazar los vértices de la línea. Pulsa "Terminar" o haz doble clic para concluir.');
     }
 
-    function handleMapClickLine(e) {
+    function onLineMapClick(e) {
       if (!isDrawingCustomLine) return;
-      customLineDraftPoints.push(e.latlng);
-      const n = customLineDraftPoints.length;
+      customLineDraftPoints.push({ lat: e.latlng.lat, lng: e.latlng.lng });
+      updateLineDraftDisplay();
+    }
 
-      const lbl = document.getElementById('lblLinePointsCount');
-      if (lbl) lbl.textContent = `Vértices: ${n}`;
+    function onLineMapDblClick(e) {
+      if (!isDrawingCustomLine) return;
+      L.DomEvent.stopPropagation(e);
+      finishDrawingLineOnMap();
+    }
 
-      const m = L.circleMarker(e.latlng, {
-        radius: 4.5,
-        color: '#38bdf8',
-        fillColor: '#ffffff',
-        fillOpacity: 1,
-        weight: 2
-      }).addTo(map2d);
-      customLineDraftMarkers.push(m);
-
-      const col = document.getElementById('selEditorLineColor')?.value || '#38bdf8';
-      const w = Number(document.getElementById('selEditorLineWidth')?.value) || 2.5;
-      const d = document.getElementById('selEditorLineDash')?.value === 'dashed' ? '6, 6' : undefined;
-
-      if (!customLineDraftPolyline) {
-        customLineDraftPolyline = L.polyline(customLineDraftPoints, {
-          color: col,
-          weight: w,
-          dashArray: d
-        }).addTo(map2d);
-      } else {
-        customLineDraftPolyline.setLatLngs(customLineDraftPoints);
+    function updateLineDraftDisplay() {
+      const count = customLineDraftPoints.length;
+      const stText = document.getElementById('lineDraftStatusText');
+      if (stText) {
+        stText.textContent = `Vértices: ${count} · Clic para añadir más o "Terminar"`;
+      }
+      const btn = document.getElementById('btnStartDrawLine');
+      if (btn) {
+        btn.innerHTML = `<span>⏹️ Terminar (${count})</span>`;
       }
 
-      showToast(`Vértice ${n} marcado. Sigue haciendo clic o pulsa "✔️ Listo".`);
+      if (draftPolyline && map2d) {
+        map2d.removeLayer(draftPolyline);
+        draftPolyline = null;
+      }
+      if (count >= 2 && map2d) {
+        const colorVal = document.getElementById('selEditorLineColor')?.value || '#38bdf8';
+        draftPolyline = L.polyline(customLineDraftPoints.map(p => [p.lat, p.lng]), {
+          color: colorVal,
+          weight: 3,
+          dashArray: '6, 6'
+        }).addTo(map2d);
+      }
+
+      if (count > 0 && map2d) {
+        const lastPt = customLineDraftPoints[count - 1];
+        const m = L.circleMarker([lastPt.lat, lastPt.lng], {
+          radius: 5,
+          color: '#ffffff',
+          fillColor: '#38bdf8',
+          fillOpacity: 1,
+          weight: 2
+        }).addTo(map2d);
+        draftMarkers.push(m);
+      }
     }
 
     function finishDrawingLineOnMap() {
       if (!isDrawingCustomLine) return;
       if (customLineDraftPoints.length < 2) {
-        showToast('Debes marcar al menos 2 vértices para formar la línea.');
+        showToast('Debes marcar al menos 2 puntos en el mapa para crear una línea.');
         return;
       }
 
-      const points = customLineDraftPoints.map(pt => ({ lat: pt.lat, lng: pt.lng }));
       const colorVal = document.getElementById('selEditorLineColor')?.value || '#38bdf8';
       const widthVal = Number(document.getElementById('selEditorLineWidth')?.value) || 2.5;
       const dashVal = document.getElementById('selEditorLineDash')?.value || 'solid';
 
       if (!Array.isArray(currentProject.custom_lines)) currentProject.custom_lines = [];
       const newId = `line-${Date.now()}`;
-      currentProject.custom_lines.push({
+      const pts = customLineDraftPoints.map(p => ({ lat: p.lat, lng: p.lng }));
+      const newLine = {
         id: newId,
-        points,
-        lat1: points[0].lat,
-        lng1: points[0].lng,
-        lat2: points[points.length - 1].lat,
-        lng2: points[points.length - 1].lng,
+        points: pts,
+        lat1: pts[0].lat,
+        lng1: pts[0].lng,
+        lat2: pts[pts.length - 1].lat,
+        lng2: pts[pts.length - 1].lng,
         color: colorVal,
         width: widthVal,
         dash: dashVal
-      });
+      };
 
-      cancelDrawingLineOnMap();
+      currentProject.custom_lines.push(newLine);
+      cancelDrawingLine();
 
       selectedCustomLineId = newId;
       currentProject.updated_at = new Date().toISOString();
@@ -3396,25 +3204,38 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       renderAllProjectsAndLots();
       renderEditorLinesList();
       rebuildEditorHandles();
-      showToast(`Línea con ${points.length} vértices trazada e integrada.`);
+      showToast(`📏 Línea trazada con ${pts.length} vértices e integrada en el mapa.`);
     }
 
-    function cancelDrawingLineOnMap() {
+    function cancelDrawingLine() {
       isDrawingCustomLine = false;
       customLineDraftPoints = [];
-      if (map2d) {
-        map2d.off('click', handleMapClickLine);
-        if (customLineDraftPolyline) {
-          map2d.removeLayer(customLineDraftPolyline);
-          customLineDraftPolyline = null;
-        }
-        customLineDraftMarkers.forEach(m => map2d.removeLayer(m));
-        customLineDraftMarkers = [];
-      }
-      const banner = document.getElementById('drawingLineBanner');
-      if (banner) banner.classList.add('hidden');
+      clearLineDraft();
+
       const btn = document.getElementById('btnStartDrawLine');
-      if (btn) btn.classList.remove('ring-2', 'ring-sky-400');
+      if (btn) {
+        btn.innerHTML = '<span>➕ Trazar</span>';
+        btn.className = 'py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1';
+      }
+      const stContainer = document.getElementById('lineDraftStatusContainer');
+      if (stContainer) stContainer.classList.add('hidden');
+
+      if (map2d) {
+        map2d.getContainer().style.cursor = '';
+        map2d.off('click', onLineMapClick);
+        map2d.off('dblclick', onLineMapDblClick);
+      }
+    }
+
+    function clearLineDraft() {
+      if (draftPolyline && map2d) {
+        map2d.removeLayer(draftPolyline);
+        draftPolyline = null;
+      }
+      if (draftMarkers.length && map2d) {
+        draftMarkers.forEach(m => map2d.removeLayer(m));
+        draftMarkers = [];
+      }
     }
 
     function selectCustomLine(id) {
@@ -3633,8 +3454,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           const box = getPolygonBoundsCenter(lot.coords);
 
           // 1. Vértices del polígono (celeste 'vertex')
-          lot.coords.forEach((rawPt, idx) => {
-            const pt = getCoordLatLng(rawPt);
+          lot.coords.forEach((pt, idx) => {
             const m = L.marker([pt.lat, pt.lng], {
               icon: createHandleIcon('vertex'),
               draggable: true,
@@ -3669,8 +3489,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           });
 
           // 2. Borde interactivo para agregar vértice al hacer clic en cualquier arista
-          const validCoords = lot.coords.map(getCoordLatLng);
-          const ringPts = [...validCoords.map(c => [c.lat, c.lng]), [validCoords[0].lat, validCoords[0].lng]];
+          const ringPts = [...lot.coords.map(c => [c.lat, c.lng]), [lot.coords[0].lat, lot.coords[0].lng]];
           const edgeHitLine = L.polyline(ringPts, {
             color: '#38bdf8',
             weight: 12,
@@ -3942,40 +3761,82 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         }
       }
 
-      // D. Nodos Interactivos de la Línea Adicional Seleccionada (Múltiples Vértices, Mover Centro, Rotar y Borrar)
+      // D. Nodos Interactivos de la Línea Adicional Seleccionada (Multivértice: Puntos individuales, Mover, Escalar, Rotar y Borrar)
       if (selectedCustomLineId) {
         const l = (currentProject.custom_lines || []).find(x => x.id === selectedCustomLineId);
         if (l) {
-          const pts = ensureLinePoints(l);
-          if (pts.length >= 2) {
+          syncLineBoundsAndProps(l);
+          const pts = l.points;
+          if (Array.isArray(pts) && pts.length >= 2) {
             let sumLat = 0, sumLng = 0;
             pts.forEach(p => { sumLat += p.lat; sumLng += p.lng; });
             const midLat = sumLat / pts.length;
             const midLng = sumLng / pts.length;
 
-            // 1. Nodos de cada vértice individual de la línea
-            pts.forEach((pt, vIdx) => {
-              const vm = L.marker([pt.lat, pt.lng], {
+            // 1. Manijas en CADA VÉRTICE individual (Draggable)
+            pts.forEach((p, vIdx) => {
+              const vm = L.marker([p.lat, p.lng], {
                 icon: createHandleIcon('vertex'),
                 draggable: true,
-                zIndexOffset: 940
+                zIndexOffset: 950
               });
               vm.on('drag', (e) => {
                 const cur = e.target.getLatLng();
-                pt.lat = cur.lat;
-                pt.lng = cur.lng;
-                if (vIdx === 0) { l.lat1 = cur.lat; l.lng1 = cur.lng; }
-                if (vIdx === pts.length - 1) { l.lat2 = cur.lat; l.lng2 = cur.lng; }
+                pts[vIdx] = { lat: cur.lat, lng: cur.lng };
+                syncLineBoundsAndProps(l);
                 renderCustomLinesLightweight();
               });
               vm.on('dragend', () => {
                 saveProjectsLocal();
                 rebuildEditorHandles();
               });
+              // Clic derecho en vértice para eliminarlo (si tiene más de 2 vértices)
+              vm.on('contextmenu', (e) => {
+                L.DomEvent.stopPropagation(e);
+                if (pts.length > 2) {
+                  pts.splice(vIdx, 1);
+                  syncLineBoundsAndProps(l);
+                  saveProjectsLocal();
+                  renderAllProjectsAndLots();
+                  rebuildEditorHandles();
+                  renderEditorLinesList();
+                  showToast('Vértice eliminado de la línea.');
+                } else {
+                  showToast('La línea debe conservar al menos 2 vértices.');
+                }
+              });
               editorHandlesGroup.addLayer(vm);
+
+              // 1.b Manija intermedia (+) entre cada par de vértices adyacentes para insertar nuevo vértice
+              if (vIdx < pts.length - 1) {
+                const nextP = pts[vIdx + 1];
+                const midSegLat = (p.lat + nextP.lat) / 2;
+                const midSegLng = (p.lng + nextP.lng) / 2;
+                const addMarker = L.marker([midSegLat, midSegLng], {
+                  icon: L.divIcon({
+                    className: 'handle-icon-add-seg',
+                    html: `<div style="width:13px;height:13px;border-radius:50%;background:#0284c7;border:1.5px solid #fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9.5px;font-weight:900;box-shadow:0 0 5px rgba(0,0,0,0.8);cursor:pointer;" title="Clic para insertar vértice">+</div>`,
+                    iconSize: [13, 13],
+                    iconAnchor: [6.5, 6.5]
+                  }),
+                  interactive: true,
+                  zIndexOffset: 930
+                });
+                addMarker.on('click', (e) => {
+                  L.DomEvent.stopPropagation(e);
+                  pts.splice(vIdx + 1, 0, { lat: midSegLat, lng: midSegLng });
+                  syncLineBoundsAndProps(l);
+                  saveProjectsLocal();
+                  renderAllProjectsAndLots();
+                  rebuildEditorHandles();
+                  renderEditorLinesList();
+                  showToast('Nuevo vértice insertado.');
+                });
+                editorHandlesGroup.addLayer(addMarker);
+              }
             });
 
-            // 2. Nodo Verde en el Centroide para MOVER la línea completa
+            // 2. Nodo Verde Central para MOVER la línea completa
             let prevMidLL = null;
             const moveLineM = L.marker([midLat, midLng], {
               icon: createHandleIcon('move'),
@@ -3989,57 +3850,94 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
               const dLng = cur.lng - prevMidLL.lng;
               prevMidLL = cur;
               pts.forEach(p => { p.lat += dLat; p.lng += dLng; });
-              l.lat1 = pts[0].lat; l.lng1 = pts[0].lng;
-              l.lat2 = pts[pts.length - 1].lat; l.lng2 = pts[pts.length - 1].lng;
+              syncLineBoundsAndProps(l);
               renderCustomLinesLightweight();
             });
             moveLineM.on('dragend', () => {
               saveProjectsLocal();
               renderAllProjectsAndLots();
+              rebuildEditorHandles();
             });
             editorHandlesGroup.addLayer(moveLineM);
 
-            // 3. Nodo Cian para ROTAR la línea completa alrededor de su centroide
-            const lastPt = pts[pts.length - 1];
-            const offEnd = latLngToOffsetMeters(midLat, midLng, lastPt.lat, lastPt.lng);
-            const perpEast = -offEnd.north;
-            const perpNorth = offEnd.east;
-            const perpLen = Math.hypot(perpEast, perpNorth) || 1;
-            const rotDist = Math.max(3.5, Math.hypot(offEnd.east, offEnd.north) * 0.4);
-            const rotHandlePos = offsetMetersToLatLng(midLat, midLng, (perpEast / perpLen) * rotDist, (perpNorth / perpLen) * rotDist);
+            // 3. Nodo Ámbar para ESCALAR la línea desde su centroide
+            let maxDist = 0;
+            let farPt = pts[0];
+            pts.forEach(p => {
+              const off = latLngToOffsetMeters(midLat, midLng, p.lat, p.lng);
+              const d = Math.hypot(off.east, off.north);
+              if (d > maxDist) { maxDist = d; farPt = p; }
+            });
+            const scaleDist = Math.max(8, maxDist * 1.25);
+            const farOff = latLngToOffsetMeters(midLat, midLng, farPt.lat, farPt.lng);
+            const dirE = maxDist > 0 ? farOff.east / maxDist : 1;
+            const dirN = maxDist > 0 ? farOff.north / maxDist : 0;
+            const scalePos = offsetMetersToLatLng(midLat, midLng, dirE * scaleDist, dirN * scaleDist);
 
-            L.polyline([[midLat, midLng], [rotHandlePos.lat, rotHandlePos.lng]], {
+            let snapLinePts = null;
+            const resLineM = L.marker([scalePos.lat, scalePos.lng], {
+              icon: createHandleIcon('resize'),
+              draggable: true,
+              zIndexOffset: 955
+            });
+            resLineM.on('dragstart', () => {
+              snapLinePts = pts.map(p => ({ ...p }));
+            });
+            resLineM.on('drag', (e) => {
+              if (!snapLinePts) return;
+              const cur = e.target.getLatLng();
+              const off = latLngToOffsetMeters(midLat, midLng, cur.lat, cur.lng);
+              const curDist = Math.hypot(off.east, off.north);
+              const factor = Math.max(0.15, Math.min(6, curDist / scaleDist));
+              pts.forEach((p, idx) => {
+                const origOff = latLngToOffsetMeters(midLat, midLng, snapLinePts[idx].lat, snapLinePts[idx].lng);
+                const scaledLL = offsetMetersToLatLng(midLat, midLng, origOff.east * factor, origOff.north * factor);
+                p.lat = scaledLL.lat;
+                p.lng = scaledLL.lng;
+              });
+              syncLineBoundsAndProps(l);
+              renderCustomLinesLightweight();
+            });
+            resLineM.on('dragend', () => {
+              saveProjectsLocal();
+              rebuildEditorHandles();
+            });
+            editorHandlesGroup.addLayer(resLineM);
+
+            // 4. Nodo Cian para ROTAR la línea alrededor del centroide
+            const rotPos = offsetMetersToLatLng(midLat, midLng, -dirN * scaleDist, dirE * scaleDist);
+            L.polyline([[midLat, midLng], [rotPos.lat, rotPos.lng]], {
               color: '#38bdf8',
               weight: 1.2,
               dashArray: '3,3',
               interactive: false
             }).addTo(editorHandlesGroup);
 
-            const rotLineM = L.marker([rotHandlePos.lat, rotHandlePos.lng], {
+            let snapRotPts = null;
+            let startLineAng = 0;
+            const rotLineM = L.marker([rotPos.lat, rotPos.lng], {
               icon: createHandleIcon('rotate'),
               draggable: true,
               zIndexOffset: 955
             });
-            let snapPts = null, startLineAng = 0;
             rotLineM.on('dragstart', (e) => {
-              snapPts = pts.map(p => ({ ...p }));
+              snapRotPts = pts.map(p => ({ ...p }));
               const cur = e.target.getLatLng();
               const off = latLngToOffsetMeters(midLat, midLng, cur.lat, cur.lng);
               startLineAng = Math.atan2(off.east, off.north) * (180 / Math.PI);
             });
             rotLineM.on('drag', (e) => {
-              if (!snapPts) return;
+              if (!snapRotPts) return;
               const cur = e.target.getLatLng();
               const off = latLngToOffsetMeters(midLat, midLng, cur.lat, cur.lng);
               const curAng = Math.atan2(off.east, off.north) * (180 / Math.PI);
               const dDeg = curAng - startLineAng;
-              const rotCoords = rotateCoordsAroundCenter(snapPts, { lat: midLat, lng: midLng }, dDeg);
-              rotCoords.forEach((rp, idx) => {
-                pts[idx].lat = rp.lat;
-                pts[idx].lng = rp.lng;
+              const rotCoords = rotateCoordsAroundCenter(snapRotPts, { lat: midLat, lng: midLng }, dDeg);
+              pts.forEach((p, idx) => {
+                p.lat = rotCoords[idx].lat;
+                p.lng = rotCoords[idx].lng;
               });
-              l.lat1 = pts[0].lat; l.lng1 = pts[0].lng;
-              l.lat2 = pts[pts.length - 1].lat; l.lng2 = pts[pts.length - 1].lng;
+              syncLineBoundsAndProps(l);
               renderCustomLinesLightweight();
             });
             rotLineM.on('dragend', () => {
@@ -4048,8 +3946,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             });
             editorHandlesGroup.addLayer(rotLineM);
 
-            // 4. Nodo Rojo para ELIMINAR la línea
-            const delPos = offsetMetersToLatLng(midLat, midLng, (perpEast / perpLen) * -rotDist, (perpNorth / perpLen) * -rotDist);
+            // 5. Nodo Rojo para ELIMINAR la línea
+            const delPos = offsetMetersToLatLng(midLat, midLng, dirN * scaleDist, -dirE * scaleDist);
             const delLineM = L.marker([delPos.lat, delPos.lng], {
               icon: createHandleIcon('delete'),
               interactive: true,
@@ -4064,7 +3962,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         }
       }
 
-      // E. Nodos de MOVER TODA LA LOTIZACION (Pestaña 2 cuando isAllPolygonsSelected está activo)
+      // E. Nodos de MOVER, REDIMENSIONAR Y ROTAR TODA LA LOTIZACIÓN (Botón SELECCIONAR TODOS LOS POLÍGONOS)
       if (activeEditorTab === 2 && isAllPolygonsSelected && (currentProject.lotes || []).length > 0) {
         addLotGroupHandles();
       }
@@ -4307,11 +4205,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const isCurrent = currentProject && proj.id === currentProject.id;
         (proj.lotes || []).forEach(lot => {
           if (!lot.coords || lot.coords.length < 3) return;
-          const validCoords = (lot.coords || []).map(getCoordLatLng);
-          if (validCoords.length < 3) return;
           const style = getStatusStyle(lot.status);
           const isSelected = isCurrent && lot.id === selectedLotId;
-          const poly = L.polygon(validCoords.map(c => [c.lat, c.lng]), {
+          const poly = L.polygon(lot.coords.map(c => [c.lat, c.lng]), {
             color: '#ffffff',
             weight: 1.8,
             fillColor: style.fill,
@@ -4348,10 +4244,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       if (!customLinesLayerGroup) return;
       customLinesLayerGroup.clearLayers();
       (currentProject?.custom_lines || []).forEach(line => {
-        const latlngs = getLineLatLngs(line);
-        if (latlngs.length < 2) return;
+        const pts = getLineLatLngPoints(line);
+        if (pts.length < 2) return;
         const isSel = line.id === selectedCustomLineId;
-        const pline = L.polyline(latlngs, {
+        const latLngs = pts.map(p => [p.lat, p.lng]);
+        const pline = L.polyline(latLngs, {
           color: isSel ? '#f59e0b' : (line.color || '#38bdf8'),
           weight: (line.width || 2.5) + (isSel ? 2 : 0),
           dashArray: line.dash === 'dashed' ? '6, 6' : undefined,
@@ -4506,11 +4403,79 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       }).join('');
     }
 
+    let isAllPolygonsSelected = false;
+
+    function toggleSelectAllPolygons() {
+      if (!currentProject || !currentProject.lotes || !currentProject.lotes.length) {
+        showToast('El proyecto no tiene polígonos creados.');
+        return;
+      }
+      isAllPolygonsSelected = !isAllPolygonsSelected;
+      if (isAllPolygonsSelected) {
+        selectedLotId = null;
+        selectedCustomTextId = null;
+        selectedCustomLineId = null;
+        showToast('🌐 Todos los polígonos seleccionados. Puedes moverlos, rotarlos o redimensionarlos en grupo desde los puntos en el mapa.');
+      }
+      updateSelectAllPolygonsUI();
+      renderAllProjectsAndLots();
+      rebuildEditorHandles();
+    }
+
+    function updateSelectAllPolygonsUI() {
+      const btn = document.getElementById('btnSelectAllPolygons');
+      const lbl = document.getElementById('lblBtnSelectAllPolygons');
+      const allForm = document.getElementById('allPolygonsSelectedForm');
+      const lotForm = document.getElementById('lotDataForm');
+      const hint = document.getElementById('noLotSelectedHint');
+      const badge = document.getElementById('editingLotBadge');
+
+      if (isAllPolygonsSelected && currentProject?.lotes?.length) {
+        if (btn) {
+          btn.className = 'w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-sky-500 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer ring-2 ring-emerald-300';
+        }
+        if (lbl) lbl.textContent = `✓ TODOS LOS POLÍGONOS SELECCIONADOS (${currentProject.lotes.length})`;
+        if (badge) {
+          badge.textContent = `Todos (${currentProject.lotes.length})`;
+          badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-400/20 text-emerald-300 border border-emerald-400/40';
+        }
+
+        let totalArea = 0;
+        currentProject.lotes.forEach(l => { totalArea += (Number(l.area) || 0); });
+        const countEl = document.getElementById('lblAllPolygonsCount');
+        const areaEl = document.getElementById('lblAllPolygonsArea');
+        if (countEl) countEl.textContent = `${currentProject.lotes.length} Polígonos Totales Seleccionados`;
+        if (areaEl) areaEl.textContent = `Área Total: ${totalArea.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m²`;
+
+        if (allForm) allForm.classList.remove('hidden');
+        if (lotForm) lotForm.classList.add('hidden');
+        if (hint) hint.classList.add('hidden');
+      } else {
+        isAllPolygonsSelected = false;
+        if (btn) {
+          btn.className = 'w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400/20 via-sky-400/20 to-emerald-400/20 hover:from-amber-400/35 hover:to-sky-400/35 border border-amber-400/50 text-amber-300 hover:text-white text-xs font-black uppercase tracking-wider transition shadow-md flex items-center justify-center gap-2 cursor-pointer';
+        }
+        if (lbl) lbl.textContent = 'SELECCIONAR TODOS LOS POLÍGONOS';
+        if (allForm) allForm.classList.add('hidden');
+        if (!selectedLotId) {
+          if (hint) hint.classList.remove('hidden');
+          if (lotForm) lotForm.classList.add('hidden');
+          if (badge) {
+            badge.textContent = 'Ninguno';
+            badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30';
+          }
+        }
+      }
+    }
+
     function selectLotFromEditor(lotId) {
-      isAllPolygonsSelected = false;
-      const banner = document.getElementById('allPolygonsActiveBanner');
-      if (banner) banner.classList.add('hidden');
+      if (isAllPolygonsSelected) {
+        isAllPolygonsSelected = false;
+        updateSelectAllPolygonsUI();
+      }
       selectedLotId = lotId;
+      selectedCustomTextId = null;
+      selectedCustomLineId = null;
       renderAllProjectsAndLots();
       syncLotDataForm();
       rebuildEditorHandles();
@@ -4519,16 +4484,35 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     function syncLotDataForm() {
       const hint = document.getElementById('noLotSelectedHint');
       const form = document.getElementById('lotDataForm');
+      const allForm = document.getElementById('allPolygonsSelectedForm');
+      const badge = document.getElementById('editingLotBadge');
       if (!hint || !form) return;
+
+      if (isAllPolygonsSelected) {
+        hint.classList.add('hidden');
+        form.classList.add('hidden');
+        if (allForm) allForm.classList.remove('hidden');
+        return;
+      }
+
+      if (allForm) allForm.classList.add('hidden');
+
       const lot = currentProject ? (currentProject.lotes || []).find(l => l.id === selectedLotId) : null;
       if (!lot) {
         hint.classList.remove('hidden');
         form.classList.add('hidden');
+        if (badge) {
+          badge.textContent = 'Ninguno';
+          badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30';
+        }
         return;
       }
       hint.classList.add('hidden');
       form.classList.remove('hidden');
-      document.getElementById('editingLotBadge').textContent = lot.code || 'Lote';
+      if (badge) {
+        badge.textContent = lot.code || 'Lote';
+        badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30';
+      }
       document.getElementById('inpLotCode').value = lot.code || '';
       document.getElementById('inpLotArea').value = lot.area ?? 150;
       document.getElementById('inpLotPrice').value = lot.price ?? 23000;
@@ -4628,7 +4612,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       if (!client) return;
       try {
         showToast('Guardando en Supabase...');
-        const rows = (projects || []).filter(p => !isExcludedProject(p)).map(p => {
+        const rows = projects.map(p => {
           const coordsStr = `${Number(p.lat).toFixed(6)}, ${Number(p.lng).toFixed(6)}`;
           const metadataPayload = {
             calco_config: p.calco_config || {},
@@ -4823,13 +4807,13 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           };
         });
 
-        // Asegurar que Proyecto Guadalupe / Fortunato esté en la lista si no vino de la BD
-        if (!loadedProjects.some(p => p.id === 'prop-guadalupe' || p.id === 'proj-fortunato')) {
+        // Asegurar que Proyecto Fortunato esté en la lista si no vino de la BD
+        if (!loadedProjects.some(p => p.id === 'proj-fortunato' || p.id === 'prop-1')) {
           loadedProjects.unshift(createDefaultProject());
         }
 
         projects = loadedProjects;
-        currentProject = projects.find(p => p.id === 'prop-guadalupe' || p.id === 'proj-fortunato') || projects[0];
+        currentProject = projects.find(p => p.id === 'proj-fortunato' || p.id === 'prop-1') || projects[0];
         saveProjectsLocal();
         syncProjectFormUI();
         renderAllProjectsAndLots();
@@ -5649,19 +5633,6 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         setTimeout(() => {
           loadFromSupabase(true);
         }, 400);
-
-        // Si viene con parámetro ?id=... desde terrenos.html, enfocar directamente
-        const urlParams = new URLSearchParams(window.location.search);
-        const targetProjId = urlParams.get('id') || urlParams.get('project');
-        if (targetProjId) {
-          setTimeout(() => {
-            const found = (projects || []).find(p => p.id === targetProjId || String(p.id) === targetProjId || (p.nombre && p.nombre.toLowerCase().includes(targetProjId.toLowerCase())));
-            if (found) {
-              switchProject(found.id, true);
-              showToast(`Ubicado en "${found.nombre}".`);
-            }
-          }, 700);
-        }
       } catch (err) {
         console.error('Error crítico al arrancar la aplicación:', err);
       }
