@@ -2879,24 +2879,25 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       }
       if (Array.isArray(payload.customLines)) {
         currentProject.custom_lines = payload.customLines.map(l => {
-          const east1 = (l.x1 - imgW / 2) * mPerPx;
-          const north1 = -(l.y1 - imgH / 2) * mPerPx;
-          const rx1 = east1 * cosA + north1 * sinA;
-          const ry1 = -east1 * sinA + north1 * cosA;
-          const ll1 = offsetMetersToLatLng(refLat, refLng, rx1, ry1);
+          const ptsRaw = (Array.isArray(l.pointsPx) && l.pointsPx.length >= 2)
+            ? l.pointsPx
+            : [[l.x1, l.y1], [l.x2, l.y2]];
 
-          const east2 = (l.x2 - imgW / 2) * mPerPx;
-          const north2 = -(l.y2 - imgH / 2) * mPerPx;
-          const rx2 = east2 * cosA + north2 * sinA;
-          const ry2 = -east2 * sinA + north2 * cosA;
-          const ll2 = offsetMetersToLatLng(refLat, refLng, rx2, ry2);
+          const pointsLatLng = ptsRaw.map(([px, py]) => {
+            const east = (px - imgW / 2) * mPerPx;
+            const north = -(py - imgH / 2) * mPerPx;
+            const rx = east * cosA + north * sinA;
+            const ry = -east * sinA + north * cosA;
+            return offsetMetersToLatLng(refLat, refLng, rx, ry);
+          });
 
           return {
             id: l.id || `line-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-            lat1: ll1.lat,
-            lng1: ll1.lng,
-            lat2: ll2.lat,
-            lng2: ll2.lng,
+            points: pointsLatLng,
+            lat1: pointsLatLng[0]?.lat || 0,
+            lng1: pointsLatLng[0]?.lng || 0,
+            lat2: pointsLatLng[pointsLatLng.length - 1]?.lat || 0,
+            lng2: pointsLatLng[pointsLatLng.length - 1]?.lng || 0,
             width: l.width || 2.5,
             color: l.color || '#38bdf8',
             dash: l.dash || 'solid'
@@ -5991,17 +5992,6 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           display: flex; flex-direction: column; min-height: 0; overflow-y: auto;
           padding: 14px 16px; gap: 10px;
         }
-        .lotizador-tabs {
-          display: flex; gap: 4px; background: #0b1120; padding: 4px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 2px;
-        }
-        .lotizador-tab-btn {
-          flex: 1; padding: 8px 8px; font-size: 11.5px; font-weight: 700; border: none; border-radius: 7px;
-          background: transparent; color: #94a3b8; cursor: pointer; transition: all 0.2s; text-align: center;
-        }
-        .lotizador-tab-btn:hover { color: #f8fafc; background: rgba(255,255,255,0.06); }
-        .lotizador-tab-btn.active { background: #38bdf8; color: #0b1120; font-weight: 800; }
-        .tab-panel { display: flex; flex-direction: column; gap: 10px; }
-        .tab-panel.hidden { display: none; }
         .custom-plan-text {
           cursor: move; user-select: none; font-family: 'Inter', system-ui, sans-serif;
         }
@@ -6014,10 +6004,22 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         .custom-plan-line.selected {
           stroke: #38bdf8 !important; stroke-width: 4px !important;
         }
-        .line-handle {
+        .line-vertex-dot {
           fill: #38bdf8; stroke: #ffffff; stroke-width: 1.5; cursor: move;
         }
-        .line-handle:hover { fill: #f59e0b; }
+        .line-vertex-dot:hover { fill: #f59e0b; }
+        .line-midpoint-dot {
+          fill: #10b981; stroke: #ffffff; stroke-width: 1.5; cursor: copy;
+        }
+        .line-midpoint-dot:hover { fill: #34d399; }
+        .line-centroid-dot {
+          fill: #f59e0b; stroke: #ffffff; stroke-width: 1.5; cursor: move;
+        }
+        .line-centroid-dot:hover { fill: #fbbf24; }
+        .text-scale-handle {
+          fill: #38bdf8; stroke: #ffffff; stroke-width: 1.5; cursor: nwse-resize;
+        }
+        .text-scale-handle:hover { fill: #f59e0b; }
         .item-list { max-height: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
         .item-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; font-size: 11px; cursor: pointer; }
         .item-row.selected { border-color: #38bdf8; background: rgba(56,189,248,0.12); }
@@ -6039,6 +6041,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         }
         .btn:hover:not(:disabled) { background: #334155; }
         .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-sm { padding: 4px 8px; font-size: 11px; border-radius: 6px; }
         .btn-primary { background: #38bdf8; border-color: #38bdf8; color: #0f172a; }
         .btn-primary:hover:not(:disabled) { background: #7dd3fc; }
         .btn-accent { background: #10b981; border-color: #10b981; color: #0f172a; }
@@ -6082,110 +6085,168 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
               </div>
 
               <aside class="sidebar">
-                <!-- PESTAÑAS: DETECTAR LOTES VS TEXTO Y LÍNEA -->
-                <div class="lotizador-tabs">
-                  <button class="lotizador-tab-btn active" id="tabBtnLotes">⚡ DETECTAR LOTES</button>
-                  <button class="lotizador-tab-btn" id="tabBtnTextLines">✏️ TEXTO Y LÍNEA (AGREGAR, EDITAR, BORRAR)</button>
-                </div>
-
-                <!-- PANEL 1: LOTES / POLÍGONOS -->
-                <div id="panelLotes" class="tab-panel">
-                  <div class="card">
-                    <h3>1. Imagen y Detección</h3>
-                    <div class="row">
-                      <button class="btn" id="btnUpload" style="flex:1;">📁 Subir imagen</button>
-                      <button class="btn btn-primary" id="btnDetect" style="flex:1;" disabled>⚡ Detectar lotes</button>
-                    </div>
-                    <label class="field" style="margin-top:8px;">
-                      <span>Sensibilidad de líneas (Umbral: <strong id="lblThreshold">185</strong>)</span>
-                      <input type="range" id="rngThreshold" min="80" max="240" value="185" />
-                    </label>
-                    <label class="field" style="margin-top:6px;">
-                      <span>Área mínima en px (<strong id="lblMinArea">350</strong>)</span>
-                      <input type="range" id="rngMinArea" min="80" max="3000" step="20" value="350" />
-                    </label>
-                    <div class="row" style="margin-top:8px;">
-                      <button class="btn btn-active" id="btnSnapSides" style="flex:1;" title="Une los bordes y vértices de los polígonos contiguos sin dejar huecos">🧲 Pegar lados contiguos</button>
-                    </div>
+                <div class="card">
+                  <h3>1. Imagen y Detección</h3>
+                  <div class="row">
+                    <button class="btn" id="btnUpload" style="flex:1;">📁 Subir imagen</button>
+                    <button class="btn btn-primary" id="btnDetect" style="flex:1;" disabled>⚡ Detectar lotes</button>
                   </div>
-
-                  <div class="card">
-                    <h3>2. Zoom y Edición de Polígonos</h3>
-                    <div class="row">
-                      <button class="btn" id="btnZoomOut" style="flex:1;" disabled>🔍- Alejar</button>
-                      <button class="btn" id="btnZoomReset" style="flex:1;" disabled>100%</button>
-                      <button class="btn" id="btnZoomIn" style="flex:1;" disabled>🔍+ Acercar</button>
-                    </div>
-                    <div class="status-bar" id="statusBar">Sube una imagen para comenzar. Clic en borde agrega vértice · Anticlick en vértice lo elimina.</div>
-                  </div>
-
-                  <div class="card" id="inspectorCard" style="display:none;">
-                    <div class="row" style="justify-content:space-between;">
-                      <h3 style="margin:0;">3. Datos del Lote</h3>
-                      <span class="badge" id="badgeLoteId">L-01</span>
-                    </div>
-                    <div class="row">
-                      <label class="field">
-                        <span>Manzana</span>
-                        <input type="text" id="fldManzana" placeholder="Ej. A" />
-                      </label>
-                      <label class="field">
-                        <span>N° Lote</span>
-                        <input type="text" id="fldLote" placeholder="Ej. 01" />
-                      </label>
-                    </div>
-                    <div class="row">
-                      <label class="field">
-                        <span>Área (m²)</span>
-                        <input type="number" id="fldArea" step="0.01" />
-                      </label>
-                      <label class="field">
-                        <span>Estado</span>
-                        <select id="fldEstado">
-                          <option value="Disponible">Disponible</option>
-                          <option value="Reservado">Reservado</option>
-                          <option value="Vendido">Vendido</option>
-                        </select>
-                      </label>
-                    </div>
-                    <div class="row">
-                      <label class="field">
-                        <span>Precio (S/.)</span>
-                        <input type="text" id="fldPrecio" placeholder="Ej. 25000" />
-                      </label>
-                    </div>
-                    <div class="row" style="margin-top:8px;">
-                      <button class="btn btn-danger" id="btnDeletePoly" style="flex:1;">🗑️ Eliminar polígono</button>
-                    </div>
+                  <label class="field" style="margin-top:8px;">
+                    <span>Sensibilidad de líneas (Umbral: <strong id="lblThreshold">185</strong>)</span>
+                    <input type="range" id="rngThreshold" min="80" max="240" value="185" />
+                  </label>
+                  <label class="field" style="margin-top:6px;">
+                    <span>Área mínima en px (<strong id="lblMinArea">350</strong>)</span>
+                    <input type="range" id="rngMinArea" min="80" max="3000" step="20" value="350" />
+                  </label>
+                  <div class="row" style="margin-top:8px;">
+                    <button class="btn btn-active" id="btnSnapSides" style="flex:1;" title="Une los bordes y vértices de los polígonos contiguos sin dejar huecos">🧲 Pegar lados contiguos</button>
                   </div>
                 </div>
 
-                <!-- PANEL 2: TEXTO Y LÍNEAS -->
-                <div id="panelTextLines" class="tab-panel hidden">
-                  <!-- RÓTULOS DE TEXTO -->
-                  <div class="card">
-                    <div class="row" style="justify-content:space-between;">
-                      <h3 style="margin:0;">1. Textos en el Plano</h3>
-                      <span class="badge" id="badgeTextCount">0 textos</span>
+                <div class="card">
+                  <h3>2. Zoom y Edición de Polígonos</h3>
+                  <div class="row">
+                    <button class="btn" id="btnZoomOut" style="flex:1;" disabled>🔍- Alejar</button>
+                    <button class="btn" id="btnZoomReset" style="flex:1;" disabled>100%</button>
+                    <button class="btn" id="btnZoomIn" style="flex:1;" disabled>🔍+ Acercar</button>
+                  </div>
+                  <div class="status-bar" id="statusBar">Sube una imagen para comenzar. Clic en borde agrega vértice · Anticlick en vértice lo elimina.</div>
+                </div>
+
+                <div class="card" id="inspectorCard" style="display:none;">
+                  <div class="row" style="justify-content:space-between;">
+                    <h3 style="margin:0;">3. Datos del Lote</h3>
+                    <span class="badge" id="badgeLoteId">L-01</span>
+                  </div>
+                  <div class="row">
+                    <label class="field">
+                      <span>Manzana</span>
+                      <input type="text" id="fldManzana" placeholder="Ej. A" />
+                    </label>
+                    <label class="field">
+                      <span>N° Lote</span>
+                      <input type="text" id="fldLote" placeholder="Ej. 01" />
+                    </label>
+                  </div>
+                  <div class="row">
+                    <label class="field">
+                      <span>Área (m²)</span>
+                      <input type="number" id="fldArea" step="0.01" />
+                    </label>
+                    <label class="field">
+                      <span>Estado</span>
+                      <select id="fldEstado">
+                        <option value="Disponible">Disponible</option>
+                        <option value="Reservado">Reservado</option>
+                        <option value="Vendido">Vendido</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="row">
+                    <label class="field">
+                      <span>Precio (S/.)</span>
+                      <input type="text" id="fldPrecio" placeholder="Ej. 25000" />
+                    </label>
+                  </div>
+                  <div class="row" style="margin-top:8px;">
+                    <button class="btn btn-danger" id="btnDeletePoly" style="flex:1;">🗑️ Eliminar polígono</button>
+                  </div>
+                </div>
+
+                <!-- 4. LÍNEAS Y TEXTOS -->
+                <div class="card" id="section4LineasTextos">
+                  <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <h3 style="margin:0;">4. Líneas y Textos</h3>
+                    <div style="display:flex; gap:4px;">
+                      <button class="btn btn-sm btn-active" id="s4SubTabLines" style="padding:3px 7px; font-size:10.5px;">📏 Líneas</button>
+                      <button class="btn btn-sm" id="s4SubTabTexts" style="padding:3px 7px; font-size:10.5px;">✏️ Textos</button>
                     </div>
-                    <div class="row" style="margin-top:8px; gap:4px;">
-                      <button class="btn btn-primary" id="btnAddText" style="flex:1;" title="Colocar nuevo texto en el plano">➕ Agregar</button>
-                      <button class="btn btn-warning" id="btnEditText" style="flex:1;" disabled title="Editar texto seleccionado">✏️ Editar</button>
-                      <button class="btn btn-danger" id="btnDeleteText" style="flex:1;" disabled title="Borrar texto seleccionado">🗑️ Borrar</button>
+                  </div>
+
+                  <!-- SUBPANEL LÍNEAS MULTIVÉRTICE -->
+                  <div id="s4PanelLines">
+                    <div class="row" style="gap:4px; margin-bottom:8px;">
+                      <button class="btn btn-primary" id="s4BtnAddLine" style="flex:1;" title="Haz clic en el plano para marcar múltiples vértices">➕ Trazar Línea</button>
+                      <button class="btn btn-accent" id="s4BtnFinishLine" style="display:none; flex:1;" title="Finalizar trazo de línea">✅ Finalizar</button>
+                      <button class="btn btn-danger" id="s4BtnDeleteLine" style="flex:1;" disabled title="Eliminar línea seleccionada">🗑️ Borrar</button>
                     </div>
-                    <div id="textFormGroup" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;">
-                      <label class="field">
-                        <span>Contenido del Texto</span>
-                        <input type="text" id="fldCustomText" placeholder="Ej. Mz. A / Calle 1 / Área Verde" value="Mz. A" />
-                      </label>
+
+                    <div id="s4LineControls" style="display:flex; flex-direction:column; gap:6px;">
                       <div class="row">
                         <label class="field">
-                          <span>Tamaño (px)</span>
-                          <input type="number" id="fldTextSize" min="8" max="72" value="15" />
+                          <span>Color</span>
+                          <select id="s4SelLineColor">
+                            <option value="#38bdf8" selected>Cian (#38bdf8)</option>
+                            <option value="#fbbf24">Amarillo (#fbbf24)</option>
+                            <option value="#10b981">Verde (#10b981)</option>
+                            <option value="#ffffff">Blanco (#ffffff)</option>
+                            <option value="#ef4444">Rojo (#ef4444)</option>
+                            <option value="#f97316">Naranja (#f97316)</option>
+                          </select>
                         </label>
                         <label class="field">
+                          <span>Grosor</span>
+                          <select id="s4SelLineWidth">
+                            <option value="1.5">Fino (1.5px)</option>
+                            <option value="2.5" selected>Normal (2.5px)</option>
+                            <option value="4">Grueso (4px)</option>
+                            <option value="6">Muy grueso (6px)</option>
+                          </select>
+                        </label>
+                      </div>
+
+                      <div class="row">
+                        <label class="field" style="flex:1;">
+                          <span>Estilo</span>
+                          <select id="s4SelLineStyle">
+                            <option value="solid" selected>Continua</option>
+                            <option value="dashed">Segmentada</option>
+                            <option value="dotted">Punteada</option>
+                          </select>
+                        </label>
+                        <div class="field" style="flex:1;">
+                          <span>Redimensionar (Escala)</span>
+                          <div class="row" style="margin-bottom:0; gap:4px;">
+                            <button class="btn btn-sm" id="s4BtnLineScaleDown" style="flex:1;" title="Reducir línea al 90%">➖ 90%</button>
+                            <button class="btn btn-sm" id="s4BtnLineScaleUp" style="flex:1;" title="Aumentar línea al 110%">➕ 110%</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style="font-size:10.5px;color:#94a3b8;margin-top:8px; display:flex; justify-content:space-between;">
+                      <span>Líneas trazadas:</span>
+                      <span id="s4LinesCountBadge" style="color:#38bdf8; font-weight:700;">0</span>
+                    </div>
+                    <div class="item-list" id="s4LinesList" style="max-height:85px; overflow-y:auto;"></div>
+                  </div>
+
+                  <!-- SUBPANEL TEXTOS -->
+                  <div id="s4PanelTexts" style="display:none;">
+                    <div class="row" style="gap:4px; margin-bottom:8px;">
+                      <button class="btn btn-primary" id="s4BtnAddText" style="flex:1;" title="Haz clic en el plano para situar un nuevo texto">➕ Agregar Texto</button>
+                      <button class="btn btn-danger" id="s4BtnDeleteText" style="flex:1;" disabled title="Eliminar texto seleccionado">🗑️ Borrar</button>
+                    </div>
+
+                    <div id="s4TextControls" style="display:flex; flex-direction:column; gap:6px;">
+                      <label class="field">
+                        <span>Contenido del Texto</span>
+                        <input type="text" id="s4InpTextContent" placeholder="Ej. Calle 1 / Área Verde / Entrada" value="Texto Plano" />
+                      </label>
+
+                      <div class="row">
+                        <div class="field" style="flex:1;">
+                          <span>Tamaño (px)</span>
+                          <div class="row" style="margin-bottom:0; gap:3px;">
+                            <button class="btn btn-sm" id="s4BtnTextSizeDown" style="padding:4px 8px;" title="Disminuir tamaño">A-</button>
+                            <input type="number" id="s4InpTextSize" min="8" max="96" value="16" style="text-align:center; padding:5px 4px;" />
+                            <button class="btn btn-sm" id="s4BtnTextSizeUp" style="padding:4px 8px;" title="Aumentar tamaño">A+</button>
+                          </div>
+                        </div>
+                        <label class="field" style="flex:1;">
                           <span>Color</span>
-                          <select id="fldTextColor">
+                          <select id="s4SelTextColor">
                             <option value="#ffffff" selected>Blanco (#ffffff)</option>
                             <option value="#fbbf24">Amarillo (#fbbf24)</option>
                             <option value="#38bdf8">Cian (#38bdf8)</option>
@@ -6196,53 +6257,12 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                         </label>
                       </div>
                     </div>
-                    <div style="font-size:10.5px;color:#94a3b8;margin-top:6px;">Textos colocados:</div>
-                    <div class="item-list" id="textsList"></div>
-                  </div>
 
-                  <!-- LÍNEAS Y DELIMITACIONES -->
-                  <div class="card">
-                    <div class="row" style="justify-content:space-between;">
-                      <h3 style="margin:0;">2. Líneas y Trazos</h3>
-                      <span class="badge" id="badgeLineCount">0 líneas</span>
+                    <div style="font-size:10.5px;color:#94a3b8;margin-top:8px; display:flex; justify-content:space-between;">
+                      <span>Textos colocados:</span>
+                      <span id="s4TextsCountBadge" style="color:#38bdf8; font-weight:700;">0</span>
                     </div>
-                    <div class="row" style="margin-top:8px; gap:4px;">
-                      <button class="btn btn-primary" id="btnAddLine" style="flex:1;" title="Trazar nueva línea en el plano">➕ Trazar</button>
-                      <button class="btn btn-warning" id="btnEditLine" style="flex:1;" disabled title="Editar línea seleccionada">✏️ Editar</button>
-                      <button class="btn btn-danger" id="btnDeleteLine" style="flex:1;" disabled title="Borrar línea seleccionada">🗑️ Borrar</button>
-                    </div>
-                    <div id="lineFormGroup" style="margin-top:8px; display:flex; flex-direction:column; gap:6px;">
-                      <div class="row">
-                        <label class="field">
-                          <span>Color de Línea</span>
-                          <select id="fldLineColor">
-                            <option value="#38bdf8" selected>Cian (#38bdf8)</option>
-                            <option value="#fbbf24">Amarillo (#fbbf24)</option>
-                            <option value="#10b981">Verde (#10b981)</option>
-                            <option value="#ffffff">Blanco (#ffffff)</option>
-                            <option value="#ef4444">Rojo (#ef4444)</option>
-                          </select>
-                        </label>
-                        <label class="field">
-                          <span>Grosor</span>
-                          <select id="fldLineWidth">
-                            <option value="1">1 px</option>
-                            <option value="2" selected>2 px</option>
-                            <option value="3">3 px</option>
-                            <option value="5">5 px</option>
-                          </select>
-                        </label>
-                      </div>
-                      <label class="field">
-                        <span>Estilo de Trazo</span>
-                        <select id="fldLineStyle">
-                          <option value="solid" selected>Línea Continua</option>
-                          <option value="dashed">Línea Discontinua / Punteada</option>
-                        </select>
-                      </label>
-                    </div>
-                    <div style="font-size:10.5px;color:#94a3b8;margin-top:6px;">Líneas trazadas:</div>
-                    <div class="item-list" id="linesList"></div>
+                    <div class="item-list" id="s4TextsList" style="max-height:85px; overflow-y:auto;"></div>
                   </div>
                 </div>
               </aside>
@@ -6279,16 +6299,18 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           this.zoom = 1;
           this.draggingVertex = null;
 
-          // Pestañas y elementos interactivos personalizados (Textos y Líneas)
-          this.currentTab = 'lotes';
+          // Sección 4: Líneas Multivértice y Textos Personalizados
+          this.s4SubTab = 'lines'; // 'lines' | 'texts'
           this.customTexts = [];
           this.selectedTextId = null;
           this.customLines = [];
           this.selectedLineId = null;
-          this.actionState = null; // 'add_text' | 'add_line_start' | 'add_line_end' | 'drag_text' | 'drag_line_handle'
-          this.lineTempStart = null;
-          this.draggingLineHandle = null;
-          this.draggingTextId = null;
+          this.actionState = null; // 'add_text' | 'draw_multiline'
+          this.lineDraftPoints = [];
+          this.draggingLineVertex = null; // { lineId, vertexIdx }
+          this.draggingLineCentroid = null; // { lineId, startPt, originalPoints }
+          this.draggingText = null; // { textId, startPt, originalPos }
+          this.draggingTextResize = null; // { textId, startPt, originalSize }
         }
 
         ensureMounted() {
@@ -6313,10 +6335,6 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         bindEvents() {
           this.$('btnClose').addEventListener('click', () => this.cerrar());
           this.$('backdrop').addEventListener('click', (e) => { if (e.target === this.$('backdrop')) this.cerrar(); });
-
-          // Pestañas (Lotes / Polígonos vs Texto y Líneas)
-          this.$('tabBtnLotes').addEventListener('click', () => this.switchTab('lotes'));
-          this.$('tabBtnTextLines').addEventListener('click', () => this.switchTab('textLines'));
 
           const triggerUpload = () => this.$('fileInput').click();
           this.$('emptyState').addEventListener('click', triggerUpload);
@@ -6353,13 +6371,10 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
           const svgEl = this.$('overlaySvg');
           svgEl.addEventListener('click', (e) => this.onSvgClick(e));
+          svgEl.addEventListener('dblclick', (e) => this.onSvgDblClick(e));
           svgEl.addEventListener('mousedown', (e) => this.onSvgMouseDown(e));
           svgEl.addEventListener('mousemove', (e) => this.onSvgMouseMove(e));
-          window.addEventListener('mouseup', () => {
-            this.draggingVertex = null;
-            this.draggingTextId = null;
-            this.draggingLineHandle = null;
-          });
+          window.addEventListener('mouseup', () => this.onWindowMouseUp());
           svgEl.addEventListener('contextmenu', (e) => this.onSvgContextMenu(e));
 
           // Inspector de Lotes
@@ -6374,21 +6389,28 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             this.renderOverlay();
           });
 
-          // Acciones de Texto
-          this.$('btnAddText').addEventListener('click', () => this.iniciarAgregarTexto());
-          this.$('btnEditText').addEventListener('click', () => this.actualizarTextoSeleccionado());
-          ['fldCustomText', 'fldTextSize', 'fldTextColor'].forEach((id) => {
-            this.$(id).addEventListener('input', () => this.actualizarTextoSeleccionado());
-          });
-          this.$('btnDeleteText').addEventListener('click', () => this.borrarTextoSeleccionado());
+          // Sección 4: Subpestañas
+          this.$('s4SubTabLines').addEventListener('click', () => this.switchS4SubTab('lines'));
+          this.$('s4SubTabTexts').addEventListener('click', () => this.switchS4SubTab('texts'));
 
-          // Acciones de Línea
-          this.$('btnAddLine').addEventListener('click', () => this.iniciarTrazarLinea());
-          this.$('btnEditLine').addEventListener('click', () => this.actualizarLineaSeleccionada());
-          ['fldLineColor', 'fldLineWidth', 'fldLineStyle'].forEach((id) => {
+          // Sección 4: Líneas Multivértice
+          this.$('s4BtnAddLine').addEventListener('click', () => this.iniciarTrazarLinea());
+          this.$('s4BtnFinishLine').addEventListener('click', () => this.finalizarTrazoLinea());
+          this.$('s4BtnDeleteLine').addEventListener('click', () => this.borrarLineaSeleccionada());
+          this.$('s4BtnLineScaleDown').addEventListener('click', () => this.escalarLineaSeleccionada(0.9));
+          this.$('s4BtnLineScaleUp').addEventListener('click', () => this.escalarLineaSeleccionada(1.1));
+          ['s4SelLineColor', 's4SelLineWidth', 's4SelLineStyle'].forEach((id) => {
             this.$(id).addEventListener('change', () => this.actualizarLineaSeleccionada());
           });
-          this.$('btnDeleteLine').addEventListener('click', () => this.borrarLineaSeleccionada());
+
+          // Sección 4: Textos
+          this.$('s4BtnAddText').addEventListener('click', () => this.iniciarAgregarTexto());
+          this.$('s4BtnDeleteText').addEventListener('click', () => this.borrarTextoSeleccionado());
+          this.$('s4BtnTextSizeDown').addEventListener('click', () => this.escalarTextoSeleccionado(-2));
+          this.$('s4BtnTextSizeUp').addEventListener('click', () => this.escalarTextoSeleccionado(2));
+          this.$('s4InpTextSize').addEventListener('input', () => this.actualizarTextoSeleccionado());
+          this.$('s4InpTextContent').addEventListener('input', () => this.actualizarTextoSeleccionado());
+          this.$('s4SelTextColor').addEventListener('change', () => this.actualizarTextoSeleccionado());
 
           // Exportar
           this.$('btnCopySvg').addEventListener('click', () => this.copiarSvg());
@@ -6396,14 +6418,19 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           this.$('btnApply').addEventListener('click', () => this.aplicarExportacion());
         }
 
+        switchS4SubTab(tab) {
+          this.s4SubTab = tab;
+          this.$('s4SubTabLines').classList.toggle('btn-active', tab === 'lines');
+          this.$('s4SubTabTexts').classList.toggle('btn-active', tab === 'texts');
+          this.$('s4PanelLines').style.display = tab === 'lines' ? 'block' : 'none';
+          this.$('s4PanelTexts').style.display = tab === 'texts' ? 'block' : 'none';
+        }
+
         switchTab(tabName) {
-          this.currentTab = tabName;
-          this.$('tabBtnLotes').classList.toggle('active', tabName === 'lotes');
-          this.$('tabBtnTextLines').classList.toggle('active', tabName === 'textLines');
-          this.$('panelLotes').classList.toggle('hidden', tabName !== 'lotes');
-          this.$('panelTextLines').classList.toggle('hidden', tabName !== 'textLines');
-          if (tabName === 'textLines') {
-            this.renderTextLinesList();
+          if (tabName === 'lines' || tabName === 'textLines') {
+            this.switchS4SubTab('lines');
+          } else if (tabName === 'texts') {
+            this.switchS4SubTab('texts');
           }
         }
 
@@ -6426,24 +6453,25 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           this.setStatus('🧲 Lados de polígonos contiguos perfectamente pegados y unificados sin huecos.');
         }
 
-        // ================= GESTIÓN DE TEXTOS =================
+        // ================= SECCIÓN 4: GESTIÓN DE TEXTOS =================
         iniciarAgregarTexto() {
-          const txt = (this.$('fldCustomText').value || '').trim() || 'Mz. A';
+          this.switchS4SubTab('texts');
+          const txt = (this.$('s4InpTextContent').value || '').trim() || 'Texto Plano';
           this.actionState = 'add_text';
           this.setStatus(`Haz clic sobre el plano para colocar el texto: "${txt}"`);
         }
 
         colocarTexto(pt) {
-          const text = (this.$('fldCustomText').value || '').trim() || 'Mz. A';
-          const size = parseInt(this.$('fldTextSize').value, 10) || 15;
-          const color = this.$('fldTextColor').value || '#ffffff';
+          const text = (this.$('s4InpTextContent').value || '').trim() || 'Texto Plano';
+          const size = parseInt(this.$('s4InpTextSize').value, 10) || 16;
+          const color = this.$('s4SelTextColor').value || '#ffffff';
           const id = `txt-${Date.now().toString(36).slice(-4)}`;
           const item = { id, text, x: pt[0], y: pt[1], size, color };
           this.customTexts.push(item);
           this.selectedTextId = id;
           this.actionState = null;
           this.renderOverlay();
-          this.renderTextLinesList();
+          this.renderSection4UI();
           this.setStatus(`Texto "${text}" colocado.`);
         }
 
@@ -6451,196 +6479,171 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           this.selectedTextId = id;
           this.selectedLineId = null;
           this.selectedId = null;
+          this.switchS4SubTab('texts');
           const t = this.customTexts.find(x => x.id === id);
           if (t) {
-            this.switchTab('textLines');
-            this.$('fldCustomText').value = t.text;
-            this.$('fldTextSize').value = t.size;
-            this.$('fldTextColor').value = t.color;
-            this.$('btnEditText').disabled = false;
-            this.$('btnDeleteText').disabled = false;
+            this.$('s4InpTextContent').value = t.text;
+            this.$('s4InpTextSize').value = t.size || 16;
+            this.$('s4SelTextColor').value = t.color || '#ffffff';
+            this.$('s4BtnDeleteText').disabled = false;
           }
           this.renderOverlay();
-          this.renderTextLinesList();
+          this.renderSection4UI();
         }
 
         actualizarTextoSeleccionado() {
           if (!this.selectedTextId) return;
           const t = this.customTexts.find(x => x.id === this.selectedTextId);
           if (!t) return;
-          t.text = this.$('fldCustomText').value;
-          t.size = parseInt(this.$('fldTextSize').value, 10) || 15;
-          t.color = this.$('fldTextColor').value;
-          this.renderOverlay();
-          this.renderTextLinesList();
+          t.text = this.$('s4InpTextContent').value;
+          t.size = parseInt(this.$('s4InpTextSize').value, 10) || 16;
+          t.color = this.$('s4SelTextColor').value;
+          this.renderOverlay(true);
+          this.renderSection4UI();
+        }
+
+        escalarTextoSeleccionado(delta) {
+          if (!this.selectedTextId) return;
+          const t = this.customTexts.find(x => x.id === this.selectedTextId);
+          if (!t) return;
+          t.size = Math.max(8, Math.min(96, (t.size || 16) + delta));
+          this.$('s4InpTextSize').value = t.size;
+          this.renderOverlay(true);
+          this.renderSection4UI();
         }
 
         borrarTextoSeleccionado() {
           if (!this.selectedTextId) return;
           this.customTexts = this.customTexts.filter(x => x.id !== this.selectedTextId);
           this.selectedTextId = null;
-          this.$('btnEditText').disabled = true;
-          this.$('btnDeleteText').disabled = true;
+          this.$('s4BtnDeleteText').disabled = true;
           this.renderOverlay();
-          this.renderTextLinesList();
+          this.renderSection4UI();
           this.setStatus('Texto eliminado.');
         }
 
-        // ================= GESTIÓN DE LÍNEAS =================
+        // ================= SECCIÓN 4: GESTIÓN DE LÍNEAS MULTIVÉRTICE =================
         iniciarTrazarLinea() {
-          this.actionState = 'add_line_start';
-          this.lineTempStart = null;
-          this.setStatus('Haz clic en el plano para marcar el punto INICIAL de la línea.');
+          this.switchS4SubTab('lines');
+          this.actionState = 'draw_multiline';
+          this.lineDraftPoints = [];
+          this.selectedLineId = null;
+          this.$('s4BtnAddLine').style.display = 'none';
+          this.$('s4BtnFinishLine').style.display = 'inline-flex';
+          this.setStatus('Haz clic en el plano para agregar vértices. Clic en "Finalizar" o doble clic para terminar.');
+          this.renderOverlay();
         }
 
-        gestionarClickLinea(pt) {
-          if (this.actionState === 'add_line_start') {
-            this.lineTempStart = pt;
-            this.actionState = 'add_line_end';
-            this.setStatus('Haz clic en el plano para marcar el punto FINAL de la línea.');
-          } else if (this.actionState === 'add_line_end') {
-            const color = this.$('fldLineColor').value || '#38bdf8';
-            const width = parseInt(this.$('fldLineWidth').value, 10) || 2;
-            const dash = this.$('fldLineStyle').value || 'solid';
+        agregarPuntoDraftLinea(pt) {
+          this.lineDraftPoints.push(pt);
+          this.setStatus(`Vértice ${this.lineDraftPoints.length} marcado. Clic para seguir trazando o "Finalizar".`);
+          this.renderOverlay();
+        }
+
+        finalizarTrazoLinea() {
+          if (this.lineDraftPoints.length >= 2) {
+            const color = this.$('s4SelLineColor').value || '#38bdf8';
+            const width = parseFloat(this.$('s4SelLineWidth').value) || 2.5;
+            const dash = this.$('s4SelLineStyle').value || 'solid';
             const id = `line-${Date.now().toString(36).slice(-4)}`;
             const newLine = {
               id,
-              x1: this.lineTempStart[0],
-              y1: this.lineTempStart[1],
-              x2: pt[0],
-              y2: pt[1],
+              points: [...this.lineDraftPoints],
               color,
               width,
               dash
             };
             this.customLines.push(newLine);
             this.selectedLineId = id;
-            this.actionState = null;
-            this.lineTempStart = null;
-            this.renderOverlay();
-            this.renderTextLinesList();
-            this.setStatus('Línea trazada con éxito.');
+            this.setStatus(`Línea creada con ${newLine.points.length} vértices.`);
+          } else {
+            this.setStatus('Se requieren al menos 2 puntos para crear una línea.');
           }
+          this.lineDraftPoints = [];
+          this.actionState = null;
+          this.$('s4BtnAddLine').style.display = 'inline-flex';
+          this.$('s4BtnFinishLine').style.display = 'none';
+          this.renderOverlay();
+          this.renderSection4UI();
         }
 
         seleccionarLinea(id) {
           this.selectedLineId = id;
           this.selectedTextId = null;
           this.selectedId = null;
+          this.switchS4SubTab('lines');
           const l = this.customLines.find(x => x.id === id);
           if (l) {
-            this.switchTab('textLines');
-            this.$('fldLineColor').value = l.color;
-            this.$('fldLineWidth').value = l.width;
-            this.$('fldLineStyle').value = l.dash;
-            this.$('btnEditLine').disabled = false;
-            this.$('btnDeleteLine').disabled = false;
+            this.$('s4SelLineColor').value = l.color || '#38bdf8';
+            this.$('s4SelLineWidth').value = l.width || 2.5;
+            this.$('s4SelLineStyle').value = l.dash || 'solid';
+            this.$('s4BtnDeleteLine').disabled = false;
           }
           this.renderOverlay();
-          this.renderTextLinesList();
+          this.renderSection4UI();
         }
 
         actualizarLineaSeleccionada() {
           if (!this.selectedLineId) return;
           const l = this.customLines.find(x => x.id === this.selectedLineId);
           if (!l) return;
-          l.color = this.$('fldLineColor').value;
-          l.width = parseInt(this.$('fldLineWidth').value, 10) || 2;
-          l.dash = this.$('fldLineStyle').value;
-          this.renderOverlay();
-          this.renderTextLinesList();
+          l.color = this.$('s4SelLineColor').value;
+          l.width = parseFloat(this.$('s4SelLineWidth').value) || 2.5;
+          l.dash = this.$('s4SelLineStyle').value;
+          this.renderOverlay(true);
+          this.renderSection4UI();
+        }
+
+        escalarLineaSeleccionada(factor) {
+          if (!this.selectedLineId) return;
+          const l = this.customLines.find(x => x.id === this.selectedLineId);
+          if (!l || !l.points || l.points.length < 2) return;
+          const [cx, cy] = calcularCentroide(l.points);
+          l.points = l.points.map(([px, py]) => [
+            Math.round(cx + (px - cx) * factor),
+            Math.round(cy + (py - cy) * factor)
+          ]);
+          this.renderOverlay(true);
+          this.setStatus(`Línea escalada al ${Math.round(factor * 100)}%.`);
         }
 
         borrarLineaSeleccionada() {
           if (!this.selectedLineId) return;
           this.customLines = this.customLines.filter(x => x.id !== this.selectedLineId);
           this.selectedLineId = null;
-          this.$('btnEditLine').disabled = true;
-          this.$('btnDeleteLine').disabled = true;
+          this.$('s4BtnDeleteLine').disabled = true;
           this.renderOverlay();
-          this.renderTextLinesList();
+          this.renderSection4UI();
           this.setStatus('Línea eliminada.');
         }
 
-        renderTextLinesList() {
-          this.$('badgeTextCount').textContent = `${this.customTexts.length} textos`;
-          this.$('badgeLineCount').textContent = `${this.customLines.length} líneas`;
-
-          // Lista de Textos
-          const tBody = this.$('textsList');
-          if (tBody) {
-            if (!this.customTexts.length) {
-              tBody.innerHTML = '<div style="font-size:10px;color:#64748b;padding:4px 0;">Sin textos en el plano.</div>';
-            } else {
-              tBody.innerHTML = this.customTexts.map(t => {
-                const isSel = t.id === this.selectedTextId;
-                return `
-                  <div class="item-row ${isSel ? 'selected' : ''}" data-item-text="${t.id}">
-                    <span style="font-weight:700;color:${t.color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;">${escapeHtml(t.text)} (${t.size}px)</span>
-                    <div style="display:flex;gap:4px;align-items:center;">
-                      <button type="button" data-edit-text="${t.id}" title="Editar este texto" style="background:rgba(245,158,11,0.25);color:#fbbf24;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✏️</button>
-                      <button type="button" data-del-text="${t.id}" title="Eliminar este texto" style="background:rgba(239,68,68,0.25);color:#fca5a5;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✕</button>
-                    </div>
-                  </div>
-                `;
-              }).join('');
-
-              tBody.querySelectorAll('[data-item-text]').forEach(el => {
-                el.addEventListener('click', (e) => {
-                  if (e.target.closest('[data-del-text]') || e.target.closest('[data-edit-text]')) return;
-                  this.seleccionarTexto(el.getAttribute('data-item-text'));
-                });
-              });
-
-              tBody.querySelectorAll('[data-edit-text]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                  e.stopPropagation();
-                  this.seleccionarTexto(btn.getAttribute('data-edit-text'));
-                  const fld = this.$('fldCustomText');
-                  if (fld) { fld.focus(); fld.select(); }
-                });
-              });
-
-              tBody.querySelectorAll('[data-del-text]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                  e.stopPropagation();
-                  this.selectedTextId = btn.getAttribute('data-del-text');
-                  this.borrarTextoSeleccionado();
-                });
-              });
-            }
-          }
+        renderSection4UI() {
+          this.$('s4LinesCountBadge').textContent = `${this.customLines.length}`;
+          this.$('s4TextsCountBadge').textContent = `${this.customTexts.length}`;
 
           // Lista de Líneas
-          const lBody = this.$('linesList');
+          const lBody = this.$('s4LinesList');
           if (lBody) {
             if (!this.customLines.length) {
               lBody.innerHTML = '<div style="font-size:10px;color:#64748b;padding:4px 0;">Sin líneas trazadas.</div>';
             } else {
               lBody.innerHTML = this.customLines.map((l, i) => {
                 const isSel = l.id === this.selectedLineId;
+                const ptCount = l.points ? l.points.length : 2;
                 return `
-                  <div class="item-row ${isSel ? 'selected' : ''}" data-item-line="${l.id}">
-                    <span style="font-weight:700;color:${l.color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px;">Línea #${i + 1} (${l.width}px · ${l.dash === 'dashed' ? 'Puntos' : 'Sólida'})</span>
-                    <div style="display:flex;gap:4px;align-items:center;">
-                      <button type="button" data-edit-line="${l.id}" title="Editar esta línea" style="background:rgba(245,158,11,0.25);color:#fbbf24;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✏️</button>
-                      <button type="button" data-del-line="${l.id}" title="Eliminar esta línea" style="background:rgba(239,68,68,0.25);color:#fca5a5;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✕</button>
-                    </div>
+                  <div class="item-row ${isSel ? 'selected' : ''}" data-s4-line="${l.id}">
+                    <span style="font-weight:700;color:${l.color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:145px;">
+                      ● Línea #${i + 1} (${ptCount} pts · ${l.width}px)
+                    </span>
+                    <button type="button" data-del-line="${l.id}" title="Eliminar línea" style="background:rgba(239,68,68,0.25);color:#fca5a5;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✕</button>
                   </div>
                 `;
               }).join('');
 
-              lBody.querySelectorAll('[data-item-line]').forEach(el => {
+              lBody.querySelectorAll('[data-s4-line]').forEach(el => {
                 el.addEventListener('click', (e) => {
-                  if (e.target.closest('[data-del-line]') || e.target.closest('[data-edit-line]')) return;
-                  this.seleccionarLinea(el.getAttribute('data-item-line'));
-                });
-              });
-
-              lBody.querySelectorAll('[data-edit-line]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                  e.stopPropagation();
-                  this.seleccionarLinea(btn.getAttribute('data-edit-line'));
+                  if (e.target.closest('[data-del-line]')) return;
+                  this.seleccionarLinea(el.getAttribute('data-s4-line'));
                 });
               });
 
@@ -6649,6 +6652,41 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                   e.stopPropagation();
                   this.selectedLineId = btn.getAttribute('data-del-line');
                   this.borrarLineaSeleccionada();
+                });
+              });
+            }
+          }
+
+          // Lista de Textos
+          const tBody = this.$('s4TextsList');
+          if (tBody) {
+            if (!this.customTexts.length) {
+              tBody.innerHTML = '<div style="font-size:10px;color:#64748b;padding:4px 0;">Sin textos colocados.</div>';
+            } else {
+              tBody.innerHTML = this.customTexts.map(t => {
+                const isSel = t.id === this.selectedTextId;
+                return `
+                  <div class="item-row ${isSel ? 'selected' : ''}" data-s4-text="${t.id}">
+                    <span style="font-weight:700;color:${t.color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:145px;">
+                      ● ${escapeHtml(t.text)} (${t.size}px)
+                    </span>
+                    <button type="button" data-del-text="${t.id}" title="Eliminar texto" style="background:rgba(239,68,68,0.25);color:#fca5a5;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:10px;font-weight:bold;">✕</button>
+                  </div>
+                `;
+              }).join('');
+
+              tBody.querySelectorAll('[data-s4-text]').forEach(el => {
+                el.addEventListener('click', (e) => {
+                  if (e.target.closest('[data-del-text]')) return;
+                  this.seleccionarTexto(el.getAttribute('data-s4-text'));
+                });
+              });
+
+              tBody.querySelectorAll('[data-del-text]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  this.selectedTextId = btn.getAttribute('data-del-text');
+                  this.borrarTextoSeleccionado();
                 });
               });
             }
@@ -6665,6 +6703,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           if (options.initialImageUrl && !this.imgNaturalW) {
             this.cargarImagenDesdeUrl(options.initialImageUrl);
           }
+          this.renderSection4UI();
         }
 
         cerrar() {
@@ -6678,7 +6717,6 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           img.crossOrigin = 'anonymous';
           img.onload = () => this.procesarElementoImagen(img, url);
           img.onerror = () => {
-            // Intento con proxy para evitar bloqueo por CORS de la URL externa
             const proxyUrl = 'https://images.weserv.nl/?url=' + encodeURIComponent(url.replace(/^https?:\/\//, ''));
             const fallbackImg = new Image();
             fallbackImg.crossOrigin = 'anonymous';
@@ -6731,6 +6769,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
           this.setStatus(`Imagen cargada (${this.imgNaturalW}×${this.imgNaturalH}px). Pulsa "Detectar lotes".`);
           this.renderOverlay();
+          this.renderSection4UI();
         }
 
         ejecutarDeteccion() {
@@ -6780,6 +6819,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             this.selectedId = this.lotes[0]?.id || null;
             this.recalcularMetricas();
             this.renderOverlay();
+            this.renderSection4UI();
 
             // Actualizar inmediatamente los datos en los campos correspondientes de la interfaz
             if (this.selectedId) {
@@ -6844,28 +6884,82 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         onSvgMouseDown(e) {
           const pt = this.obtenerPuntoSvg(e);
 
-          // 1. Manejo de extremos de línea (line-handle)
-          const lineHandle = e.target.closest('[data-line-handle]');
-          if (lineHandle && e.button === 0) {
+          // 1. Manejo de vértice individual de línea multivértice
+          const lineVertex = e.target.closest('[data-line-vertex-idx]');
+          if (lineVertex && e.button === 0) {
             e.stopPropagation();
-            this.draggingLineHandle = {
-              lineId: lineHandle.getAttribute('data-line-id'),
-              handle: lineHandle.getAttribute('data-line-handle')
+            this.draggingLineVertex = {
+              lineId: lineVertex.getAttribute('data-line-id'),
+              vertexIdx: parseInt(lineVertex.getAttribute('data-line-vertex-idx'), 10)
             };
             return;
           }
 
-          // 2. Manejo de texto arrastrable
+          // 2. Manejo de punto medio para insertar vértice a la línea
+          const midpoint = e.target.closest('[data-line-insert-after]');
+          if (midpoint && e.button === 0) {
+            e.stopPropagation();
+            const lineId = midpoint.getAttribute('data-line-id');
+            const insertAfter = parseInt(midpoint.getAttribute('data-line-insert-after'), 10);
+            const line = this.customLines.find(l => l.id === lineId);
+            if (line && Array.isArray(line.points)) {
+              line.points.splice(insertAfter + 1, 0, pt);
+              this.draggingLineVertex = { lineId, vertexIdx: insertAfter + 1 };
+              this.renderOverlay(true);
+            }
+            return;
+          }
+
+          // 3. Manejo de centroide de línea (mover toda la línea)
+          const lineCentroid = e.target.closest('[data-line-centroid]');
+          if (lineCentroid && e.button === 0) {
+            e.stopPropagation();
+            const lineId = lineCentroid.getAttribute('data-line-id');
+            const line = this.customLines.find(l => l.id === lineId);
+            if (line && Array.isArray(line.points)) {
+              this.draggingLineCentroid = {
+                lineId,
+                startPt: pt,
+                originalPoints: line.points.map(p => [...p])
+              };
+            }
+            return;
+          }
+
+          // 4. Manejo de redimensionamiento de texto (tirador de esquina)
+          const textResize = e.target.closest('[data-text-resize-id]');
+          if (textResize && e.button === 0) {
+            e.stopPropagation();
+            const textId = textResize.getAttribute('data-text-resize-id');
+            const t = this.customTexts.find(x => x.id === textId);
+            if (t) {
+              this.draggingTextResize = {
+                textId,
+                startPt: pt,
+                originalSize: t.size || 16
+              };
+            }
+            return;
+          }
+
+          // 5. Manejo de texto arrastrable
           const textEl = e.target.closest('[data-plan-text-id]');
           if (textEl && e.button === 0) {
             e.stopPropagation();
             const textId = textEl.getAttribute('data-plan-text-id');
             this.seleccionarTexto(textId);
-            this.draggingTextId = textId;
+            const t = this.customTexts.find(x => x.id === textId);
+            if (t) {
+              this.draggingText = {
+                textId,
+                startPt: pt,
+                originalPos: [t.x, t.y]
+              };
+            }
             return;
           }
 
-          // 3. Vértice de polígono
+          // 6. Vértice de polígono
           const vEl = e.target.closest('[data-vertex-idx]');
           if (vEl && e.button === 0) {
             e.stopPropagation();
@@ -6876,26 +6970,48 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         onSvgMouseMove(e) {
           const pt = this.obtenerPuntoSvg(e);
 
-          // Mover extremo de línea seleccionada
-          if (this.draggingLineHandle) {
-            const line = this.customLines.find(l => l.id === this.draggingLineHandle.lineId);
-            if (line) {
-              if (this.draggingLineHandle.handle === 'p1') {
-                line.x1 = pt[0]; line.y1 = pt[1];
-              } else {
-                line.x2 = pt[0]; line.y2 = pt[1];
-              }
+          // Mover vértice individual de línea multivértice
+          if (this.draggingLineVertex) {
+            const line = this.customLines.find(l => l.id === this.draggingLineVertex.lineId);
+            if (line && Array.isArray(line.points)) {
+              line.points[this.draggingLineVertex.vertexIdx] = pt;
+              this.renderOverlay(true);
+            }
+            return;
+          }
+
+          // Mover línea completa por su centroide
+          if (this.draggingLineCentroid) {
+            const line = this.customLines.find(l => l.id === this.draggingLineCentroid.lineId);
+            if (line && Array.isArray(line.points)) {
+              const dx = pt[0] - this.draggingLineCentroid.startPt[0];
+              const dy = pt[1] - this.draggingLineCentroid.startPt[1];
+              line.points = this.draggingLineCentroid.originalPoints.map(([ox, oy]) => [ox + dx, oy + dy]);
+              this.renderOverlay(true);
+            }
+            return;
+          }
+
+          // Redimensionar texto arrastrando tirador
+          if (this.draggingTextResize) {
+            const t = this.customTexts.find(x => x.id === this.draggingTextResize.textId);
+            if (t) {
+              const dx = pt[0] - this.draggingTextResize.startPt[0];
+              t.size = Math.max(8, Math.min(96, Math.round(this.draggingTextResize.originalSize + dx * 0.5)));
+              this.$('s4InpTextSize').value = t.size;
               this.renderOverlay(true);
             }
             return;
           }
 
           // Mover texto seleccionado
-          if (this.draggingTextId) {
-            const t = this.customTexts.find(x => x.id === this.draggingTextId);
+          if (this.draggingText) {
+            const t = this.customTexts.find(x => x.id === this.draggingText.textId);
             if (t) {
-              t.x = pt[0];
-              t.y = pt[1];
+              const dx = pt[0] - this.draggingText.startPt[0];
+              const dy = pt[1] - this.draggingText.startPt[1];
+              t.x = this.draggingText.originalPos[0] + dx;
+              t.y = this.draggingText.originalPos[1] + dy;
               this.renderOverlay(true);
             }
             return;
@@ -6910,7 +7026,38 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           }
         }
 
+        onWindowMouseUp() {
+          const hadAction = this.draggingLineVertex || this.draggingLineCentroid || this.draggingText || this.draggingTextResize;
+          this.draggingVertex = null;
+          this.draggingLineVertex = null;
+          this.draggingLineCentroid = null;
+          this.draggingText = null;
+          this.draggingTextResize = null;
+          if (hadAction) this.renderSection4UI();
+        }
+
         onSvgContextMenu(e) {
+          // Eliminar vértice de línea multivértice con clic derecho
+          const lineVertex = e.target.closest('[data-line-vertex-idx]');
+          if (lineVertex) {
+            e.preventDefault();
+            const lineId = lineVertex.getAttribute('data-line-id');
+            const idx = parseInt(lineVertex.getAttribute('data-line-vertex-idx'), 10);
+            const line = this.customLines.find(l => l.id === lineId);
+            if (line && Array.isArray(line.points)) {
+              if (line.points.length <= 2) {
+                this.setStatus('Una línea debe tener al menos 2 vértices.');
+                return;
+              }
+              line.points.splice(idx, 1);
+              this.renderOverlay(true);
+              this.renderSection4UI();
+              this.setStatus('Vértice de línea eliminado.');
+            }
+            return;
+          }
+
+          // Eliminar vértice de polígono con clic derecho
           const vEl = e.target.closest('[data-vertex-idx]');
           if (!vEl || !this.selectedId) return;
           e.preventDefault();
@@ -6923,26 +7070,34 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           }
           lote.points.splice(idx, 1);
           this.renderOverlay(true);
-          this.setStatus('Vértice eliminado.');
+          this.setStatus('Vértice de polígono eliminado.');
+        }
+
+        onSvgDblClick(e) {
+          if (this.actionState === 'draw_multiline') {
+            e.preventDefault();
+            this.finalizarTrazoLinea();
+          }
         }
 
         onSvgClick(e) {
           const pt = this.obtenerPuntoSvg(e);
 
-          // Si estamos en modo agregar texto
+          if (this.actionState === 'draw_multiline') {
+            this.agregarPuntoDraftLinea(pt);
+            return;
+          }
+
           if (this.actionState === 'add_text') {
             this.colocarTexto(pt);
             return;
           }
 
-          // Si estamos en modo agregar línea
-          if (this.actionState === 'add_line_start' || this.actionState === 'add_line_end') {
-            this.gestionarClickLinea(pt);
-            return;
-          }
-
           if (e.target.closest('[data-vertex-idx]')) return;
-          if (e.target.closest('[data-line-handle]')) return;
+          if (e.target.closest('[data-line-vertex-idx]')) return;
+          if (e.target.closest('[data-line-insert-after]')) return;
+          if (e.target.closest('[data-line-centroid]')) return;
+          if (e.target.closest('[data-text-resize-id]')) return;
 
           // Clic en texto personalizado
           const textEl = e.target.closest('[data-plan-text-id]');
@@ -6988,8 +7143,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             this.selectedId = polyEl.getAttribute('data-lote-id');
             this.selectedTextId = null;
             this.selectedLineId = null;
-            this.switchTab('lotes');
             this.renderOverlay();
+            this.renderSection4UI();
           }
         }
 
@@ -7030,48 +7185,113 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             svg.appendChild(text);
           }
 
-          // 2. Renderizar Líneas Personalizadas
+          // 2. Renderizar Líneas Multivértice
           for (const line of this.customLines) {
+            const pts = (Array.isArray(line.points) && line.points.length >= 2)
+              ? line.points
+              : [[line.x1 || 0, line.y1 || 0], [line.x2 || 10, line.y2 || 10]];
+
             const isSel = line.id === this.selectedLineId;
-            const lEl = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            lEl.setAttribute('x1', line.x1);
-            lEl.setAttribute('y1', line.y1);
-            lEl.setAttribute('x2', line.x2);
-            lEl.setAttribute('y2', line.y2);
-            lEl.setAttribute('stroke', isSel ? '#38bdf8' : line.color);
-            lEl.setAttribute('stroke-width', isSel ? Math.max(3, line.width + 1.5) : line.width);
-            if (line.dash === 'dashed') lEl.setAttribute('stroke-dasharray', '6,4');
-            lEl.setAttribute('data-plan-line-id', line.id);
-            lEl.setAttribute('class', `custom-plan-line ${isSel ? 'selected' : ''}`);
-            svg.appendChild(lEl);
+            const ptsAttr = pts.map(p => p.join(',')).join(' ');
 
-            // Nodos en extremos si está seleccionada
+            // Línea visible
+            const pl = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            pl.setAttribute('points', ptsAttr);
+            pl.setAttribute('fill', 'none');
+            pl.setAttribute('stroke', isSel ? '#38bdf8' : line.color);
+            pl.setAttribute('stroke-width', isSel ? Math.max(3.5, line.width + 1.5) : line.width);
+            if (line.dash === 'dashed') pl.setAttribute('stroke-dasharray', '8,5');
+            if (line.dash === 'dotted') pl.setAttribute('stroke-dasharray', '3,4');
+            pl.setAttribute('data-plan-line-id', line.id);
+            pl.setAttribute('class', `custom-plan-line ${isSel ? 'selected' : ''}`);
+            svg.appendChild(pl);
+
+            // Hit-area transparente para facilitar clic
+            const hit = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            hit.setAttribute('points', ptsAttr);
+            hit.setAttribute('fill', 'none');
+            hit.setAttribute('stroke', 'transparent');
+            hit.setAttribute('stroke-width', '14');
+            hit.setAttribute('data-plan-line-id', line.id);
+            hit.style.cursor = 'pointer';
+            svg.appendChild(hit);
+
+            // Si está seleccionada: Tiradores interactivos
             if (isSel) {
-              const h1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-              h1.setAttribute('cx', line.x1); h1.setAttribute('cy', line.y1); h1.setAttribute('r', '6');
-              h1.setAttribute('class', 'line-handle');
-              h1.setAttribute('data-line-id', line.id);
-              h1.setAttribute('data-line-handle', 'p1');
-              svg.appendChild(h1);
+              // Vértices individuales arrastrables
+              pts.forEach(([vx, vy], idx) => {
+                const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                dot.setAttribute('cx', vx);
+                dot.setAttribute('cy', vy);
+                dot.setAttribute('r', '6');
+                dot.setAttribute('class', 'line-vertex-dot');
+                dot.setAttribute('data-line-id', line.id);
+                dot.setAttribute('data-line-vertex-idx', String(idx));
+                dot.setAttribute('title', 'Arrastra para mover vértice · Clic derecho para borrarlo');
+                svg.appendChild(dot);
+              });
 
-              const h2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-              h2.setAttribute('cx', line.x2); h2.setAttribute('cy', line.y2); h2.setAttribute('r', '6');
-              h2.setAttribute('class', 'line-handle');
-              h2.setAttribute('data-line-id', line.id);
-              h2.setAttribute('data-line-handle', 'p2');
-              svg.appendChild(h2);
+              // Puntos medios '+' para insertar vértice
+              for (let i = 0; i < pts.length - 1; i++) {
+                const mx = Math.round((pts[i][0] + pts[i + 1][0]) / 2);
+                const my = Math.round((pts[i][1] + pts[i + 1][1]) / 2);
+                const mid = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                mid.setAttribute('cx', mx);
+                mid.setAttribute('cy', my);
+                mid.setAttribute('r', '4.5');
+                mid.setAttribute('class', 'line-midpoint-dot');
+                mid.setAttribute('data-line-id', line.id);
+                mid.setAttribute('data-line-insert-after', String(i));
+                mid.setAttribute('title', 'Arrastra o haz clic para insertar un nuevo vértice');
+                svg.appendChild(mid);
+              }
+
+              // Centroide de línea para mover toda la línea
+              const [cx, cy] = calcularCentroide(pts);
+              const centroidDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+              centroidDot.setAttribute('cx', cx);
+              centroidDot.setAttribute('cy', cy);
+              centroidDot.setAttribute('r', '7');
+              centroidDot.setAttribute('class', 'line-centroid-dot');
+              centroidDot.setAttribute('data-line-id', line.id);
+              centroidDot.setAttribute('data-line-centroid', 'true');
+              centroidDot.setAttribute('title', 'Arrastra para mover toda la línea');
+              svg.appendChild(centroidDot);
             }
           }
 
-          // 3. Renderizar Textos Personalizados
+          // 3. Renderizar Trazo en Curso (Draft) de Línea
+          if (this.lineDraftPoints && this.lineDraftPoints.length > 0) {
+            const draftPts = this.lineDraftPoints.map(p => p.join(',')).join(' ');
+            const draftPl = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            draftPl.setAttribute('points', draftPts);
+            draftPl.setAttribute('fill', 'none');
+            draftPl.setAttribute('stroke', '#38bdf8');
+            draftPl.setAttribute('stroke-width', '2.5');
+            draftPl.setAttribute('stroke-dasharray', '5,4');
+            svg.appendChild(draftPl);
+
+            this.lineDraftPoints.forEach(([dx, dy]) => {
+              const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+              c.setAttribute('cx', dx);
+              c.setAttribute('cy', dy);
+              c.setAttribute('r', '5');
+              c.setAttribute('fill', '#38bdf8');
+              c.setAttribute('stroke', '#ffffff');
+              c.setAttribute('stroke-width', '1.5');
+              svg.appendChild(c);
+            });
+          }
+
+          // 4. Renderizar Textos Personalizados
           for (const txt of this.customTexts) {
             const isSel = txt.id === this.selectedTextId;
             const tEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             tEl.setAttribute('x', txt.x);
             tEl.setAttribute('y', txt.y);
-            tEl.setAttribute('font-size', txt.size);
+            tEl.setAttribute('font-size', txt.size || 16);
             tEl.setAttribute('font-weight', '800');
-            tEl.setAttribute('fill', txt.color);
+            tEl.setAttribute('fill', txt.color || '#ffffff');
             tEl.setAttribute('stroke', isSel ? '#38bdf8' : '#000000');
             tEl.setAttribute('stroke-width', isSel ? '4' : '2.5');
             tEl.setAttribute('paint-order', 'stroke');
@@ -7081,9 +7301,37 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             tEl.setAttribute('class', `custom-plan-text ${isSel ? 'selected' : ''}`);
             tEl.textContent = txt.text;
             svg.appendChild(tEl);
+
+            if (isSel) {
+              const estW = Math.max(30, (txt.text || '').length * ((txt.size || 16) * 0.6));
+              const estH = Math.max(16, (txt.size || 16) * 1.3);
+              const rx = txt.x - estW / 2;
+              const ry = txt.y - estH / 2;
+
+              const box = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+              box.setAttribute('x', rx);
+              box.setAttribute('y', ry);
+              box.setAttribute('width', estW);
+              box.setAttribute('height', estH);
+              box.setAttribute('fill', 'none');
+              box.setAttribute('stroke', '#38bdf8');
+              box.setAttribute('stroke-width', '1');
+              box.setAttribute('stroke-dasharray', '3,3');
+              box.style.pointerEvents = 'none';
+              svg.appendChild(box);
+
+              const handle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+              handle.setAttribute('cx', rx + estW);
+              handle.setAttribute('cy', ry + estH);
+              handle.setAttribute('r', '5.5');
+              handle.setAttribute('class', 'text-scale-handle');
+              handle.setAttribute('data-text-resize-id', txt.id);
+              handle.setAttribute('title', 'Arrastra para redimensionar tamaño de texto');
+              svg.appendChild(handle);
+            }
           }
 
-          // 4. Hit-area y Vértices del Lote Seleccionado
+          // 5. Hit-area y Vértices del Lote Seleccionado
           const selLote = this.lotes.find((l) => l.id === this.selectedId);
           if (selLote && selLote.points.length >= 3) {
             const closedPts = [...selLote.points, selLote.points[0]].map((p) => p.join(',')).join(' ');
@@ -7156,29 +7404,42 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             text: t.text,
             x: Math.round(t.x * scaleToOriginal),
             y: Math.round(t.y * scaleToOriginal),
-            size: Math.round(t.size * scaleToOriginal),
+            size: Math.round((t.size || 16) * scaleToOriginal),
             color: t.color
           }));
 
-          const customLinesExport = (this.customLines || []).map(l => ({
-            id: l.id,
-            x1: Math.round(l.x1 * scaleToOriginal),
-            y1: Math.round(l.y1 * scaleToOriginal),
-            x2: Math.round(l.x2 * scaleToOriginal),
-            y2: Math.round(l.y2 * scaleToOriginal),
-            width: l.width,
-            color: l.color,
-            dash: l.dash
-          }));
+          const customLinesExport = (this.customLines || []).map(l => {
+            const pts = (Array.isArray(l.points) && l.points.length >= 2)
+              ? l.points
+              : [[l.x1 || 0, l.y1 || 0], [l.x2 || 10, l.y2 || 10]];
+
+            const pointsPx = pts.map(([x, y]) => [
+              Math.round(x * scaleToOriginal),
+              Math.round(y * scaleToOriginal)
+            ]);
+
+            return {
+              id: l.id,
+              pointsPx,
+              x1: pointsPx[0][0],
+              y1: pointsPx[0][1],
+              x2: pointsPx[pointsPx.length - 1][0],
+              y2: pointsPx[pointsPx.length - 1][1],
+              width: l.width,
+              color: l.color,
+              dash: l.dash
+            };
+          });
 
           const polygonsSvg = lotesExport.map((l) => {
             const est = ESTADOS[l.estado] || ESTADOS.Disponible;
             return `  <polygon class="lote-poligono" data-id="${l.id}" data-manzana="${l.manzana}" data-lote="${l.lote}" data-area="${l.area_m2}" data-estado="${l.estado}" data-precio="${l.precio}" points="${l.svgPoints}" fill="${est.fill}" stroke="${est.stroke}" stroke-width="2" />`;
           }).join('\n');
 
-          const linesSvg = customLinesExport.map(l =>
-            `  <line data-id="${l.id}" x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" stroke="${l.color}" stroke-width="${l.width}" stroke-dasharray="${l.dash === 'dashed' ? '6,4' : 'none'}" />`
-          ).join('\n');
+          const linesSvg = customLinesExport.map(l => {
+            const ptsStr = l.pointsPx.map(p => p.join(',')).join(' ');
+            return `  <polyline data-id="${l.id}" points="${ptsStr}" fill="none" stroke="${l.color}" stroke-width="${l.width}" stroke-dasharray="${l.dash === 'dashed' ? '8,5' : (l.dash === 'dotted' ? '3,4' : 'none')}" />`;
+          }).join('\n');
 
           const textsSvg = customTextsExport.map(t =>
             `  <text data-id="${t.id}" x="${t.x}" y="${t.y}" font-size="${t.size}" fill="${t.color}" font-weight="bold" stroke="#000" stroke-width="2" text-anchor="middle" dominant-baseline="central">${escapeHtml(t.text)}</text>`
