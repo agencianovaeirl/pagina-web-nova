@@ -1054,7 +1054,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     // =========================================================================
     // 1. CONSTANTES Y ESTADO GLOBAL
     // =========================================================================
-    const STORAGE_KEY = 'agencia_nova_proyectos_v10';
+    const STORAGE_KEY = 'agencia_nova_proyectos_v15';
     const SB_CONF_KEY = 'agencia_nova_supabase_cfg_v1';
 
     // Credenciales predeterminadas de Supabase (idénticas a terrenos.html)
@@ -1085,8 +1085,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     let activeEditorTab = 1;
     let showCalco = false;
 
-    // Piloto Automático (ACTIVO al iniciar)
-    let autoPilotActive = true;
+    // Piloto Automático (desactivado al inicio para carga limpia e inmediata del mapa)
+    let autoPilotActive = false;
     let autoPilotRafId = null;
     let autoPilotPhase = 0;
     let autoPilotLastTs = 0;
@@ -1165,26 +1165,42 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       };
     }
 
-    function latLngToOffsetMeters(refLat, refLng, lat, lng) {
+    function getCoordLatLng(pt) {
+      if (!pt) return { lat: DEFAULT_LAT, lng: DEFAULT_LNG };
+      if (Array.isArray(pt)) {
+        return { lat: Number(pt[0]) || DEFAULT_LAT, lng: Number(pt[1]) || DEFAULT_LNG };
+      }
       return {
-        east: (lng - refLng) * metersPerDegLng(refLat),
-        north: (lat - refLat) * 111320
+        lat: Number(pt.lat !== undefined ? pt.lat : (pt.latitude || pt.y)) || DEFAULT_LAT,
+        lng: Number(pt.lng !== undefined ? pt.lng : (pt.longitude || pt.x)) || DEFAULT_LNG
+      };
+    }
+
+    function latLngToOffsetMeters(refLat, refLng, lat, lng) {
+      const rLat = Number(refLat) || DEFAULT_LAT;
+      const rLng = Number(refLng) || DEFAULT_LNG;
+      const pLat = Number(lat) || DEFAULT_LAT;
+      const pLng = Number(lng) || DEFAULT_LNG;
+      return {
+        east: (pLng - rLng) * metersPerDegLng(rLat),
+        north: (pLat - rLat) * 111320
       };
     }
 
     function getPolygonCentroid(coords) {
       if (!coords || !coords.length) return { lat: DEFAULT_LAT, lng: DEFAULT_LNG };
-      if (coords.length < 3) {
+      const pts = coords.map(getCoordLatLng);
+      if (pts.length < 3) {
         let sumLat = 0, sumLng = 0;
-        for (let i = 0; i < coords.length; i++) { sumLat += coords[i].lat; sumLng += coords[i].lng; }
-        return { lat: sumLat / coords.length, lng: sumLng / coords.length };
+        for (let i = 0; i < pts.length; i++) { sumLat += pts[i].lat; sumLng += pts[i].lng; }
+        return { lat: sumLat / pts.length, lng: sumLng / pts.length };
       }
-      const refLat = coords[0].lat;
-      const refLng = coords[0].lng;
+      const refLat = pts[0].lat;
+      const refLng = pts[0].lng;
       let signedArea = 0, cx = 0, cy = 0;
-      for (let i = 0; i < coords.length; i++) {
-        const p0 = coords[i];
-        const p1 = coords[(i + 1) % coords.length];
+      for (let i = 0; i < pts.length; i++) {
+        const p0 = pts[i];
+        const p1 = pts[(i + 1) % pts.length];
         const x0 = p0.lng - refLng, y0 = p0.lat - refLat;
         const x1 = p1.lng - refLng, y1 = p1.lat - refLat;
         const a = x0 * y1 - x1 * y0;
@@ -1193,30 +1209,39 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         cy += (y0 + y1) * a;
       }
       signedArea *= 0.5;
-      if (Math.abs(signedArea) < 1e-14) {
+      if (Math.abs(signedArea) < 1e-14 || isNaN(signedArea)) {
         let sumLat = 0, sumLng = 0;
-        for (let i = 0; i < coords.length; i++) { sumLat += coords[i].lat; sumLng += coords[i].lng; }
-        return { lat: sumLat / coords.length, lng: sumLng / coords.length };
+        for (let i = 0; i < pts.length; i++) { sumLat += pts[i].lat; sumLng += pts[i].lng; }
+        return { lat: sumLat / pts.length, lng: sumLng / pts.length };
       }
-      return { lat: refLat + cy / (6 * signedArea), lng: refLng + cx / (6 * signedArea) };
+      const finalLat = refLat + cy / (6 * signedArea);
+      const finalLng = refLng + cx / (6 * signedArea);
+      return {
+        lat: isNaN(finalLat) ? refLat : finalLat,
+        lng: isNaN(finalLng) ? refLng : finalLng
+      };
     }
 
     function scaleCoordsAroundCenter(coords, center, scaleX, scaleY) {
+      const c = getCoordLatLng(center);
       return coords.map(pt => {
-        const off = latLngToOffsetMeters(center.lat, center.lng, pt.lat, pt.lng);
-        return offsetMetersToLatLng(center.lat, center.lng, off.east * scaleX, off.north * scaleY);
+        const p = getCoordLatLng(pt);
+        const off = latLngToOffsetMeters(c.lat, c.lng, p.lat, p.lng);
+        return offsetMetersToLatLng(c.lat, c.lng, off.east * scaleX, off.north * scaleY);
       });
     }
 
     function rotateCoordsAroundCenter(coords, center, degClockwise) {
+      const c = getCoordLatLng(center);
       const rad = (degClockwise * Math.PI) / 180;
       const cosA = Math.cos(rad);
       const sinA = Math.sin(rad);
       return coords.map(pt => {
-        const off = latLngToOffsetMeters(center.lat, center.lng, pt.lat, pt.lng);
+        const p = getCoordLatLng(pt);
+        const off = latLngToOffsetMeters(c.lat, c.lng, p.lat, p.lng);
         const rx = off.east * cosA + off.north * sinA;
         const ry = -off.east * sinA + off.north * cosA;
-        return offsetMetersToLatLng(center.lat, center.lng, rx, ry);
+        return offsetMetersToLatLng(c.lat, c.lng, rx, ry);
       });
     }
 
@@ -1396,18 +1421,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
              nombre.includes('(0 lotes)') || nombre === '0 lotes';
     }
 
-    // Purga y depuración integral de almacenamiento local
+    // Purga y migración limpia de almacenamiento local
     (function purgeResidualStorage() {
       try {
-        [STORAGE_KEY, 'nova_map_projects', 'agencia_nova_proyectos_v9'].forEach(k => {
-          const raw = localStorage.getItem(k);
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed)) {
-              const cleaned = parsed.filter(p => !isExcludedProject(p));
-              localStorage.setItem(k, JSON.stringify(cleaned));
-            }
-          }
+        ['agencia_nova_proyectos_v10', 'agencia_nova_proyectos_v11', 'agencia_nova_proyectos_v12', 'agencia_nova_proyectos_v9', 'agencia_nova_proyectos_v8', 'nova_map_projects'].forEach(k => {
+          localStorage.removeItem(k);
         });
       } catch(e) {}
     })();
@@ -1463,13 +1481,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) {
+          if (Array.isArray(parsed) && parsed.length >= 3) {
             projects = parsed.filter(p => !isExcludedProject(p));
-            if (projects.length > 0) {
-              const mainProj = projects.find(p => p.id === 'prop-guadalupe' || p.id === 'proj-fortunato');
-              if (mainProj && (!mainProj.lotes || !mainProj.lotes.length)) {
-                mainProj.lotes = buildFortunatoLots(mainProj.lat || DEFAULT_LAT, mainProj.lng || DEFAULT_LNG);
-              }
+            // Asegurar que Proyecto Guadalupe tenga los 7 lotes válidos
+            const mainProj = projects.find(p => p.id === 'prop-guadalupe' || p.id === 'proj-fortunato');
+            if (mainProj && (!mainProj.lotes || !mainProj.lotes.length)) {
+              mainProj.lotes = buildFortunatoLots(Number(mainProj.lat) || DEFAULT_LAT, Number(mainProj.lng) || DEFAULT_LNG);
+            }
+            if (projects.length >= 3 && projects[0] && Number(projects[0].lat)) {
               currentProject = projects[0];
               saveProjectsLocal();
               return;
@@ -1510,11 +1529,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     // =========================================================================
     function initMap2D() {
       try {
+        const initLat = Number(currentProject?.lat) || DEFAULT_LAT;
+        const initLng = Number(currentProject?.lng) || DEFAULT_LNG;
+
         map2d = L.map('map2d', {
-          center: [currentProject.lat, currentProject.lng],
-          zoom: 19,
+          center: [initLat, initLng],
+          zoom: 18,
           minZoom: 4,
-          maxZoom: 22,
+          maxZoom: 21,
           zoomControl: false,
           attributionControl: false,
           preferCanvas: false
@@ -1530,30 +1552,25 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         map2d.getPane('calcoPane').style.zIndex = 350;
         map2d.getPane('calcoPane').style.pointerEvents = 'none';
 
-        // Respaldo automático por tesela hacia Esri World Imagery ante cualquier error
-        const attachEsriFallback = (layer) => {
-          layer.on('tileerror', (evt) => {
-            const tile = evt.tile;
-            const coords = evt.coords;
-            if (!tile || tile.dataset.esriFallbackDone) return;
-            tile.dataset.esriFallbackDone = '1';
-            const z = Math.min(coords.z, 18);
-            const scale = Math.pow(2, coords.z - z);
-            const x = Math.floor(coords.x / scale);
-            const y = Math.floor(coords.y / scale);
-            tile.src = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
-          });
-        };
+        // 1. Capa Satélite Oficial Esri World Imagery (HD, 100% libre, sin 403 ni bloqueo en Vercel)
+        const baseEsriLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          maxZoom: 21,
+          maxNativeZoom: 18,
+          attribution: 'Tiles &copy; Esri World Imagery'
+        }).addTo(map2d);
 
-        // Capa base principal Google Earth Satélite (siempre activa en Satélite e Híbrido)
+        // 2. Capa Google Earth Satélite superpuesta
         googleSatLayer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s&hl=es&x={x}&y={y}&z={z}', {
           subdomains: ['0', '1', '2', '3'],
-          maxZoom: 22,
-          maxNativeZoom: 20,
-          keepBuffer: 6,
-          updateWhenIdle: false
+          maxZoom: 21,
+          maxNativeZoom: 18
         }).addTo(map2d);
-        attachEsriFallback(googleSatLayer);
+
+        googleSatLayer.on('tileerror', (evt) => {
+          if (evt.tile) {
+            evt.tile.style.display = 'none';
+          }
+        });
 
         // Capa de SOLO carreteras principales (sin calles locales) para Modo Híbrido
         roadsOverlayLayer = L.layerGroup();
@@ -1614,14 +1631,18 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
         // Forzar cálculo de tamaño inmediato y en resize
         map2d.invalidateSize();
-        setTimeout(() => { if (map2d) map2d.invalidateSize(); }, 250);
+        setTimeout(() => { if (map2d) map2d.invalidateSize(); }, 100);
+        setTimeout(() => { if (map2d) map2d.invalidateSize(); }, 350);
+        setTimeout(() => { if (map2d) map2d.invalidateSize(); }, 800);
         window.addEventListener('resize', () => {
           if (map2d && viewMode === '2d') map2d.invalidateSize();
         });
 
         renderAllProjectsAndLots();
         syncProjectFormUI();
-        startAutoPilot();
+        if (currentProject) {
+          flyToProject(currentProject);
+        }
       } catch (err) {
         console.error('Error iniciando mapa 2D:', err);
         showToast('Error al inicializar el mapa 2D.');
@@ -1734,16 +1755,17 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const isCurrent = currentProject && proj.id === currentProject.id;
 
         // 1. Pin flotante del proyecto
-        let pinLat = proj.lat;
-        let pinLng = proj.lng;
+        let pinLat = Number(proj.lat) || DEFAULT_LAT;
+        let pinLng = Number(proj.lng) || DEFAULT_LNG;
         if (Array.isArray(proj.lotes) && proj.lotes.length > 0) {
           let maxLat = -Infinity, sumLng = 0, cnt = 0;
           proj.lotes.forEach(l => (l.coords || []).forEach(c => {
-            if (c.lat > maxLat) maxLat = c.lat;
-            sumLng += c.lng;
+            const pt = getCoordLatLng(c);
+            if (pt.lat > maxLat) maxLat = pt.lat;
+            sumLng += pt.lng;
             cnt++;
           }));
-          if (cnt > 0) {
+          if (cnt > 0 && isFinite(maxLat) && isFinite(sumLng)) {
             pinLat = maxLat + 0.00012;
             pinLng = sumLng / cnt;
           }
@@ -1756,7 +1778,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             <div class="project-pin-wrap ${isCurrent ? 'is-active' : ''}">
               <div class="project-pin-pill">
                 <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span>${escapeHtml(proj.nombre)}</span>
+                <span>${escapeHtml(proj.nombre || proj.title || 'Proyecto')}</span>
                 <span class="text-[9.5px] font-semibold text-sky-300">${dispCount} disp.</span>
               </div>
               <div class="project-pin-stem"></div>
@@ -1776,12 +1798,15 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         // 2. Polígonos de cada lote (borde blanco constante 1.8px)
         (proj.lotes || []).forEach(lot => {
           if (!lot.coords || lot.coords.length < 3) return;
+          const validCoords = lot.coords.map(getCoordLatLng);
+          if (validCoords.length < 3) return;
+
           const isSelected = isCurrent && lot.id === selectedLotId;
           const matchesFilter = (filterStatus === 'ALL' || lot.status === filterStatus);
           const style = getStatusStyle(lot.status);
-          const centroid = getPolygonCentroid(lot.coords);
+          const centroid = getPolygonCentroid(validCoords);
 
-          const latLngs = lot.coords.map(c => [c.lat, c.lng]);
+          const latLngs = validCoords.map(c => [c.lat, c.lng]);
 
           const poly = L.polygon(latLngs, {
             color: '#ffffff',
@@ -1830,12 +1855,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           });
 
           labelIcon.options.iconAnchor = [0, 0];
-          const lblMarker = L.marker([centroid.lat, centroid.lng], {
+          const safeCentroidLat = isFinite(centroid.lat) ? centroid.lat : pinLat;
+          const safeCentroidLng = isFinite(centroid.lng) ? centroid.lng : pinLng;
+          const lblMarker = L.marker([safeCentroidLat, safeCentroidLng], {
             icon: labelIcon,
             interactive: false
           });
-          lblMarker._lotCoords = lot.coords;
-          lblMarker._lotCentroid = centroid;
+          lblMarker._lotCoords = validCoords;
+          lblMarker._lotCentroid = { lat: safeCentroidLat, lng: safeCentroidLng };
           labelsLayerGroup.addLayer(lblMarker);
         });
       });
@@ -1911,8 +1938,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           return;
         }
 
-        const cPt = map2d.latLngToLayerPoint([centroid.lat, centroid.lng]);
-        const pts = coords.map(c => map2d.latLngToLayerPoint([c.lat, c.lng]));
+        const c = getCoordLatLng(centroid);
+        const cPt = map2d.latLngToLayerPoint([c.lat, c.lng]);
+        const pts = coords.map(getCoordLatLng).map(c => map2d.latLngToLayerPoint([c.lat, c.lng]));
 
         // Radio inscrito mínimo desde el centroide hasta cualquier borde del polígono
         let minEdgeDist = Infinity;
@@ -2098,11 +2126,16 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       const res = lots.filter(l => l.status === 'Reservado').length;
       const vend = lots.filter(l => l.status === 'Vendido').length;
 
-      document.getElementById('hudProjectName').textContent = currentProject ? currentProject.nombre : 'Sin Proyecto';
-      document.getElementById('cntAll').textContent = lots.length;
-      document.getElementById('cntDisp').textContent = disp;
-      document.getElementById('cntRes').textContent = res;
-      document.getElementById('cntVend').textContent = vend;
+      const pName = document.getElementById('hudProjectName');
+      if (pName) pName.textContent = currentProject ? (currentProject.nombre || currentProject.title || 'Proyecto') : 'Sin Proyecto';
+      const cAll = document.getElementById('cntAll');
+      if (cAll) cAll.textContent = lots.length;
+      const cDisp = document.getElementById('cntDisp');
+      if (cDisp) cDisp.textContent = disp;
+      const cRes = document.getElementById('cntRes');
+      if (cRes) cRes.textContent = res;
+      const cVend = document.getElementById('cntVend');
+      if (cVend) cVend.textContent = vend;
     }
 
     function setFilter(status) {
@@ -2318,18 +2351,27 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     function flyToProject(proj) {
       if (!proj) return;
       stopAutoPilot();
+      const pLat = Number(proj.lat) || DEFAULT_LAT;
+      const pLng = Number(proj.lng) || DEFAULT_LNG;
       if (viewMode === '3d') {
-        earth3D.flyToLatLng(proj.lat, proj.lng, 210);
+        earth3D.flyToLatLng(pLat, pLng, 210);
         return;
       }
       if (!map2d) return;
       const pts = [];
-      (proj.lotes || []).forEach(l => (l.coords || []).forEach(c => pts.push([c.lat, c.lng])));
+      (proj.lotes || []).forEach(l => (l.coords || []).forEach(c => {
+        const pt = getCoordLatLng(c);
+        if (isFinite(pt.lat) && isFinite(pt.lng)) pts.push([pt.lat, pt.lng]);
+      }));
       isProgrammaticMove = true;
       if (pts.length >= 3) {
-        map2d.flyToBounds(L.latLngBounds(pts).pad(0.32), { maxZoom: 19, duration: 0.9 });
+        try {
+          map2d.flyToBounds(L.latLngBounds(pts).pad(0.32), { maxZoom: 18, duration: 0.9 });
+        } catch(e) {
+          map2d.flyTo([pLat, pLng], 18, { duration: 0.9 });
+        }
       } else {
-        map2d.flyTo([proj.lat, proj.lng], 19, { duration: 0.9 });
+        map2d.flyTo([pLat, pLng], 18, { duration: 0.9 });
       }
       setTimeout(() => { isProgrammaticMove = false; }, 1000);
     }
@@ -2338,8 +2380,13 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       stopAutoPilot();
       const allPts = [];
       projects.forEach(p => {
-        allPts.push([p.lat, p.lng]);
-        (p.lotes || []).forEach(l => (l.coords || []).forEach(c => allPts.push([c.lat, c.lng])));
+        const pLat = Number(p.lat) || DEFAULT_LAT;
+        const pLng = Number(p.lng) || DEFAULT_LNG;
+        if (isFinite(pLat) && isFinite(pLng)) allPts.push([pLat, pLng]);
+        (p.lotes || []).forEach(l => (l.coords || []).forEach(c => {
+          const pt = getCoordLatLng(c);
+          if (isFinite(pt.lat) && isFinite(pt.lng)) allPts.push([pt.lat, pt.lng]);
+        }));
       });
       if (!allPts.length) return;
 
@@ -3586,7 +3633,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           const box = getPolygonBoundsCenter(lot.coords);
 
           // 1. Vértices del polígono (celeste 'vertex')
-          lot.coords.forEach((pt, idx) => {
+          lot.coords.forEach((rawPt, idx) => {
+            const pt = getCoordLatLng(rawPt);
             const m = L.marker([pt.lat, pt.lng], {
               icon: createHandleIcon('vertex'),
               draggable: true,
@@ -3621,7 +3669,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           });
 
           // 2. Borde interactivo para agregar vértice al hacer clic en cualquier arista
-          const ringPts = [...lot.coords.map(c => [c.lat, c.lng]), [lot.coords[0].lat, lot.coords[0].lng]];
+          const validCoords = lot.coords.map(getCoordLatLng);
+          const ringPts = [...validCoords.map(c => [c.lat, c.lng]), [validCoords[0].lat, validCoords[0].lng]];
           const edgeHitLine = L.polyline(ringPts, {
             color: '#38bdf8',
             weight: 12,
@@ -4258,9 +4307,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const isCurrent = currentProject && proj.id === currentProject.id;
         (proj.lotes || []).forEach(lot => {
           if (!lot.coords || lot.coords.length < 3) return;
+          const validCoords = (lot.coords || []).map(getCoordLatLng);
+          if (validCoords.length < 3) return;
           const style = getStatusStyle(lot.status);
           const isSelected = isCurrent && lot.id === selectedLotId;
-          const poly = L.polygon(lot.coords.map(c => [c.lat, c.lng]), {
+          const poly = L.polygon(validCoords.map(c => [c.lat, c.lng]), {
             color: '#ffffff',
             weight: 1.8,
             fillColor: style.fill,
