@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -25,7 +26,8 @@
 
   <style>
     /* Requisitos críticos de visibilidad */
-    html, body {
+    html,
+    body {
       margin: 0;
       padding: 0;
       width: 100%;
@@ -66,6 +68,7 @@
       height: 100%;
       cursor: grab;
     }
+
     #canvas3d:active {
       cursor: grabbing;
     }
@@ -139,16 +142,19 @@
       color: #ffffff;
       letter-spacing: 0.02em;
     }
+
     .lot-lbl-area {
       font-size: 10px;
       font-weight: 700;
       color: #f1f5f9;
     }
+
     .lot-lbl-price {
       font-size: 10px;
       font-weight: 800;
       color: #fef08a;
     }
+
     .lot-lbl-status {
       margin-top: 5px;
       font-size: 12px;
@@ -159,15 +165,19 @@
 
     /* Resplandor latente amarillo fuerte solo en el borde blanco al seleccionar */
     @keyframes lotBorderPulse {
-      0%, 100% {
+
+      0%,
+      100% {
         filter: drop-shadow(0 0 5px #facc15) drop-shadow(0 0 12px #eab308);
         stroke-opacity: 1;
       }
+
       50% {
         filter: drop-shadow(0 0 10px #fde047) drop-shadow(0 0 22px #facc15);
         stroke-opacity: 0.92;
       }
     }
+
     .lot-border-pulse {
       animation: lotBorderPulse 1.3s ease-in-out infinite;
     }
@@ -177,6 +187,7 @@
       background: transparent !important;
       border: none !important;
     }
+
     .project-pin-wrap {
       transform: translate(-50%, -100%);
       display: flex;
@@ -185,9 +196,11 @@
       cursor: pointer;
       transition: transform 0.18s ease;
     }
+
     .project-pin-wrap:hover {
       transform: translate(-50%, -104%) scale(1.04);
     }
+
     .project-pin-pill {
       display: inline-flex;
       align-items: center;
@@ -202,15 +215,18 @@
       white-space: nowrap;
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
     }
+
     .project-pin-wrap.is-active .project-pin-pill {
       border-color: #34d399;
       box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.28), 0 8px 20px rgba(0, 0, 0, 0.55);
     }
+
     .project-pin-stem {
       width: 2px;
       height: 12px;
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(56, 189, 248, 0.4));
     }
+
     .project-pin-dot {
       width: 8px;
       height: 8px;
@@ -225,15 +241,18 @@
       background: transparent !important;
       border: none !important;
     }
+
     .handle-dot {
       border-radius: 9999px;
       border: 2px solid #ffffff;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
       transition: transform 0.12s ease;
     }
+
     .handle-dot:hover {
       transform: scale(1.22);
     }
+
     .handle-move {
       width: 22px;
       height: 22px;
@@ -243,12 +262,14 @@
       justify-content: center;
       cursor: move;
     }
+
     .handle-resize {
       width: 14px;
       height: 14px;
       background: #f59e0b;
       cursor: nwse-resize;
     }
+
     .handle-rotate {
       width: 15px;
       height: 15px;
@@ -258,12 +279,14 @@
       align-items: center;
       justify-content: center;
     }
+
     .handle-vertex {
       width: 13px;
       height: 13px;
       background: #38bdf8;
       cursor: move;
     }
+
     .handle-delete {
       width: 16px;
       height: 16px;
@@ -288,6 +311,7 @@
       box-shadow: none !important;
       pointer-events: none !important;
     }
+
     .district-label-text {
       transform: translate(-50%, -50%);
       white-space: nowrap;
@@ -307,6 +331,7 @@
     .proj-chevron {
       transition: transform 0.2s ease;
     }
+
     .proj-chevron.is-open {
       transform: rotate(180deg);
     }
@@ -320,6 +345,7 @@
       z-index: 610;
       max-width: calc(100vw - 24px);
     }
+
     .dock-btn {
       display: inline-flex;
       align-items: center;
@@ -331,6 +357,7 @@
       white-space: nowrap;
       transition: background-color 0.16s ease, color 0.16s ease, transform 0.12s ease;
     }
+
     .dock-btn:active {
       transform: scale(0.96);
     }
@@ -339,21 +366,26 @@
     .custom-scroll::-webkit-scrollbar {
       width: 5px;
     }
+
     .custom-scroll::-webkit-scrollbar-track {
       background: rgba(255, 255, 255, 0.03);
     }
+
     .custom-scroll::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.18);
       border-radius: 9999px;
     }
 
     /* Permitir selección en inputs */
-    input, select, textarea {
+    input,
+    select,
+    textarea {
       user-select: text;
       -webkit-user-select: text;
     }
   </style>
 </head>
+
 <body>
 
   <!-- 1. MAPA 2D GOOGLE EARTH SATÉLITE (LEAFLET) -->
@@ -369,33 +401,46 @@
   <!-- 3. ESQUINA SUPERIOR IZQUIERDA: BOTÓN VOLVER + PÍLDORA DESPLEGABLE DE PROYECTOS -->
   <div class="fixed top-3.5 left-3.5 z-[600] flex items-start gap-2 max-w-[calc(100vw-28px)] pointer-events-none">
     <!-- Botón Volver a Terrenos -->
-    <a href="terrenos.html" class="pointer-events-auto glass-panel hover:bg-[#142c1e] text-[#f2ca50] border border-[#d4af37]/50 rounded-2xl px-3 py-2.5 flex items-center gap-1.5 text-xs font-black shadow-xl transition backdrop-blur-md group shrink-0" title="Regresar al Catálogo de Terrenos">
-      <svg class="w-4 h-4 text-amber-400 group-hover:-translate-x-1 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <a href="terrenos.html"
+      class="pointer-events-auto glass-panel hover:bg-[#142c1e] text-[#f2ca50] border border-[#d4af37]/50 rounded-2xl px-3 py-2.5 flex items-center gap-1.5 text-xs font-black shadow-xl transition backdrop-blur-md group shrink-0"
+      title="Regresar al Catálogo de Terrenos">
+      <svg class="w-4 h-4 text-amber-400 group-hover:-translate-x-1 transition-transform" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M19 12H5M12 19l-7-7 7-7" />
+      </svg>
       <span class="hidden sm:inline">Volver</span>
     </a>
 
     <!-- Píldora Desplegable de Proyectos -->
     <div id="projectsDropdownWrap" class="w-[285px] max-w-[calc(100vw-115px)] pointer-events-none">
       <!-- Botón píldora compacto -->
-      <button onclick="toggleProjectsDropdown()" id="btnProjectsPill" class="pointer-events-auto glass-panel hover:bg-slate-900/95 rounded-2xl px-3.5 py-2.5 flex items-center justify-between gap-3 w-auto max-w-full transition">
+      <button onclick="toggleProjectsDropdown()" id="btnProjectsPill"
+        class="pointer-events-auto glass-panel hover:bg-slate-900/95 rounded-2xl px-3.5 py-2.5 flex items-center justify-between gap-3 w-auto max-w-full transition">
         <div class="flex items-center gap-2.5 min-w-0">
-          <div class="w-7 h-7 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center shrink-0">
+          <div
+            class="w-7 h-7 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center shrink-0">
             <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"></circle>
               <path d="M2 12h20"></path>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+              </path>
             </svg>
           </div>
           <div class="text-left min-w-0">
             <div class="flex items-center gap-1.5">
-              <span class="text-[11px] font-extrabold text-white">Proyectos (<span id="sidebarProjCount">1</span>)</span>
-              <span id="badgeViewMode" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">2D</span>
-              <span id="badgeDbState" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-white/10">Local</span>
+              <span class="text-[11px] font-extrabold text-white">Proyectos (<span
+                  id="sidebarProjCount">1</span>)</span>
+              <span id="badgeViewMode"
+                class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">2D</span>
+              <span id="badgeDbState"
+                class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-white/10">Local</span>
             </div>
-            <div id="hudProjectName" class="text-[10.5px] font-semibold text-slate-300 truncate max-w-[165px]">Proyecto Fortunato</div>
+            <div id="hudProjectName" class="text-[10.5px] font-semibold text-slate-300 truncate max-w-[165px]">Proyecto
+              Fortunato</div>
           </div>
         </div>
-        <svg id="projectsPillChevron" class="w-4 h-4 text-slate-300 proj-chevron shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+        <svg id="projectsPillChevron" class="w-4 h-4 text-slate-300 proj-chevron shrink-0" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.4">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </button>
@@ -410,19 +455,24 @@
   </div>
 
   <!-- 4. ESQUINA SUPERIOR DERECHA: FILTROS COMPACTOS POR ESTADO -->
-  <div class="fixed top-3.5 right-3.5 z-[600] glass-panel rounded-2xl p-1 flex items-center gap-1 max-w-[calc(100vw-28px)] overflow-x-auto">
-    <button onclick="setFilter('ALL')" id="filterAll" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-white/15 text-white transition whitespace-nowrap">
+  <div
+    class="fixed top-3.5 right-3.5 z-[600] glass-panel rounded-2xl p-1 flex items-center gap-1 max-w-[calc(100vw-28px)] overflow-x-auto">
+    <button onclick="setFilter('ALL')" id="filterAll"
+      class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-white/15 text-white transition whitespace-nowrap">
       Todos <span id="cntAll" class="ml-0.5 text-slate-300">7</span>
     </button>
-    <button onclick="setFilter('Disponible')" id="filterDisp" class="px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-emerald-300 hover:bg-emerald-500/15 transition flex items-center gap-1 whitespace-nowrap">
+    <button onclick="setFilter('Disponible')" id="filterDisp"
+      class="px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-emerald-300 hover:bg-emerald-500/15 transition flex items-center gap-1 whitespace-nowrap">
       <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
       Disponible <span id="cntDisp" class="font-bold">0</span>
     </button>
-    <button onclick="setFilter('Reservado')" id="filterRes" class="px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-amber-300 hover:bg-amber-500/15 transition flex items-center gap-1 whitespace-nowrap">
+    <button onclick="setFilter('Reservado')" id="filterRes"
+      class="px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-amber-300 hover:bg-amber-500/15 transition flex items-center gap-1 whitespace-nowrap">
       <span class="w-2 h-2 rounded-full bg-amber-400"></span>
       Reservado <span id="cntRes" class="font-bold">0</span>
     </button>
-    <button onclick="setFilter('Vendido')" id="filterVend" class="px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-red-300 hover:bg-red-500/15 transition flex items-center gap-1 whitespace-nowrap">
+    <button onclick="setFilter('Vendido')" id="filterVend"
+      class="px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-red-300 hover:bg-red-500/15 transition flex items-center gap-1 whitespace-nowrap">
       <span class="w-2 h-2 rounded-full bg-red-400"></span>
       Vendido <span id="cntVend" class="font-bold">0</span>
     </button>
@@ -431,7 +481,9 @@
   <!-- 5. DOCK FLOTANTE INFERIOR CENTRADO (TODOS LOS ICONOS PRINCIPALES) -->
   <nav id="bottomDock" class="glass-panel rounded-2xl p-1.5 flex items-center gap-1 overflow-x-auto">
     <!-- 1) Satélite / Híbrido -->
-    <button onclick="toggleSatelliteStyle()" id="btnSatToggle" class="dock-btn bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 border border-sky-400/30" title="Alternar entre Satélite puro e Híbrido (carreteras + distritos)">
+    <button onclick="toggleSatelliteStyle()" id="btnSatToggle"
+      class="dock-btn bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 border border-sky-400/30"
+      title="Alternar entre Satélite puro e Híbrido (carreteras + distritos)">
       <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M13 7 9 3 5 7l4 4"></path>
         <path d="m17 11 4 4-4 4-4-4"></path>
@@ -445,7 +497,8 @@
     <div class="w-px h-6 bg-white/10 mx-0.5 shrink-0"></div>
 
     <!-- 2) Ver Todos -->
-    <button onclick="frameAllProjects()" class="dock-btn text-slate-200 hover:bg-white/10" title="Encuadrar todos los proyectos en el mapa">
+    <button onclick="frameAllProjects()" class="dock-btn text-slate-200 hover:bg-white/10"
+      title="Encuadrar todos los proyectos en el mapa">
       <svg class="w-4 h-4 text-sky-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path>
       </svg>
@@ -453,7 +506,8 @@
     </button>
 
     <!-- 3) Supabase -->
-    <button onclick="openSupabaseModal()" class="dock-btn text-emerald-300 hover:bg-emerald-500/15" title="Base de datos Supabase (nova_propiedades)">
+    <button onclick="openSupabaseModal()" class="dock-btn text-emerald-300 hover:bg-emerald-500/15"
+      title="Base de datos Supabase (nova_propiedades)">
       <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
         <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
@@ -465,7 +519,8 @@
     <div class="w-px h-6 bg-white/10 mx-0.5 shrink-0"></div>
 
     <!-- 4) Modo Editor (Acceso directo, sin clave) -->
-    <button onclick="toggleEditor()" id="btnToggleEditor" class="dock-btn bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold shadow-lg shadow-amber-500/20">
+    <button onclick="toggleEditor()" id="btnToggleEditor"
+      class="dock-btn bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold shadow-lg shadow-amber-500/20">
       <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
         <path d="M12 20h9"></path>
         <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"></path>
@@ -477,49 +532,74 @@
   <!-- CONTROLES COMPACTOS DE ZOOM (INFERIOR DERECHA) -->
   <div class="fixed bottom-5 right-3.5 z-[550] hidden sm:flex flex-col gap-1 glass-panel rounded-2xl p-1">
     <button onclick="handleZoomIn()" class="p-2 rounded-xl text-slate-200 hover:bg-white/10 transition" title="Acercar">
-      <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
     </button>
     <div class="h-px w-5 mx-auto bg-white/10"></div>
     <button onclick="handleZoomOut()" class="p-2 rounded-xl text-slate-200 hover:bg-white/10 transition" title="Alejar">
-      <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
     </button>
   </div>
 
   <!-- BANNER DE DIBUJO ACTIVO (CUANDO SE CREA UN POLÍGONO) -->
-  <div id="drawBanner" class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 z-[650] glass-panel rounded-2xl px-4 py-2.5 flex flex-wrap items-center justify-center gap-3 border-sky-400/50">
+  <div id="drawBanner"
+    class="hidden fixed bottom-20 left-1/2 -translate-x-1/2 z-[650] glass-panel rounded-2xl px-4 py-2.5 flex flex-wrap items-center justify-center gap-3 border-sky-400/50">
     <div class="flex items-center gap-2 text-xs font-semibold text-white">
       <span class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping"></span>
-      <span>Clic para marcar vértices · Doble clic para cerrar (<strong id="drawVertexCount" class="text-sky-300">0</strong> puntos)</span>
+      <span>Clic para marcar vértices · Doble clic para cerrar (<strong id="drawVertexCount"
+          class="text-sky-300">0</strong> puntos)</span>
     </div>
     <div class="flex items-center gap-2">
-      <button onclick="finishDrawingPolygon()" class="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition">Finalizar Polígono</button>
-      <button onclick="cancelDrawingPolygon()" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition">Cancelar</button>
+      <button onclick="finishDrawingPolygon()"
+        class="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition">Finalizar
+        Polígono</button>
+      <button onclick="cancelDrawingPolygon()"
+        class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition">Cancelar</button>
     </div>
   </div>
 
   <!-- 6. CUADRO MODO EDITOR (PANEL LATERAL IZQUIERDO - CONSOLIDADO Y AMPLIADO) -->
-  <aside id="editorDrawer" class="hidden fixed top-3.5 bottom-20 left-3.5 z-[620] w-[460px] max-w-[calc(100vw-24px)] glass-panel rounded-3xl flex flex-col overflow-hidden shadow-2xl border border-white/15 transition-[width] duration-300">
+  <aside id="editorDrawer"
+    class="hidden fixed top-3.5 bottom-20 left-3.5 z-[620] w-[460px] max-w-[calc(100vw-24px)] glass-panel rounded-3xl flex flex-col overflow-hidden shadow-2xl border border-white/15 transition-[width] duration-300">
     <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between bg-slate-950/60">
       <div class="flex items-center gap-2">
         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
         <h2 class="text-xs font-black uppercase tracking-wider text-white">Cuadro Modo Editor</h2>
-        <span id="editorDrawerModeBadge" class="text-[9.5px] font-bold text-amber-300 px-2 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/30">Consolidado</span>
+        <span id="editorDrawerModeBadge"
+          class="text-[9.5px] font-bold text-amber-300 px-2 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/30">Consolidado</span>
       </div>
       <div class="flex items-center gap-1.5">
-        <button onclick="toggleEditorDrawerExpand()" id="btnExpandDrawer" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition" title="Ampliar / Reducir Cuadro">
-          <svg id="iconExpandDrawer" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        <button onclick="toggleEditorDrawerExpand()" id="btnExpandDrawer"
+          class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition"
+          title="Ampliar / Reducir Cuadro">
+          <svg id="iconExpandDrawer" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.2">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+          </svg>
         </button>
-        <button onclick="toggleEditor()" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition" title="Cerrar Editor">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        <button onclick="toggleEditor()"
+          class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition" title="Cerrar Editor">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
       </div>
     </div>
 
     <!-- Pestañas del Editor Consolidado -->
     <div class="grid grid-cols-3 gap-1.5 p-2 border-b border-white/10 bg-slate-950/80 text-[11px] font-extrabold">
-      <button onclick="switchEditorTab(1)" id="tabBtn1" class="py-2 px-1 rounded-xl bg-amber-400 text-slate-950 transition text-center shadow">1. Proyecto y Plano</button>
-      <button onclick="switchEditorTab(2)" id="tabBtn2" class="py-2 px-1 rounded-xl text-slate-300 hover:bg-white/10 transition text-center">2. Polígonos</button>
-      <button onclick="switchEditorTab(3)" id="tabBtn3" class="py-2 px-1 rounded-xl text-slate-300 hover:bg-white/10 transition text-center">3. Texto y Línea</button>
+      <button onclick="switchEditorTab(1)" id="tabBtn1"
+        class="py-2 px-1 rounded-xl bg-amber-400 text-slate-950 transition text-center shadow">1. Proyecto y
+        Plano</button>
+      <button onclick="switchEditorTab(2)" id="tabBtn2"
+        class="py-2 px-1 rounded-xl text-slate-300 hover:bg-white/10 transition text-center">2. Polígonos</button>
+      <button onclick="switchEditorTab(3)" id="tabBtn3"
+        class="py-2 px-1 rounded-xl text-slate-300 hover:bg-white/10 transition text-center">3. Texto y Línea</button>
     </div>
 
     <!-- Contenido Scrolleable -->
@@ -532,23 +612,30 @@
           <div class="flex items-center justify-between gap-2">
             <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Proyecto Activo</label>
             <div class="flex items-center gap-2">
-              <button onclick="createNewProject()" class="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 transition">+ Nuevo</button>
-              <button onclick="saveCurrentProjectNow()" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-bold transition">Guardar</button>
+              <button onclick="createNewProject()"
+                class="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 transition">+ Nuevo</button>
+              <button onclick="saveCurrentProjectNow()"
+                class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-bold transition">Guardar</button>
             </div>
           </div>
-          <select id="editorProjectSelect" onchange="switchProject(this.value, true)" class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400"></select>
+          <select id="editorProjectSelect" onchange="switchProject(this.value, true)"
+            class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400"></select>
         </div>
 
         <!-- Datos Base del Proyecto y GPS -->
         <div class="space-y-2.5 pt-2 border-t border-white/10">
           <div>
             <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Nombre del Proyecto</label>
-            <input id="inpProjectName" type="text" onchange="handleProjectInputChange()" class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400" placeholder="Ej. Proyecto Fortunato" />
+            <input id="inpProjectName" type="text" onchange="handleProjectInputChange()"
+              class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400"
+              placeholder="Ej. Proyecto Fortunato" />
           </div>
 
           <div>
             <label class="block text-[10.5px] font-bold text-sky-300 mb-1">UBICACIÓN GPS (Latitud, Longitud)</label>
-            <input id="inpGpsLocation" type="text" onchange="handleProjectInputChange()" class="w-full bg-slate-900/90 border border-sky-400/40 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-400" placeholder="-13.421719, -72.089713" />
+            <input id="inpGpsLocation" type="text" onchange="handleProjectInputChange()"
+              class="w-full bg-slate-900/90 border border-sky-400/40 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-400"
+              placeholder="-13.421719, -72.089713" />
           </div>
         </div>
 
@@ -556,42 +643,64 @@
         <div class="p-3.5 rounded-2xl bg-slate-900/85 border border-amber-400/30 space-y-3 shadow-lg">
           <div class="flex items-center justify-between">
             <h3 class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-              <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
               <span>Plano y Detección de Polígonos</span>
             </h3>
-            <span id="drawerPlanBadge" class="text-[9.5px] font-bold text-emerald-300 px-2 py-0.5 rounded-full bg-emerald-400/15 border border-emerald-400/30">Activo</span>
+            <span id="drawerPlanBadge"
+              class="text-[9.5px] font-bold text-emerald-300 px-2 py-0.5 rounded-full bg-emerald-400/15 border border-emerald-400/30">Activo</span>
           </div>
 
           <div>
-            <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Imagen del Plano (URL o Archivo)</label>
+            <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Imagen del Plano (URL o
+              Archivo)</label>
             <div class="flex gap-1.5">
-              <input id="inpPlanUrl" type="url" placeholder="https://... URL del plano" onchange="handlePlanUrlChange(this.value)" class="flex-1 bg-slate-950 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400" />
-              <button onclick="document.getElementById('inpDrawerPlanFile').click()" type="button" class="px-3 py-2 bg-gradient-to-r from-sky-500/20 to-emerald-500/20 hover:bg-white/15 border border-sky-400/30 text-sky-200 text-xs font-bold rounded-xl transition flex items-center gap-1.5" title="Subir imagen desde equipo">
+              <input id="inpPlanUrl" type="url" placeholder="https://... URL del plano"
+                onchange="handlePlanUrlChange(this.value)"
+                class="flex-1 bg-slate-950 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400" />
+              <button onclick="document.getElementById('inpDrawerPlanFile').click()" type="button"
+                class="px-3 py-2 bg-gradient-to-r from-sky-500/20 to-emerald-500/20 hover:bg-white/15 border border-sky-400/30 text-sky-200 text-xs font-bold rounded-xl transition flex items-center gap-1.5"
+                title="Subir imagen desde equipo">
                 📁 Subir
               </button>
-              <input type="file" id="inpDrawerPlanFile" accept="image/*" class="hidden" onchange="handleDrawerPlanUpload(event)" />
+              <input type="file" id="inpDrawerPlanFile" accept="image/*" class="hidden"
+                onchange="handleDrawerPlanUpload(event)" />
             </div>
           </div>
 
           <!-- CUADRO VISOR / VISTA PREVIA DE LA IMAGEN DEL PLANO (AGRANDADO) -->
-          <div id="drawerPlanPreviewContainer" class="rounded-2xl border border-white/15 bg-slate-950 p-3 flex flex-col gap-2.5 shadow-xl">
+          <div id="drawerPlanPreviewContainer"
+            class="rounded-2xl border border-white/15 bg-slate-950 p-3 flex flex-col gap-2.5 shadow-xl">
             <div class="flex items-center justify-between text-[11px]">
               <span class="font-extrabold text-amber-300 flex items-center gap-1.5">
                 <span>🔍 Vista de la Imagen del Plano</span>
               </span>
               <div class="flex items-center gap-1">
                 <span id="lblDrawerPlanDimensions" class="font-mono text-sky-300 text-[10px] mr-1">Resolución: -</span>
-                <button type="button" onclick="zoomDrawerPlanPreview(-0.25)" class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center justify-center transition" title="Alejar">-</button>
-                <button type="button" onclick="zoomDrawerPlanPreview(0.25)" class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center justify-center transition" title="Acercar">+</button>
-                <button type="button" onclick="resetDrawerPlanPreviewZoom()" class="px-1.5 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-sky-300 flex items-center justify-center transition" title="Restablecer tamaño">100%</button>
+                <button type="button" onclick="zoomDrawerPlanPreview(-0.25)"
+                  class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center justify-center transition"
+                  title="Alejar">-</button>
+                <button type="button" onclick="zoomDrawerPlanPreview(0.25)"
+                  class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center justify-center transition"
+                  title="Acercar">+</button>
+                <button type="button" onclick="resetDrawerPlanPreviewZoom()"
+                  class="px-1.5 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-sky-300 flex items-center justify-center transition"
+                  title="Restablecer tamaño">100%</button>
               </div>
             </div>
-            <div id="drawerPlanViewport" class="relative w-full h-80 sm:h-96 min-h-[320px] max-h-[440px] rounded-xl overflow-auto bg-slate-900 border border-white/10 flex items-center justify-center custom-scroll select-none">
-              <img id="imgDrawerPlanPreview" src="" alt="Vista previa del plano" class="hidden max-w-none transition-transform duration-200 cursor-grab active:cursor-grabbing origin-center" style="transform: scale(1);" />
-              <div id="imgDrawerPlanPlaceholder" class="text-xs text-slate-500 flex flex-col items-center gap-2 text-center p-6">
+            <div id="drawerPlanViewport"
+              class="relative w-full h-80 sm:h-96 min-h-[320px] max-h-[440px] rounded-xl overflow-auto bg-slate-900 border border-white/10 flex items-center justify-center custom-scroll select-none">
+              <img id="imgDrawerPlanPreview" src="" alt="Vista previa del plano"
+                class="hidden max-w-none transition-transform duration-200 cursor-grab active:cursor-grabbing origin-center"
+                style="transform: scale(1);" />
+              <div id="imgDrawerPlanPlaceholder"
+                class="text-xs text-slate-500 flex flex-col items-center gap-2 text-center p-6">
                 <span class="text-3xl">🗺️</span>
                 <span class="font-bold text-slate-300">Ningún plano cargado aún</span>
-                <span class="text-[11px] text-slate-500 max-w-xs">Pega la URL de una imagen o sube el plano en formato JPG / PNG para visualizarlo en alta definición y detectar sus polígonos</span>
+                <span class="text-[11px] text-slate-500 max-w-xs">Pega la URL de una imagen o sube el plano en formato
+                  JPG / PNG para visualizarlo en alta definición y detectar sus polígonos</span>
               </div>
             </div>
           </div>
@@ -602,23 +711,32 @@
                 <span>Sensibilidad</span>
                 <strong id="lblThresholdDrawer" class="text-sky-300 font-mono">185</strong>
               </div>
-              <input type="range" id="rngThresholdDrawer" min="80" max="240" value="185" oninput="document.getElementById('lblThresholdDrawer').textContent=this.value" class="w-full accent-sky-400 cursor-pointer" />
+              <input type="range" id="rngThresholdDrawer" min="80" max="240" value="185"
+                oninput="document.getElementById('lblThresholdDrawer').textContent=this.value"
+                class="w-full accent-sky-400 cursor-pointer" />
             </div>
             <div>
               <div class="flex justify-between mb-0.5">
                 <span>Área Mínima</span>
                 <strong id="lblMinAreaDrawer" class="text-sky-300 font-mono">350px</strong>
               </div>
-              <input type="range" id="rngMinAreaDrawer" min="80" max="3000" step="20" value="350" oninput="document.getElementById('lblMinAreaDrawer').textContent=this.value+'px'" class="w-full accent-sky-400 cursor-pointer" />
+              <input type="range" id="rngMinAreaDrawer" min="80" max="3000" step="20" value="350"
+                oninput="document.getElementById('lblMinAreaDrawer').textContent=this.value+'px'"
+                class="w-full accent-sky-400 cursor-pointer" />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-2 pt-1">
-            <button onclick="detectLotsDirectlyFromDrawer()" class="py-2.5 px-2 rounded-xl bg-gradient-to-r from-amber-400 to-sky-400 hover:from-amber-300 hover:to-sky-300 text-slate-950 text-xs font-black uppercase tracking-wider transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1.5">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <button onclick="detectLotsDirectlyFromDrawer()"
+              class="py-2.5 px-2 rounded-xl bg-gradient-to-r from-amber-400 to-sky-400 hover:from-amber-300 hover:to-sky-300 text-slate-950 text-xs font-black uppercase tracking-wider transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1.5">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
               <span>Detectar Lotes</span>
             </button>
-            <button onclick="pegarLadosContiguosDrawer()" class="py-2.5 px-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-bold transition flex items-center justify-center gap-1.5" title="Unir bordes de lotes contiguos">
+            <button onclick="pegarLadosContiguosDrawer()"
+              class="py-2.5 px-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-bold transition flex items-center justify-center gap-1.5"
+              title="Unir bordes de lotes contiguos">
               <span>🧲 Pegar Lados</span>
             </button>
           </div>
@@ -632,8 +750,11 @@
               <p class="text-[10px] text-slate-400">Alinear plano sobre satélite</p>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="chkShowCalco" onchange="toggleCalcoVisibility(this.checked)" class="sr-only peer" />
-              <div class="w-10 h-5 bg-slate-700 rounded-full peer peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5"></div>
+              <input type="checkbox" id="chkShowCalco" onchange="toggleCalcoVisibility(this.checked)"
+                class="sr-only peer" />
+              <div
+                class="w-10 h-5 bg-slate-700 rounded-full peer peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5">
+              </div>
             </label>
           </div>
 
@@ -642,7 +763,8 @@
               <span>Opacidad</span>
               <span id="calcoOpacityVal" class="font-bold text-sky-300">65%</span>
             </div>
-            <input id="rngCalcoOpacity" type="range" min="10" max="100" value="65" oninput="updateCalcoOpacity(this.value)" class="w-full accent-sky-400 cursor-pointer" />
+            <input id="rngCalcoOpacity" type="range" min="10" max="100" value="65"
+              oninput="updateCalcoOpacity(this.value)" class="w-full accent-sky-400 cursor-pointer" />
           </div>
         </div>
       </div>
@@ -651,15 +773,23 @@
       <div id="editorTab2" class="hidden space-y-4">
         <!-- Botones CREAR POLIGONO y DETECTAR LOTES -->
         <div class="grid grid-cols-3 gap-1.5">
-          <button onclick="startDrawingPolygon()" class="py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-emerald-400 hover:from-sky-400 hover:to-emerald-300 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1 transition">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 22 8.5 18 21 6 21 2 8.5 12 2"/></svg>
+          <button onclick="startDrawingPolygon()"
+            class="py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-emerald-400 hover:from-sky-400 hover:to-emerald-300 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1 transition">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="12 2 22 8.5 18 21 6 21 2 8.5 12 2" />
+            </svg>
             <span>➕ Crear</span>
           </button>
-          <button onclick="detectLotsDirectlyFromDrawer()" class="py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-sky-400 hover:from-amber-300 hover:to-sky-300 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1 transition">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <button onclick="detectLotsDirectlyFromDrawer()"
+            class="py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-sky-400 hover:from-amber-300 hover:to-sky-300 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1 transition">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
             <span>⚡ Detectar</span>
           </button>
-          <button onclick="pegarLadosContiguosDrawer()" class="py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-bold transition flex items-center justify-center gap-1" title="Unir bordes de polígonos contiguos">
+          <button onclick="pegarLadosContiguosDrawer()"
+            class="py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-bold transition flex items-center justify-center gap-1"
+            title="Unir bordes de polígonos contiguos">
             <span>🧲 Pegar</span>
           </button>
         </div>
@@ -670,68 +800,107 @@
             <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
               <span>🏷️ Datos Interiores del Lote</span>
             </h3>
-            <span id="editingLotBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30">Ninguno</span>
+            <span id="editingLotBadge"
+              class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/30">Ninguno</span>
           </div>
 
           <!-- BOTÓN SELECCIONAR TODOS LOS POLÍGONOS (Item 6) -->
-          <button id="btnSelectAllPolygons" onclick="toggleSelectAllPolygons()" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400/20 via-sky-400/20 to-emerald-400/20 hover:from-amber-400/35 hover:to-sky-400/35 border border-amber-400/50 text-amber-300 hover:text-white text-xs font-black uppercase tracking-wider transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
-            <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <button id="btnSelectAllPolygons" onclick="toggleSelectAllPolygons()"
+            class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400/20 via-sky-400/20 to-emerald-400/20 hover:from-amber-400/35 hover:to-sky-400/35 border border-amber-400/50 text-amber-300 hover:text-white text-xs font-black uppercase tracking-wider transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
             <span id="lblBtnSelectAllPolygons">SELECCIONAR TODOS LOS POLÍGONOS</span>
           </button>
 
           <!-- PANEL CUANDO TODOS LOS POLÍGONOS ESTÁN SELECCIONADOS -->
-          <div id="allPolygonsSelectedForm" class="hidden space-y-2.5 bg-slate-950/80 p-3 rounded-xl border border-amber-400/40">
+          <div id="allPolygonsSelectedForm"
+            class="hidden space-y-2.5 bg-slate-950/80 p-3 rounded-xl border border-amber-400/40">
             <div class="flex items-center justify-between text-xs font-black text-amber-300">
               <span id="lblAllPolygonsCount">0 Polígonos Totales</span>
               <span id="lblAllPolygonsArea" class="font-mono text-emerald-400 text-[11px]">0.00 m²</span>
             </div>
             <div class="text-[9.5px] text-slate-300 space-y-1 bg-slate-900/90 p-2 rounded-lg border border-white/5">
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white inline-block"></span> <strong>Punto Verde Central:</strong> Arrastrar para mover todos los polígonos</div>
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 border border-white inline-block"></span> <strong>4 Esquinas Ámbar:</strong> Redimensionar todos los polígonos</div>
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400 border border-white inline-block"></span> <strong>Puntos Cian Exteriores:</strong> Rotar todos los polígonos</div>
+              <div class="flex items-center gap-1.5"><span
+                  class="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white inline-block"></span> <strong>Punto
+                  Verde Central:</strong> Arrastrar para mover todos los polígonos</div>
+              <div class="flex items-center gap-1.5"><span
+                  class="w-2.5 h-2.5 rounded-full bg-amber-500 border border-white inline-block"></span> <strong>4
+                  Esquinas Ámbar:</strong> Redimensionar todos los polígonos</div>
+              <div class="flex items-center gap-1.5"><span
+                  class="w-2.5 h-2.5 rounded-full bg-cyan-400 border border-white inline-block"></span> <strong>Puntos
+                  Cian Exteriores:</strong> Rotar todos los polígonos</div>
             </div>
             <!-- Micro-ajustes de precisión para todos los polígonos -->
             <div class="space-y-1 pt-1">
               <div class="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">Ajuste Fino de Posición</div>
               <div class="grid grid-cols-4 gap-1 text-[10px] font-bold">
-                <button onclick="moveAllLots(0, 2)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200" title="Mover al Norte">↑ N</button>
-                <button onclick="moveAllLots(0, -2)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200" title="Mover al Sur">↓ S</button>
-                <button onclick="moveAllLots(-2, 0)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200" title="Mover al Oeste">← O</button>
-                <button onclick="moveAllLots(2, 0)" class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200" title="Mover al Este">→ E</button>
+                <button onclick="moveAllLots(0, 2)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200"
+                  title="Mover al Norte">↑ N</button>
+                <button onclick="moveAllLots(0, -2)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200"
+                  title="Mover al Sur">↓ S</button>
+                <button onclick="moveAllLots(-2, 0)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200"
+                  title="Mover al Oeste">← O</button>
+                <button onclick="moveAllLots(2, 0)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/25 border border-white/10 text-slate-200"
+                  title="Mover al Este">→ E</button>
               </div>
               <div class="grid grid-cols-4 gap-1 text-[10px] font-bold pt-0.5">
-                <button onclick="scaleAllLots(0.95, 0.95)" class="py-1 rounded-lg bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-amber-300" title="Reducir escala">-5%</button>
-                <button onclick="scaleAllLots(1.05, 1.05)" class="py-1 rounded-lg bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-amber-300" title="Aumentar escala">+5%</button>
-                <button onclick="rotateAllLots(-3)" class="py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-cyan-300" title="Girar antihorario">↺ -3°</button>
-                <button onclick="rotateAllLots(3)" class="py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-cyan-300" title="Girar horario">↻ +3°</button>
+                <button onclick="scaleAllLots(0.95, 0.95)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-amber-300"
+                  title="Reducir escala">-5%</button>
+                <button onclick="scaleAllLots(1.05, 1.05)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-amber-500/25 border border-white/10 text-amber-300"
+                  title="Aumentar escala">+5%</button>
+                <button onclick="rotateAllLots(-3)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-cyan-300"
+                  title="Girar antihorario">↺ -3°</button>
+                <button onclick="rotateAllLots(3)"
+                  class="py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/25 border border-white/10 text-cyan-300"
+                  title="Girar horario">↻ +3°</button>
               </div>
             </div>
           </div>
 
-          <div id="noLotSelectedHint" class="text-[10.5px] text-slate-400 italic bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
-            Haz clic en un polígono del mapa o elígelo en la lista para ver y editar sus datos interiores, moverlo, redimensionarlo o rotarlo.
+          <div id="noLotSelectedHint"
+            class="text-[10.5px] text-slate-400 italic bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+            Haz clic en un polígono del mapa o elígelo en la lista para ver y editar sus datos interiores, moverlo,
+            redimensionarlo o rotarlo.
           </div>
 
           <div id="lotDataForm" class="hidden space-y-2.5">
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-[10px] font-semibold text-slate-300 mb-0.5">Código / N° Lote</label>
-                <input id="inpLotCode" type="text" oninput="updateSelectedLotData()" class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" placeholder="Ej. Mz. A - L-01" />
+                <input id="inpLotCode" type="text" oninput="updateSelectedLotData()"
+                  class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400"
+                  placeholder="Ej. Mz. A - L-01" />
               </div>
               <div>
                 <label class="block text-[10px] font-semibold text-slate-300 mb-0.5">Área (m²)</label>
-                <input id="inpLotArea" type="number" step="0.01" oninput="updateSelectedLotData()" class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
+                <input id="inpLotArea" type="number" step="0.01" oninput="updateSelectedLotData()"
+                  class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
               </div>
             </div>
 
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-[10px] font-semibold text-slate-300 mb-0.5">Precio (S/.)</label>
-                <input id="inpLotPrice" type="text" oninput="updateSelectedLotData()" class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" placeholder="Ej. 25000" />
+                <input id="inpLotPrice" type="text" oninput="updateSelectedLotData()"
+                  class="w-full bg-slate-950 border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400"
+                  placeholder="Ej. 25000" />
               </div>
               <div>
                 <label class="block text-[10px] font-semibold text-slate-300 mb-0.5">Estado</label>
-                <select id="inpLotStatus" onchange="updateSelectedLotData()" class="w-full bg-slate-950 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400">
+                <select id="inpLotStatus" onchange="updateSelectedLotData()"
+                  class="w-full bg-slate-950 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400">
                   <option value="Disponible">Disponible</option>
                   <option value="Reservado">Reservado</option>
                   <option value="Vendido">Vendido</option>
@@ -741,20 +910,31 @@
 
             <!-- Ayuda de Puntos Interactivos del Polígono Individual -->
             <div class="text-[9.5px] text-slate-400 bg-slate-950/80 p-2 rounded-xl border border-white/5 space-y-1">
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white inline-block"></span> <strong>Verde Central:</strong> Arrastrar y mover polígono</div>
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 border border-white inline-block"></span> <strong>4 Esquinas Ámbar:</strong> Redimensionar polígono</div>
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400 border border-white inline-block"></span> <strong>Punto Cian Superior:</strong> Rotar polígono</div>
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400 border border-white inline-block"></span> <strong>Puntos Celestes:</strong> Editar vértices (clic borde añade)</div>
+              <div class="flex items-center gap-1.5"><span
+                  class="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white inline-block"></span> <strong>Verde
+                  Central:</strong> Arrastrar y mover polígono</div>
+              <div class="flex items-center gap-1.5"><span
+                  class="w-2.5 h-2.5 rounded-full bg-amber-500 border border-white inline-block"></span> <strong>4
+                  Esquinas Ámbar:</strong> Redimensionar polígono</div>
+              <div class="flex items-center gap-1.5"><span
+                  class="w-2.5 h-2.5 rounded-full bg-cyan-400 border border-white inline-block"></span> <strong>Punto
+                  Cian Superior:</strong> Rotar polígono</div>
+              <div class="flex items-center gap-1.5"><span
+                  class="w-2.5 h-2.5 rounded-full bg-sky-400 border border-white inline-block"></span> <strong>Puntos
+                  Celestes:</strong> Editar vértices (clic borde añade)</div>
             </div>
 
             <div class="grid grid-cols-3 gap-1.5 pt-1">
-              <button onclick="saveSelectedLotNow()" class="py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
+              <button onclick="saveSelectedLotNow()"
+                class="py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
                 💾 Guardar
               </button>
-              <button onclick="duplicateSelectedLot()" class="py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
+              <button onclick="duplicateSelectedLot()"
+                class="py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
                 📋 Duplicar
               </button>
-              <button onclick="deleteSelectedLot()" class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
+              <button onclick="deleteSelectedLot()"
+                class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[11px] font-bold transition flex items-center justify-center gap-1">
                 🗑️ Eliminar
               </button>
             </div>
@@ -779,22 +959,26 @@
             <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
               <span>✏️ Textos y Rótulos Adicionales</span>
             </h3>
-            <span id="editorTextCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">0</span>
+            <span id="editorTextCountBadge"
+              class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">0</span>
           </div>
 
           <div class="space-y-2">
             <div>
               <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Contenido del Texto</label>
-              <input id="inpEditorTextContent" type="text" placeholder="Ej. Manzana A / Calle Principal" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
+              <input id="inpEditorTextContent" type="text" placeholder="Ej. Manzana A / Calle Principal"
+                class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Tamaño (px)</label>
-                <input id="inpEditorTextSize" type="number" value="16" min="8" max="72" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
+                <input id="inpEditorTextSize" type="number" value="16" min="8" max="72"
+                  class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
               </div>
               <div>
                 <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Color</label>
-                <select id="selEditorTextColor" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400">
+                <select id="selEditorTextColor"
+                  class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400">
                   <option value="#ffffff" selected>Blanco</option>
                   <option value="#fbbf24">Amarillo</option>
                   <option value="#38bdf8">Cian</option>
@@ -811,13 +995,16 @@
           </div>
 
           <div class="grid grid-cols-3 gap-1.5 pt-1">
-            <button onclick="addTextToMap()" class="py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+            <button onclick="addTextToMap()"
+              class="py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
               ➕ Agregar
             </button>
-            <button onclick="editSelectedText()" class="py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+            <button onclick="editSelectedText()"
+              class="py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
               ✏️ Modificar
             </button>
-            <button onclick="deleteSelectedText()" class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+            <button onclick="deleteSelectedText()"
+              class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
               🗑️ Borrar
             </button>
           </div>
@@ -832,13 +1019,15 @@
             <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
               <span>📏 Líneas y Delimitaciones Adicionales</span>
             </h3>
-            <span id="editorLineCountBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">0</span>
+            <span id="editorLineCountBadge"
+              class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/30">0</span>
           </div>
 
           <div class="grid grid-cols-3 gap-1.5">
             <div>
               <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Color</label>
-              <select id="selEditorLineColor" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
+              <select id="selEditorLineColor"
+                class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
                 <option value="#38bdf8" selected>Cian</option>
                 <option value="#fbbf24">Amarillo</option>
                 <option value="#10b981">Verde</option>
@@ -848,7 +1037,8 @@
             </div>
             <div>
               <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Grosor</label>
-              <select id="selEditorLineWidth" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
+              <select id="selEditorLineWidth"
+                class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
                 <option value="1.5">1.5 px</option>
                 <option value="2.5" selected>2.5 px</option>
                 <option value="4">4 px</option>
@@ -856,7 +1046,8 @@
             </div>
             <div>
               <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Estilo</label>
-              <select id="selEditorLineDash" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
+              <select id="selEditorLineDash"
+                class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-2 py-1.5 text-xs text-white">
                 <option value="solid" selected>Continua</option>
                 <option value="dashed">Punteada</option>
               </select>
@@ -870,19 +1061,24 @@
             <div>🟢 Mover trazo completo · 🟡 Escalar · 🔵 Rotar · 🔴 Borrar</div>
           </div>
 
-          <div id="lineDraftStatusContainer" class="hidden p-2 rounded-xl bg-sky-500/15 border border-sky-400/40 text-[10.5px] text-sky-200 flex items-center justify-between">
+          <div id="lineDraftStatusContainer"
+            class="hidden p-2 rounded-xl bg-sky-500/15 border border-sky-400/40 text-[10.5px] text-sky-200 flex items-center justify-between">
             <span id="lineDraftStatusText">Marcando vértices en mapa (0 puntos)...</span>
-            <button onclick="cancelDrawingLine()" type="button" class="text-rose-400 hover:text-rose-300 font-bold text-[10px] px-1.5 py-0.5 rounded bg-black/40">Cancelar</button>
+            <button onclick="cancelDrawingLine()" type="button"
+              class="text-rose-400 hover:text-rose-300 font-bold text-[10px] px-1.5 py-0.5 rounded bg-black/40">Cancelar</button>
           </div>
 
           <div class="grid grid-cols-3 gap-1.5 pt-1">
-            <button onclick="toggleStartDrawLine()" id="btnStartDrawLine" class="py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+            <button onclick="toggleStartDrawLine()" id="btnStartDrawLine"
+              class="py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
               ➕ Trazar
             </button>
-            <button onclick="editSelectedLine()" class="py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+            <button onclick="editSelectedLine()"
+              class="py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
               ✏️ Modificar
             </button>
-            <button onclick="deleteSelectedLine()" class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
+            <button onclick="deleteSelectedLine()"
+              class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-300 text-[10.5px] font-bold transition flex items-center justify-center gap-1">
               🗑️ Borrar
             </button>
           </div>
@@ -896,15 +1092,21 @@
   </aside>
 
   <!-- 7. MODAL SUPABASE (nova_propiedades) -->
-  <div id="supabaseModal" class="hidden fixed inset-0 z-[800] bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="supabaseModal"
+    class="hidden fixed inset-0 z-[800] bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="glass-panel rounded-3xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
       <div class="px-5 py-4 border-b border-white/10 flex items-center justify-between">
         <div>
-          <h3 class="text-sm font-extrabold text-white">Conexión Supabase · <span class="text-emerald-400">nova_propiedades</span></h3>
+          <h3 class="text-sm font-extrabold text-white">Conexión Supabase · <span
+              class="text-emerald-400">nova_propiedades</span></h3>
           <p class="text-[11px] text-slate-400">Sincronización bidireccional de terrenos, lotizaciones y polígonos</p>
         </div>
-        <button onclick="closeSupabaseModal()" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        <button onclick="closeSupabaseModal()"
+          class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
       </div>
 
@@ -912,21 +1114,35 @@
         <div class="space-y-2.5">
           <div>
             <label class="block text-[11px] font-semibold text-slate-300 mb-1">Supabase Project URL</label>
-            <input id="inpSbUrl" type="url" value="https://zrtfayhgoeoqwakbuakn.supabase.co" class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400 font-mono" placeholder="https://tu-proyecto.supabase.co" />
+            <input id="inpSbUrl" type="url" value="https://zrtfayhgoeoqwakbuakn.supabase.co"
+              class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400 font-mono"
+              placeholder="https://tu-proyecto.supabase.co" />
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-slate-300 mb-1">Supabase Anon Key</label>
-            <input id="inpSbKey" type="password" value="sb_publishable_jxOPrOHvCaGhZvy-4CY2RQ_NWSNxVqo" class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400 font-mono" placeholder="sb_publishable_..." />
+            <input id="inpSbKey" type="password" value="sb_publishable_jxOPrOHvCaGhZvy-4CY2RQ_NWSNxVqo"
+              class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400 font-mono"
+              placeholder="sb_publishable_..." />
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-2.5">
-          <button onclick="saveToSupabase()" class="py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1.5">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          <button onclick="saveToSupabase()"
+            class="py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
             <span>Guardar en Supabase</span>
           </button>
-          <button onclick="loadFromSupabase()" class="py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1.5">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <button onclick="loadFromSupabase()"
+            class="py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
             <span>Sincronizar y Cargar</span>
           </button>
         </div>
@@ -934,11 +1150,16 @@
         <!-- Script SQL completo y verificado para copiar y ejecutar en Supabase -->
         <div class="space-y-1.5 pt-2 border-t border-white/10">
           <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold text-slate-300">Script SQL Integral para <code class="text-emerald-300">nova_propiedades</code></span>
-            <button onclick="copySqlScript()" class="text-[11px] font-bold text-sky-400 hover:text-sky-300 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-400/30">Copiar SQL</button>
+            <span class="text-[11px] font-bold text-slate-300">Script SQL Integral para <code
+                class="text-emerald-300">nova_propiedades</code></span>
+            <button onclick="copySqlScript()"
+              class="text-[11px] font-bold text-sky-400 hover:text-sky-300 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-400/30">Copiar
+              SQL</button>
           </div>
-          <p class="text-[10px] text-slate-400">Si agregas nuevos campos, ejecuta este script en el SQL Editor de Supabase para habilitar todas las columnas automáticamente:</p>
-          <textarea id="sqlScriptArea" readonly rows="11" class="w-full bg-slate-950/90 border border-white/10 rounded-xl p-3 text-[10.5px] font-mono text-emerald-300 focus:outline-none custom-scroll">-- 1. TABLA BASE UNIFICADA
+          <p class="text-[10px] text-slate-400">Si agregas nuevos campos, ejecuta este script en el SQL Editor de
+            Supabase para habilitar todas las columnas automáticamente:</p>
+          <textarea id="sqlScriptArea" readonly rows="11"
+            class="w-full bg-slate-950/90 border border-white/10 rounded-xl p-3 text-[10.5px] font-mono text-emerald-300 focus:outline-none custom-scroll">-- 1. TABLA BASE UNIFICADA
 CREATE TABLE IF NOT EXISTS public.nova_propiedades (
   id TEXT PRIMARY KEY,
   title TEXT,
@@ -1020,14 +1241,15 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     </div>
   </div>
 
-    <!-- BOTÓN FLOTANTE PERSISTENTE DE WHATSAPP BUSINESS -->
+  <!-- BOTÓN FLOTANTE PERSISTENTE DE WHATSAPP BUSINESS -->
   <div class="fixed bottom-24 right-4 sm:bottom-28 sm:right-4 z-[605] flex flex-col items-end gap-2">
     <span onclick="openWhatsAppInquiry()"
       class="cursor-pointer bg-white text-slate-900 font-bold text-xs px-3.5 py-1.5 rounded-full shadow-2xl border border-slate-200 flex items-center gap-1.5 animate-bounce">
       <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
       QUIERO ESTA PROPIEDAD
     </span>
-    <button onclick="openWhatsAppInquiry()" id="whatsappFloatBtn" aria-label="Contactar por WhatsApp Business" title="QUIERO ESTA PROPIEDAD"
+    <button onclick="openWhatsAppInquiry()" id="whatsappFloatBtn" aria-label="Contactar por WhatsApp Business"
+      title="QUIERO ESTA PROPIEDAD"
       class="w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white flex items-center justify-center shadow-[0_4px_24px_rgba(37,211,102,0.5)] hover:scale-110 transition-all duration-300">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-8 h-8 fill-white">
         <path
@@ -1036,9 +1258,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     </button>
   </div>
 
-<!-- 8. NOTIFICACIONES TOAST (SIN alert/confirm) -->
-  <div id="toastBox" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-[900] pointer-events-none opacity-0 transition-opacity duration-300">
-    <div id="toastText" class="glass-panel rounded-2xl px-4 py-2.5 text-xs font-bold text-white border-sky-400/40"></div>
+  <!-- 8. NOTIFICACIONES TOAST (SIN alert/confirm) -->
+  <div id="toastBox"
+    class="fixed bottom-20 left-1/2 -translate-x-1/2 z-[900] pointer-events-none opacity-0 transition-opacity duration-300">
+    <div id="toastText" class="glass-panel rounded-2xl px-4 py-2.5 text-xs font-bold text-white border-sky-400/40">
+    </div>
   </div>
 
   <script>
@@ -1273,12 +1497,12 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         // Fila Superior (4 lotes escalonados)
         { id: 'lot-1', code: 'Lote 1', area: 200, price: 28000, status: 'Disponible', coords: toGeoRect(-22.5, 11.5, 13.5, 15) },
         { id: 'lot-2', code: 'Lote 2', area: 180, price: 25500, status: 'Disponible', coords: toGeoRect(-8.0, 12.5, 13.5, 15) },
-        { id: 'lot-3', code: 'Lote 3', area: 160, price: 23000, status: 'Reservado',  coords: toGeoRect(6.5, 13.5, 13.5, 15) },
+        { id: 'lot-3', code: 'Lote 3', area: 160, price: 23000, status: 'Reservado', coords: toGeoRect(6.5, 13.5, 13.5, 15) },
         { id: 'lot-4', code: 'Lote 4', area: 150, price: 22000, status: 'Disponible', coords: toGeoRect(21.0, 14.5, 13.5, 15) },
         // Fila Inferior (3 lotes frente al pasaje de acceso)
-        { id: 'lot-5', code: 'Lote 5', area: 140, price: 21500, status: 'Vendido',    coords: toGeoRect(-15.5, -10.5, 14.5, 14.5) },
+        { id: 'lot-5', code: 'Lote 5', area: 140, price: 21500, status: 'Vendido', coords: toGeoRect(-15.5, -10.5, 14.5, 14.5) },
         { id: 'lot-6', code: 'Lote 6', area: 130, price: 20000, status: 'Disponible', coords: toGeoRect(0.0, -9.5, 14.5, 14.5) },
-        { id: 'lot-7', code: 'Lote 7', area: 120, price: 19500, status: 'Reservado',  coords: toGeoRect(15.5, -8.5, 14.5, 14.5) }
+        { id: 'lot-7', code: 'Lote 7', area: 120, price: 19500, status: 'Reservado', coords: toGeoRect(15.5, -8.5, 14.5, 14.5) }
       ];
     }
 
@@ -1321,7 +1545,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             localStorage.setItem('nova_map_projects', JSON.stringify(cleaned));
           }
         }
-      } catch(e) {}
+      } catch (e) { }
     })();
 
     function loadProjectsLocal() {
@@ -1579,7 +1803,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             }).addTo(roadsOverlayLayer);
           }
         });
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // =========================================================================
@@ -1909,11 +2133,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const lotsHtml = isOpen ? `
           <div class="mt-1.5 pt-1.5 border-t border-white/10 space-y-1">
             ${lots.length === 0
-              ? `<div class="text-[10px] text-slate-400 px-2 py-1">Sin lotes trazados aún.</div>`
-              : lots.map(lot => {
-                  const st = getStatusStyle(lot.status);
-                  const isSel = isCurrent && lot.id === selectedLotId;
-                  return `
+            ? `<div class="text-[10px] text-slate-400 px-2 py-1">Sin lotes trazados aún.</div>`
+            : lots.map(lot => {
+              const st = getStatusStyle(lot.status);
+              const isSel = isCurrent && lot.id === selectedLotId;
+              return `
                     <button onclick="flyToLotFromSidebar('${escapeHtml(proj.id)}', '${escapeHtml(lot.id)}')" class="w-full px-2 py-1.5 rounded-lg text-left flex items-center justify-between gap-2 transition ${isSel ? 'bg-sky-500/25 border border-sky-400/50' : 'hover:bg-white/10 border border-transparent'}">
                       <div class="flex items-center gap-1.5 min-w-0">
                         <span class="w-2 h-2 rounded-full shrink-0" style="background:${st.fill}"></span>
@@ -1923,8 +2147,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                       <span class="text-[10px] font-bold text-amber-200 shrink-0">S/.${Number(lot.price || 0).toLocaleString('en-US')}</span>
                     </button>
                   `;
-                }).join('')
-            }
+            }).join('')
+          }
           </div>
         ` : '';
 
@@ -2987,8 +3211,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         let totalLenM = 0;
         for (let i = 0; i < pts.length - 1; i++) {
           totalLenM += Math.hypot(
-            (pts[i+1].lng - pts[i].lng) * 111320 * Math.cos(pts[i].lat * Math.PI / 180),
-            (pts[i+1].lat - pts[i].lat) * 110540
+            (pts[i + 1].lng - pts[i].lng) * 111320 * Math.cos(pts[i].lat * Math.PI / 180),
+            (pts[i + 1].lat - pts[i].lat) * 110540
           );
         }
         const lenTxt = totalLenM >= 1000 ? (totalLenM / 1000).toFixed(2) + ' km' : totalLenM.toFixed(1) + ' m';
@@ -3086,8 +3310,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       showToast('Texto eliminado.');
     }
 
-    let isDrawingCustomLine = false;
-    let customLineDraftPoints = [];
+    isDrawingCustomLine = false;
+    customLineDraftPoints = [];
     let draftPolyline = null;
     let draftMarkers = [];
 
@@ -4577,7 +4801,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const inpKey = document.getElementById('inpSbKey');
         if (inpUrl && !inpUrl.value) inpUrl.value = cfg.url;
         if (inpKey && !inpKey.value) inpKey.value = cfg.key;
-      } catch (e) {}
+      } catch (e) { }
       document.getElementById('supabaseModal').classList.remove('hidden');
     }
 
@@ -4600,7 +4824,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         localStorage.setItem('supabase_url', url);
         localStorage.setItem('supabase_key', key);
         localStorage.setItem(SB_CONF_KEY, JSON.stringify({ url, key }));
-      } catch (e) {}
+      } catch (e) { }
       if (!window.supabase || !window.supabase.createClient) {
         showToast('Librería de Supabase no disponible.');
         return null;
@@ -4780,7 +5004,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                 if (Array.isArray(meta.lotes) && meta.lotes.length) lotes = meta.lotes;
                 if (meta.calco_config) calco_config = meta.calco_config;
               }
-            } catch (e) {}
+            } catch (e) { }
           }
 
           // Si es el proyecto principal de Huaypo / Fortunato / Guadalupe y aún no tiene lotes en la base de datos,
@@ -5162,7 +5386,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           material.needsUpdate = true;
         };
         loader.load(googleUrl, applyTex, undefined, () => {
-          loader.load(esriUrl, applyTex, undefined, () => {});
+          loader.load(esriUrl, applyTex, undefined, () => { });
         });
       }
 
@@ -5189,7 +5413,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             material.map = tex;
             material.opacity = 0.94;
             material.needsUpdate = true;
-          } catch (e) {}
+          } catch (e) { }
         };
         img.src = url;
       }
@@ -5213,7 +5437,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const rings = [
           { z: 15, radius: 2, segs: 12, yBias: -1.6 },
           { z: 17, radius: 2, segs: 10, yBias: -0.5 },
-          { z: 19, radius: 2, segs: 8,  yBias: 0.0 }
+          { z: 19, radius: 2, segs: 8, yBias: 0.0 }
         ];
 
         rings.forEach(ring => {
@@ -7498,4 +7722,5 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     })(window);
   </script>
 </body>
+
 </html>
