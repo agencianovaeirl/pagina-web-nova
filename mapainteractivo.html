@@ -23,7 +23,7 @@
   <!-- Supabase JS v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Tesseract.js v5 para reconocimiento OCR en español -->
+  <!-- Tesseract.js v5 (Reconocimiento OCR de textos en planos) -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
   <style>
@@ -625,8 +625,8 @@
               <span>🧲 Pegar Lados</span>
             </button>
           </div>
-          <button onclick="abrirModuloDetectarLotes()" type="button" class="w-full mt-2 py-2 px-3 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
-            <span>🗺️ Abrir Convertidor de Planos con OCR Tesseract</span>
+          <button onclick="abrirModuloDetectarLotes('lotes')" class="w-full py-2.5 px-3 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-200 text-xs font-extrabold transition flex items-center justify-center gap-1.5">
+            <span>🗺️ Abrir Convertidor de Plano a Polígonos (OCR)</span>
           </button>
         </div>
 
@@ -669,9 +669,6 @@
             <span>🧲 Pegar</span>
           </button>
         </div>
-          <button onclick="abrirModuloDetectarLotes()" type="button" class="w-full mt-2 py-2 px-3 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-300 text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer shadow-md">
-            <span>🗺️ Abrir Convertidor de Planos con OCR Tesseract</span>
-          </button>
 
         <!-- INSPECTOR DE DATOS DEL POLÍGONO SELECCIONADO (DATOS EN EL INTERIOR) -->
         <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-white/10 space-y-2.5 shadow-lg">
@@ -2858,7 +2855,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         });
 
         const precioNum = Number(String(l.precio || '').replace(/[^\d.]/g, '')) || 23000;
-        const codigo = l.manzana ? `${l.manzana}-${l.lote}` : `Lote ${l.lote || idx + 1}`;
+        const codigo = l.lote_numero || (l.manzana ? `${l.manzana}-${l.lote}` : `Lote ${l.lote || idx + 1}`);
 
         return {
           id: `lot-${Date.now()}-${idx}`,
