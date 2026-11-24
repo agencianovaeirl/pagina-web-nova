@@ -859,14 +859,10 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-2.5">
-          <button onclick="saveToSupabase()" class="py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1.5">
+        <div>
+          <button onclick="saveToSupabase()" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1.5 cursor-pointer">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
             <span>Guardar en Supabase</span>
-          </button>
-          <button onclick="loadFromSupabase()" class="py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-extrabold transition shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1.5">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            <span>Sincronizar y Cargar</span>
           </button>
         </div>
 
@@ -2799,13 +2795,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           return offsetMetersToLatLng(refLat, refLng, rx, ry);
         });
 
-        const precioNum = Number(String(l.precio || '').replace(/[^\d.]/g, '')) || 23000;
+        const precioNum = l.precio ? (Number(String(l.precio).replace(/[^\d.]/g, '')) || 0) : 0;
         const codigo = l.lote_numero || (l.manzana ? `${l.manzana}-${l.lote}` : `Lote ${l.lote || idx + 1}`);
+        const areaVal = Number(l.area_m2) || 0;
 
         return {
           id: `lot-${Date.now()}-${idx}`,
           code: codigo,
-          area: Math.max(1, Math.round(Number(l.area_m2) || 120)),
+          area: areaVal,
           price: precioNum,
           status: normalizarEstado(l.estado),
           coords
@@ -3732,7 +3729,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             const midLat = sumLat / pts.length;
             const midLng = sumLng / pts.length;
 
-            // 1. Manijas en CADA VÉRTICE individual (Draggable)
+            // 1. Manijas en CADA VÉRTICE individual (Draggable + Clic para modificar posición interactiva)
             pts.forEach((p, vIdx) => {
               const vm = L.marker([p.lat, p.lng], {
                 icon: createHandleIcon('vertex'),
@@ -3748,7 +3745,32 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
               vm.on('dragend', () => {
                 saveProjectsLocal();
                 rebuildEditorHandles();
+                saveToSupabase();
               });
+              // AL DARLE CLICK EN EL VÉRTICE: activar modo interactivo para modificar su posición
+              vm.on('click', (e) => {
+                L.DomEvent.stopPropagation(e);
+                showToast(`📍 Vértice ${vIdx + 1} de la línea seleccionado: Haz clic en el mapa donde quieras ubicarlo (o arrástralo).`);
+                
+                const el = vm.getElement();
+                if (el) {
+                  el.style.transform = (el.style.transform || '') + ' scale(1.4)';
+                  el.style.filter = 'drop-shadow(0 0 8px #38bdf8)';
+                }
+
+                const relocateVertexHandler = (mapEvt) => {
+                  pts[vIdx] = { lat: mapEvt.latlng.lat, lng: mapEvt.latlng.lng };
+                  syncLineBoundsAndProps(l);
+                  saveProjectsLocal();
+                  renderAllProjectsAndLots();
+                  rebuildEditorHandles();
+                  saveToSupabase();
+                  showToast(`✅ Vértice ${vIdx + 1} de la línea reubicado.`);
+                };
+
+                map2d.once('click', relocateVertexHandler);
+              });
+
               // Clic derecho en vértice para eliminarlo (si tiene más de 2 vértices)
               vm.on('contextmenu', (e) => {
                 L.DomEvent.stopPropagation(e);
@@ -3759,6 +3781,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                   renderAllProjectsAndLots();
                   rebuildEditorHandles();
                   renderEditorLinesList();
+                  saveToSupabase();
                   showToast('Vértice eliminado de la línea.');
                 } else {
                   showToast('La línea debe conservar al menos 2 vértices.');
@@ -5833,10 +5856,6 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         </div>
 
         <div class="flex items-center gap-2">
-          <button id="btnLoadSampleTop" type="button" class="px-3 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-400/40 text-emerald-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
-            <span>🗺️</span>
-            <span>Cargar plano de ejemplo</span>
-          </button>
           <button id="btnCloseLotizador" type="button" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-slate-300 hover:text-white flex items-center justify-center text-lg font-bold transition cursor-pointer" title="Cerrar modal">&times;</button>
         </div>
       </header>
@@ -5860,9 +5879,6 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             <div class="flex flex-wrap items-center justify-center gap-2 mt-2 w-full">
               <button id="btnEmptyUpload" type="button" class="px-4 py-2.5 rounded-xl bg-sky-400 hover:bg-sky-300 text-slate-950 text-xs font-extrabold transition cursor-pointer">
                 📁 Subir imagen
-              </button>
-              <button id="btnEmptySample" type="button" class="px-4 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-extrabold transition cursor-pointer">
-                ✨ Cargar plano de ejemplo (6 lotes)
               </button>
             </div>
           </div>
@@ -6574,13 +6590,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         renderOverlay();
       }
 
-      // Análisis cromático de respaldo + inicialización de cada lote
+      // Inicialización de cada lote SIN CÁLCULOS ARTIFICIALES (Precio y Área vienen exclusivamente del texto en la imagen)
       function reconocerDatosBaseLote(pts, idx, medianPx) {
         const numStr = String(idx + 1).padStart(2, '0');
         const areaPx = calcularAreaPx(pts);
         const perimPx = calcularPerimetroPx(pts);
-        const ratio = Math.max(0.35, Math.min(3.5, areaPx / (medianPx || areaPx || 1000)));
-        const areaEstimada = Math.max(30, Math.round(150 * ratio));
 
         // Análisis cromático interior para estado de respaldo
         let estado = 'Disponible';
@@ -6644,69 +6658,91 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
         return {
           id: `L-${numStr}-${Date.now().toString(36).slice(-3)}`,
-          lote_numero: `Lote ${numStr}`,
+          lote_numero: numStr,
           lote: numStr,
           estado,
-          precio: String(Math.round(areaEstimada * 180)),
+          precio: '',          // Sin cálculos artificiales: se rellena exclusivamente con el texto exacto del OCR
           points: pts,
           areaPx,
           perimPx,
-          area_m2: areaEstimada,
+          area_m2: '',         // Sin cálculos artificiales: se rellena exclusivamente con el texto exacto del OCR
           ocrRaw: '',
           ocrMatched: false
         };
       }
 
-      // Parser inteligente del texto reconocido por Tesseract OCR
+      // Parser preciso que extrae exactamente los datos y textos de la imagen sin cálculos artificiales
       function extraerDatosDesdeTextoOCR(rawText) {
         const text = String(rawText || '').replace(/\r/g, '\n').trim();
         const upper = text.toUpperCase();
         const res = { lote_numero: null, area_m2: null, estado: null, precio: null };
 
-        // 1. Estado: DISPONIBLE / RESERVADO / VENDIDO
-        if (/\b(VENDIDO|VEND\.?)\b/.test(upper)) {
+        // 1. Estado exacto: DISPONIBLE / RESERVADO / VENDIDO
+        if (/\b(VENDID[OA]|VEND\.?)\b/i.test(upper)) {
           res.estado = 'Vendido';
-        } else if (/\b(RESERVADO|RESERV\.?)\b/.test(upper)) {
+        } else if (/\b(RESERVAD[OA]|RESERV\.?)\b/i.test(upper)) {
           res.estado = 'Reservado';
-        } else if (/\b(DISPONIBLE|DISP\.?)\b/.test(upper)) {
+        } else if (/\b(DISPONIBL[ES]?|DISP\.?)\b/i.test(upper)) {
           res.estado = 'Disponible';
         }
 
-        // 2. Número de Lote (unificado: "Lote 01", "Mz. A - Lote 02", etc.)
-        const matchMzLt = text.match(/\b(Mz\.?\s*[A-Za-z0-9]+)\s*[-/,\s]?\s*(?:Lt\.?|Lote)?\s*([0-9]{1,3})\b/i);
-        if (matchMzLt) {
-          res.lote_numero = `${matchMzLt[1]} - Lote ${matchMzLt[2].padStart(2, '0')}`;
+        // 2. Área (m²): reconoce los datos exactos del área en la imagen (ej. 601.01 m2, 260.00 m2, 200.00, etc.)
+        const matchArea = text.match(/(?:ÁREA|AREA|A\s*[:=])?\s*([0-9]{2,4}[.,][0-9]{1,2})\s*(?:M2|M²|MZ|M-2|MT2|MTS2|M)?\b/i);
+        if (matchArea) {
+          const parsed = parseFloat(matchArea[1].replace(',', '.'));
+          if (!isNaN(parsed) && parsed > 0) res.area_m2 = parsed;
         } else {
-          const matchLt = text.match(/\b(?:LOTE|LT\.?|L\.)\s*([0-9]{1,3})\b/i);
-          if (matchLt) {
-            res.lote_numero = `Lote ${matchLt[1].padStart(2, '0')}`;
-          } else {
-            const matchJustNum = text.match(/^\s*([0-9]{1,3})\s*$/m);
-            if (matchJustNum) {
-              res.lote_numero = `Lote ${matchJustNum[1].padStart(2, '0')}`;
-            }
+          const matchDec = text.match(/\b([1-9][0-9]{1,3}[.,][0-9]{2})\b/);
+          if (matchDec) {
+            const parsed = parseFloat(matchDec[1].replace(',', '.'));
+            if (!isNaN(parsed) && parsed >= 20 && parsed <= 5000) res.area_m2 = parsed;
           }
         }
 
-        // 3. Área en m² (ej. "160 m2", "145.50 m²", "A=180", "120.00 M2")
-        const matchArea = text.match(/(?:ÁREA|AREA|A\s*[:=])?\s*([0-9]{2,4}(?:[.,][0-9]{1,2})?)\s*(?:M2|M²|MT2|MTS2)/i);
-        if (matchArea) {
-          const parsed = parseFloat(matchArea[1].replace(',', '.'));
-          if (!isNaN(parsed) && parsed >= 20 && parsed <= 5000) res.area_m2 = parsed;
-        }
-
-        // 4. Precio (ej. "S/. 28,500", "$ 15000", "28500", "S/ 32.000")
-        const matchPrice = text.match(/(?:S\/?\.?|\$)\s*([0-9]{1,3}(?:[.,\s][0-9]{3})*(?:[.,][0-9]{2})?)/i);
+        // 3. Precio (S/.): reconoce el dato exacto del precio en la imagen (ej. S/.35,000, S/.35.000, 35000)
+        const matchPrice = text.match(/(?:S\/?\.?|\$|5\/\.?)\s*([0-9]{1,3}(?:[.,\s][0-9]{3})+(?:[.,][0-9]{2})?|[0-9]{4,7})/i);
         if (matchPrice) {
           const clean = matchPrice[1].replace(/[\s,.]/g, '');
           const val = parseInt(clean, 10);
-          if (!isNaN(val) && val >= 5000 && val <= 2000000) res.precio = String(val);
+          if (!isNaN(val) && val >= 1000) res.precio = String(val);
+        }
+
+        // 4. N° de Lote: reconoce el dato exacto del nro de lote en la imagen (ej: L44 01 -> 01, Mz. A - Lote 02 -> 02, 04 -> 04)
+        const matchLCombo = text.match(/\bL[.-]?\s*\d{1,3}\s+([0-9]{1,3})\b/i);
+        if (matchLCombo) {
+          res.lote_numero = matchLCombo[1].padStart(2, '0');
+        } else {
+          const matchMzLt = text.match(/\b(Mz\.?\s*[A-Za-z0-9]+)\s*[-/,\s]?\s*(?:Lt\.?|Lote)?\s*([0-9]{1,3})\b/i);
+          if (matchMzLt) {
+            res.lote_numero = `${matchMzLt[1]} - Lote ${matchMzLt[2].padStart(2, '0')}`;
+          } else {
+            const matchLt = text.match(/\b(?:LOTE|LT\.?|L\.)\s*([0-9]{1,3})\b/i);
+            if (matchLt) {
+              res.lote_numero = matchLt[1].padStart(2, '0');
+            } else {
+              const lines = text.split('\n');
+              for (const line of lines) {
+                const trimmed = line.trim();
+                const mSolo = trimmed.match(/^([0-9]{1,3})$/);
+                if (mSolo) {
+                  res.lote_numero = mSolo[1].padStart(2, '0');
+                  break;
+                }
+              }
+              if (!res.lote_numero) {
+                const matchAnyNum = text.match(/\b([0-9]{1,3})\b/);
+                if (matchAnyNum) {
+                  res.lote_numero = matchAnyNum[1].padStart(2, '0');
+                }
+              }
+            }
+          }
         }
 
         return res;
       }
 
-      // Recorta el lote, lo escala y le aplica contraste para alimentar a Tesseract OCR
+      // Recorta el lote con mapeo proporcional correcto a la imagen original de alta resolución
       function crearRecorteParaOCR(pts) {
         let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
         pts.forEach(([px, py]) => {
@@ -6726,24 +6762,32 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
         if (sw <= 12 || sh <= 12) return null;
 
-        const upscale = sw < 180 ? 2.6 : (sw < 340 ? 1.9 : 1.3);
+        const scaleX = (state.imgNaturalW || state.workW) / (state.workW || 1);
+        const scaleY = (state.imgNaturalH || state.workH) / (state.workH || 1);
+
+        const outW = Math.max(140, Math.round(sw * (scaleX > 1 ? scaleX : 2)));
+        const outH = Math.max(90, Math.round(sh * (scaleY > 1 ? scaleY : 2)));
+
         const c = document.createElement('canvas');
-        c.width = Math.round(sw * upscale);
-        c.height = Math.round(sh * upscale);
+        c.width = outW;
+        c.height = outH;
         const ctx = c.getContext('2d', { willReadFrequently: true });
 
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, c.width, c.height);
 
-        const sourceImg = state.origImg || state.workCanvas;
-        ctx.drawImage(sourceImg, sx, sy, sw, sh, 0, 0, c.width, c.height);
+        if (state.origImg && scaleX > 0.5) {
+          ctx.drawImage(state.origImg, sx * scaleX, sy * scaleY, sw * scaleX, sh * scaleY, 0, 0, c.width, c.height);
+        } else {
+          ctx.drawImage(state.workCanvas, sx, sy, sw, sh, 0, 0, c.width, c.height);
+        }
 
-        // Escala de grises + alto contraste para lectura OCR precisa
+        // Contraste optimizado para caracteres impresos en planos
         const imgData = ctx.getImageData(0, 0, c.width, c.height);
         const d = imgData.data;
         for (let i = 0; i < d.length; i += 4) {
           const lum = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-          const contrast = Math.max(0, Math.min(255, (lum - 140) * 2.1 + 140));
+          const contrast = Math.max(0, Math.min(255, (lum - 135) * 2.2 + 135));
           d[i] = d[i + 1] = d[i + 2] = contrast;
         }
         ctx.putImageData(imgData, 0, 0);
@@ -6954,20 +6998,22 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           lbl.textContent = l.lote_numero;
           svg.appendChild(lbl);
 
-          const sub = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          sub.setAttribute('x', cx);
-          sub.setAttribute('y', cy + 9);
-          sub.setAttribute('text-anchor', 'middle');
-          sub.setAttribute('dominant-baseline', 'central');
-          sub.setAttribute('fill', est.text || '#cbd5e1');
-          sub.setAttribute('stroke', '#0b1120');
-          sub.setAttribute('stroke-width', '3');
-          sub.setAttribute('paint-order', 'stroke');
-          sub.setAttribute('font-size', '10.5');
-          sub.setAttribute('font-weight', '700');
-          sub.style.pointerEvents = 'none';
-          sub.textContent = `${l.area_m2} m²`;
-          svg.appendChild(sub);
+          if (l.area_m2) {
+            const sub = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            sub.setAttribute('x', cx);
+            sub.setAttribute('y', cy + 9);
+            sub.setAttribute('text-anchor', 'middle');
+            sub.setAttribute('dominant-baseline', 'central');
+            sub.setAttribute('fill', est.text || '#cbd5e1');
+            sub.setAttribute('stroke', '#0b1120');
+            sub.setAttribute('stroke-width', '3');
+            sub.setAttribute('paint-order', 'stroke');
+            sub.setAttribute('font-size', '10.5');
+            sub.setAttribute('font-weight', '700');
+            sub.style.pointerEvents = 'none';
+            sub.textContent = `${l.area_m2} m²`;
+            svg.appendChild(sub);
+          }
         }
 
         // Si hay lote seleccionado, renderizar bordes clickeables y vértices arrastrables
@@ -7017,10 +7063,10 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         if (sel) {
           if ($('badgeLoteId')) $('badgeLoteId').textContent = sel.lote_numero;
           if (!skipInspectorInputs) {
-            if ($('fldLoteNumero')) $('fldLoteNumero').value = sel.lote_numero;
-            if ($('fldArea')) $('fldArea').value = sel.area_m2;
-            if ($('fldEstado')) $('fldEstado').value = sel.estado;
-            if ($('fldPrecio')) $('fldPrecio').value = sel.precio;
+            if ($('fldLoteNumero')) $('fldLoteNumero').value = sel.lote_numero || '';
+            if ($('fldArea')) $('fldArea').value = sel.area_m2 || '';
+            if ($('fldEstado')) $('fldEstado').value = sel.estado || 'Disponible';
+            if ($('fldPrecio')) $('fldPrecio').value = sel.precio || '';
           }
           if ($('fldLoteNumero')) $('fldLoteNumero').disabled = false;
           if ($('fldArea')) $('fldArea').disabled = false;
@@ -7241,13 +7287,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         $('btnUpload')?.addEventListener('click', triggerUpload);
         $('btnEmptyUpload')?.addEventListener('click', triggerUpload);
 
-        const loadSample = () => {
-          const dataUrl = generarPlanoDeEjemploDataUrl();
-          cargarImagenDesdeSrc(dataUrl);
-          showToast('Plano de ejemplo cargado. Pulsa "⚡ Detectar lotes" para probar el OCR.');
-        };
-        $('btnLoadSampleTop')?.addEventListener('click', loadSample);
-        $('btnEmptySample')?.addEventListener('click', loadSample);
+        // Botones de ejemplo removidos a solicitud
 
         $('btnCloseLotizador')?.addEventListener('click', cerrarModal);
         $('lotizadorModalBackdrop')?.addEventListener('click', (e) => {
