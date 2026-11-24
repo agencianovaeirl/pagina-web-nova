@@ -910,6 +910,8 @@ CREATE TABLE IF NOT EXISTS public.nova_propiedades (
   lot_data_json TEXT,
   calco_config JSONB DEFAULT '{}'::jsonb,
   lotes JSONB DEFAULT '[]'::jsonb,
+  custom_lines JSONB DEFAULT '[]'::jsonb,
+  custom_texts JSONB DEFAULT '[]'::jsonb,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -945,6 +947,8 @@ ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS plano_url TEXT;
 ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS lot_data_json TEXT;
 ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS calco_config JSONB DEFAULT '{}'::jsonb;
 ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS lotes JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS custom_lines JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS custom_texts JSONB DEFAULT '[]'::jsonb;
 ALTER TABLE public.nova_propiedades ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
 -- 3. POLÍTICAS DE ACCESO PÚBLICO RLS
@@ -1239,6 +1243,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           opacity: 0.65
         },
         lotes: buildFortunatoLots(DEFAULT_LAT, DEFAULT_LNG),
+        custom_lines: [],
+        custom_texts: [],
         updated_at: new Date().toISOString()
       };
     }
@@ -1273,6 +1279,10 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           if (Array.isArray(parsed) && parsed.length > 0) {
             projects = parsed.filter(p => !isExcludedProject(p));
             if (projects.length > 0) {
+              projects.forEach(p => {
+                if (!Array.isArray(p.custom_lines)) p.custom_lines = [];
+                if (!Array.isArray(p.custom_texts)) p.custom_texts = [];
+              });
               currentProject = projects[0];
               saveProjectsLocal();
               return;
@@ -2263,6 +2273,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           opacity: 0.65
         },
         lotes: [],
+        custom_lines: [],
+        custom_texts: [],
         updated_at: new Date().toISOString()
       };
       projects.push(newProj);
@@ -2834,6 +2846,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
           return {
             id: l.id || `line-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+            points: [ll1, ll2],
             lat1: ll1.lat,
             lng1: ll1.lng,
             lat2: ll2.lat,
@@ -2858,6 +2871,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       if (isEditorOpen && showCalco) renderCalcoOverlay();
       flyToProject(currentProject);
       showToast(`${nuevosLotes.length} polígonos georreferenciados e integrados en "${currentProject.nombre}".`);
+      saveToSupabase();
     }
 
     // =========================================================================
@@ -2973,6 +2987,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       renderAllProjectsAndLots();
       renderEditorTextsList();
       showToast(`Texto "${textVal}" agregado en el centro del mapa.`);
+      saveToSupabase();
     }
 
     function selectCustomText(id) {
@@ -3009,6 +3024,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       renderAllProjectsAndLots();
       renderEditorTextsList();
       showToast('Texto actualizado.');
+      saveToSupabase();
     }
 
     function deleteSelectedText(id) {
@@ -3024,6 +3040,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       renderAllProjectsAndLots();
       renderEditorTextsList();
       showToast('Texto eliminado.');
+      saveToSupabase();
     }
 
     // =========================================================================
@@ -3144,6 +3161,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       renderEditorLinesList();
       rebuildEditorHandles();
       showToast(`📏 Línea trazada con ${pts.length} vértices e integrada en el mapa.`);
+      saveToSupabase();
     }
 
     function cancelDrawingLine() {
@@ -3211,6 +3229,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       renderAllProjectsAndLots();
       renderEditorLinesList();
       showToast('Línea actualizada.');
+      saveToSupabase();
     }
 
     function deleteSelectedLine(id) {
@@ -3226,6 +3245,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       renderAllProjectsAndLots();
       renderEditorLinesList();
       showToast('Línea eliminada.');
+      saveToSupabase();
     }
 
     // =========================================================================
@@ -4737,6 +4757,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           const metadataPayload = {
             calco_config: p.calco_config || {},
             lotes: p.lotes || [],
+            custom_lines: p.custom_lines || [],
+            custom_texts: p.custom_texts || [],
             plano_url: p.plano_url || ''
           };
           const metaJson = JSON.stringify(metadataPayload);
@@ -4765,6 +4787,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             plano_url: p.plano_url || '',
             calco_config: p.calco_config || {},
             lotes: p.lotes || [],
+            custom_lines: p.custom_lines || [],
+            custom_texts: p.custom_texts || [],
             lot_data_json: metaJson,
             detailed_desc: `Propiedad georreferenciada con lotización interactiva y asesoría legal garantizada por Agencia NOVA.\n<!--NOVA_DATA:${metaJson}-->`,
             updated_at: new Date().toISOString()
@@ -4872,17 +4896,30 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             };
           }
 
-          // Lotes y Polígonos
+          // Lotes, Polígonos, Líneas y Textos
           let lotes = [];
+          let custom_lines = [];
+          let custom_texts = [];
+
           if (Array.isArray(r.lotes) && r.lotes.length > 0) {
             lotes = r.lotes;
-          } else if (r.lot_data_json) {
+          }
+          if (Array.isArray(r.custom_lines) && r.custom_lines.length > 0) {
+            custom_lines = r.custom_lines;
+          }
+          if (Array.isArray(r.custom_texts) && r.custom_texts.length > 0) {
+            custom_texts = r.custom_texts;
+          }
+
+          if (r.lot_data_json) {
             try {
               const parsed = typeof r.lot_data_json === 'string' ? JSON.parse(r.lot_data_json) : r.lot_data_json;
               if (Array.isArray(parsed)) {
-                lotes = parsed;
-              } else if (parsed && Array.isArray(parsed.lotes)) {
-                lotes = parsed.lotes;
+                if (!lotes.length) lotes = parsed;
+              } else if (parsed && typeof parsed === 'object') {
+                if (!lotes.length && Array.isArray(parsed.lotes)) lotes = parsed.lotes;
+                if (!custom_lines.length && Array.isArray(parsed.custom_lines)) custom_lines = parsed.custom_lines;
+                if (!custom_texts.length && Array.isArray(parsed.custom_texts)) custom_texts = parsed.custom_texts;
                 if (parsed.calco_config) calco_config = parsed.calco_config;
               }
             } catch (e) {
@@ -4891,12 +4928,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           }
 
           // Respaldo de metadatos si estaban guardados en detailed_desc
-          if (!lotes.length && r.detailed_desc && r.detailed_desc.includes('<!--NOVA_DATA:')) {
+          if ((!lotes.length || !custom_lines.length || !custom_texts.length) && r.detailed_desc && r.detailed_desc.includes('<!--NOVA_DATA:')) {
             try {
               const match = r.detailed_desc.match(/<!--NOVA_DATA:([\s\S]*?)-->/);
               if (match && match[1]) {
                 const meta = JSON.parse(match[1]);
-                if (Array.isArray(meta.lotes) && meta.lotes.length) lotes = meta.lotes;
+                if (Array.isArray(meta.lotes) && meta.lotes.length && !lotes.length) lotes = meta.lotes;
+                if (Array.isArray(meta.custom_lines) && meta.custom_lines.length && !custom_lines.length) custom_lines = meta.custom_lines;
+                if (Array.isArray(meta.custom_texts) && meta.custom_texts.length && !custom_texts.length) custom_texts = meta.custom_texts;
                 if (meta.calco_config) calco_config = meta.calco_config;
               }
             } catch (e) {}
@@ -4923,6 +4962,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             plano_url,
             calco_config,
             lotes,
+            custom_lines,
+            custom_texts,
             updated_at: r.updated_at || r.created_at || new Date().toISOString()
           };
         });
@@ -4938,6 +4979,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         syncProjectFormUI();
         renderAllProjectsAndLots();
         renderProjectsSidebar();
+        renderEditorTextsList();
+        renderEditorLinesList();
         flyToProject(currentProject);
 
         const badge = document.getElementById('badgeDbState');
