@@ -155,12 +155,7 @@
     }
 
     .custom-map-text-icon {
-      background: transparent !important;
-      border: none !important;
       pointer-events: auto !important;
-    }
-    .custom-map-text-icon > div {
-      transform-origin: center center;
     }
     .lot-lbl-price {
       font-size: 10px;
@@ -1738,7 +1733,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             const isSel = t.id === selectedCustomTextId;
             const txtIcon = L.divIcon({
               className: 'custom-map-text-icon',
-              html: `<div style="color:${t.color || '#ffffff'}; font-size:${t.size || 20}px !important; font-weight:900; text-shadow:0 1px 3px #000, 0 0 6px #000; padding:2px 4px; border-radius:4px; ${isSel ? 'border:1.5px dashed #f59e0b; background:rgba(0,0,0,0.6);' : ''} cursor:pointer; user-select:none; white-space:nowrap; transform: translate(-50%, -50%) rotate(${t.rotation || 0}deg); transform-origin: center center;">${escapeHtml(t.text || '')}</div>`,
+              html: `<div style="color:${t.color || '#ffffff'}; font-size:${t.size || 20}px !important; font-weight:900; text-shadow:0 1px 3px #000, 0 0 6px #000; padding:2px 4px; border-radius:4px; ${isSel ? 'border:1.5px dashed #f59e0b; background:rgba(0,0,0,0.6);' : ''} cursor:pointer; user-select:none; white-space:nowrap; transform: rotate(${t.rotation || 0}deg); transform-origin: center center;">${escapeHtml(t.text || '')}</div>`,
               iconSize: [0, 0]
             });
             const marker = L.marker([t.lat, t.lng], { icon: txtIcon, interactive: isEditorOpen });
@@ -1779,9 +1774,36 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           return;
         }
 
-        // Mantener siempre el tamaño original con el que se crearon los textos, sin reducirse ni cambiar al hacer zoom alejar
+        const cPt = map2d.latLngToLayerPoint([centroid.lat, centroid.lng]);
+        const pts = coords.map(c => map2d.latLngToLayerPoint([c.lat, c.lng]));
+
+        // Radio inscrito mínimo desde el centroide hasta cualquier borde del polígono
+        let minEdgeDist = Infinity;
+        for (let i = 0; i < pts.length; i++) {
+          const a = pts[i];
+          const b = pts[(i + 1) % pts.length];
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const lenSq = dx * dx + dy * dy;
+          const t = lenSq === 0 ? 0 : Math.max(0, Math.min(1, ((cPt.x - a.x) * dx + (cPt.y - a.y) * dy) / lenSq));
+          const px = a.x + t * dx;
+          const py = a.y + t * dy;
+          const d = Math.hypot(cPt.x - px, cPt.y - py);
+          if (d < minEdgeDist) minEdgeDist = d;
+        }
+
+        if (minEdgeDist < 2) {
+          el.style.display = 'none';
+          return;
+        }
+
+        const textW = Math.max(70, inner.offsetWidth || 86);
+        const textH = Math.max(50, inner.offsetHeight || 60);
+        const halfDiag = Math.hypot(textW / 2, textH / 2);
+        const fitScale = Math.max(0.15, Math.min(1.4, (minEdgeDist * 0.86) / halfDiag));
+
         el.style.display = 'block';
-        inner.style.transform = 'translate(-50%, -50%)';
+        inner.style.transform = `translate(-50%, -50%) scale(${fitScale.toFixed(4)})`;
         inner.style.transformOrigin = 'center center';
       });
     }
@@ -4507,7 +4529,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const isSel = t.id === selectedCustomTextId;
         const txtIcon = L.divIcon({
           className: 'custom-map-text-icon',
-          html: `<div style="color:${t.color || '#ffffff'}; font-size:${t.size || 20}px !important; font-weight:900; text-shadow:0 1px 3px #000, 0 0 6px #000; padding:2px 4px; border-radius:4px; ${isSel ? 'border:1.5px dashed #f59e0b; background:rgba(0,0,0,0.6);' : ''} cursor:pointer; user-select:none; white-space:nowrap; transform: translate(-50%, -50%) rotate(${t.rotation || 0}deg); transform-origin: center center;">${escapeHtml(t.text || '')}</div>`,
+          html: `<div style="color:${t.color || '#ffffff'}; font-size:${t.size || 20}px !important; font-weight:900; text-shadow:0 1px 3px #000, 0 0 6px #000; padding:2px 4px; border-radius:4px; ${isSel ? 'border:1.5px dashed #f59e0b; background:rgba(0,0,0,0.6);' : ''} cursor:pointer; user-select:none; white-space:nowrap; transform: rotate(${t.rotation || 0}deg); transform-origin: center center;">${escapeHtml(t.text || '')}</div>`,
           iconSize: [0, 0]
         });
         const marker = L.marker([t.lat, t.lng], { icon: txtIcon, interactive: isEditorOpen });
