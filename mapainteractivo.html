@@ -539,7 +539,20 @@
               <button onclick="saveCurrentProjectNow()" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-[10.5px] font-bold transition">Guardar</button>
             </div>
           </div>
-          <select id="editorProjectSelect" onchange="switchProject(this.value, true)" class="w-full bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400"></select>
+          <div class="flex items-center gap-1.5">
+            <select id="editorProjectSelect" onchange="switchProject(this.value, true)" class="flex-1 min-w-0 bg-slate-900/90 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400 truncate"></select>
+            
+            <!-- Botón VISUALIZAR Proyecto (Activar / Desactivar) -->
+            <button id="btnToggleProjectVis" onclick="toggleCurrentProjectVisibility()" type="button" class="w-9 h-9 shrink-0 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 flex items-center justify-center transition cursor-pointer shadow" title="Visualización activada (clic para ocultar)">
+              <svg id="iconProjectVisOn" class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <svg id="iconProjectVisOff" class="w-4 h-4 text-slate-400 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+            </button>
+
+            <!-- Botón ELIMINAR Proyecto -->
+            <button onclick="confirmDeleteCurrentProject()" type="button" class="w-9 h-9 shrink-0 rounded-xl bg-slate-800 hover:bg-rose-500/25 border border-white/15 hover:border-rose-400/40 text-rose-400 hover:text-rose-300 flex items-center justify-center transition cursor-pointer shadow" title="Eliminar este proyecto">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+          </div>
         </div>
 
         <!-- Datos Base del Proyecto y GPS -->
@@ -729,7 +742,7 @@
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Tamaño (px)</label>
-                <input id="inpEditorTextSize" type="number" value="16" min="8" max="72" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
+                <input id="inpEditorTextSize" type="number" value="20" min="8" max="72" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
               </div>
               <div>
                 <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Color</label>
@@ -833,6 +846,28 @@
 
     </div>
   </aside>
+
+  <!-- MODAL DE CONFIRMACIÓN PARA ELIMINAR PROYECTO -->
+  <div id="deleteProjectConfirmModal" class="hidden fixed inset-0 z-[950] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-panel rounded-3xl w-full max-w-sm p-5 text-center border border-rose-500/30 shadow-2xl shadow-rose-950/50 space-y-4">
+      <div class="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/40 flex items-center justify-center mx-auto text-2xl">
+        🗑️
+      </div>
+      <div>
+        <h3 class="text-sm font-extrabold text-white tracking-wide uppercase">¿DESEA BORRAR ESTE PROYECTO?</h3>
+        <p id="deleteProjectModalTargetName" class="text-xs text-amber-300 font-bold mt-1.5 break-words"></p>
+        <p class="text-[11px] text-slate-400 mt-1">Esta acción eliminará todos sus lotes, polígonos, textos y líneas tanto localmente como en la tabla <strong class="text-emerald-400">nova_propiedades</strong> de Supabase.</p>
+      </div>
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button onclick="executeDeleteCurrentProject()" type="button" class="py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs transition shadow-lg shadow-rose-600/30 cursor-pointer">
+          SÍ, BORRAR
+        </button>
+        <button onclick="closeDeleteProjectModal()" type="button" class="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-white/10 cursor-pointer">
+          NO, CANCELAR
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- 7. MODAL SUPABASE (nova_propiedades) -->
   <div id="supabaseModal" class="hidden fixed inset-0 z-[800] bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
@@ -1278,6 +1313,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
               projects.forEach(p => {
                 if (!Array.isArray(p.custom_lines)) p.custom_lines = [];
                 if (!Array.isArray(p.custom_texts)) p.custom_texts = [];
+                p.custom_texts.forEach(t => {
+                  if (!t.size || t.size === 15 || t.size === 16) t.size = 20;
+                });
               });
               currentProject = projects[0];
               saveProjectsLocal();
@@ -1541,6 +1579,10 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
       projects.forEach(proj => {
         const isCurrent = currentProject && proj.id === currentProject.id;
+        const isVisible = proj.visible !== false;
+
+        // Si el proyecto tiene la visualización desactivada, no dibujarlo en el mapa
+        if (!isVisible) return;
 
         // 1. Pin flotante del proyecto
         let pinLat = proj.lat;
@@ -1652,47 +1694,51 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       // Renderizar líneas y delimitaciones del proyecto (Multivértice)
       if (customLinesLayerGroup) {
         customLinesLayerGroup.clearLayers();
-        (currentProject?.custom_lines || []).forEach(line => {
-          const pts = getLineLatLngPoints(line);
-          if (pts.length < 2) return;
-          const isSel = line.id === selectedCustomLineId;
-          const latLngs = pts.map(p => [p.lat, p.lng]);
-          const pline = L.polyline(latLngs, {
-            color: isSel ? '#f59e0b' : (line.color || '#38bdf8'),
-            weight: (line.width || 2.5) + (isSel ? 2 : 0),
-            dashArray: line.dash === 'dashed' ? '6, 6' : undefined,
-            interactive: isEditorOpen
-          });
-          if (isEditorOpen) {
-            pline.on('click', (e) => {
-              L.DomEvent.stopPropagation(e);
-              selectCustomLine(line.id);
+        if (currentProject && currentProject.visible !== false) {
+          (currentProject?.custom_lines || []).forEach(line => {
+            const pts = getLineLatLngPoints(line);
+            if (pts.length < 2) return;
+            const isSel = line.id === selectedCustomLineId;
+            const latLngs = pts.map(p => [p.lat, p.lng]);
+            const pline = L.polyline(latLngs, {
+              color: isSel ? '#f59e0b' : (line.color || '#38bdf8'),
+              weight: (line.width || 2.5) + (isSel ? 2 : 0),
+              dashArray: line.dash === 'dashed' ? '6, 6' : undefined,
+              interactive: isEditorOpen
             });
-          }
-          customLinesLayerGroup.addLayer(pline);
-        });
+            if (isEditorOpen) {
+              pline.on('click', (e) => {
+                L.DomEvent.stopPropagation(e);
+                selectCustomLine(line.id);
+              });
+            }
+            customLinesLayerGroup.addLayer(pline);
+          });
+        }
       }
 
       // Renderizar textos y rótulos del proyecto
       if (customTextsLayerGroup) {
         customTextsLayerGroup.clearLayers();
-        (currentProject?.custom_texts || []).forEach(t => {
-          if (typeof t.lat !== 'number' || typeof t.lng !== 'number') return;
-          const isSel = t.id === selectedCustomTextId;
-          const txtIcon = L.divIcon({
-            className: 'custom-map-text-icon',
-            html: `<div style="color:${t.color || '#ffffff'}; font-size:${t.size || 15}px; font-weight:900; text-shadow:0 1px 3px #000, 0 0 6px #000; padding:2px 4px; border-radius:4px; ${isSel ? 'border:1.5px dashed #f59e0b; background:rgba(0,0,0,0.6);' : ''} cursor:pointer; user-select:none; white-space:nowrap; transform: rotate(${t.rotation || 0}deg); transform-origin: center center;">${escapeHtml(t.text || '')}</div>`,
-            iconSize: [0, 0]
-          });
-          const marker = L.marker([t.lat, t.lng], { icon: txtIcon, interactive: isEditorOpen });
-          if (isEditorOpen) {
-            marker.on('click', (e) => {
-              L.DomEvent.stopPropagation(e);
-              selectCustomText(t.id);
+        if (currentProject && currentProject.visible !== false) {
+          (currentProject?.custom_texts || []).forEach(t => {
+            if (typeof t.lat !== 'number' || typeof t.lng !== 'number') return;
+            const isSel = t.id === selectedCustomTextId;
+            const txtIcon = L.divIcon({
+              className: 'custom-map-text-icon',
+              html: `<div style="color:${t.color || '#ffffff'}; font-size:${t.size || 20}px !important; font-weight:900; text-shadow:0 1px 3px #000, 0 0 6px #000; padding:2px 4px; border-radius:4px; ${isSel ? 'border:1.5px dashed #f59e0b; background:rgba(0,0,0,0.6);' : ''} cursor:pointer; user-select:none; white-space:nowrap; transform: rotate(${t.rotation || 0}deg); transform-origin: center center;">${escapeHtml(t.text || '')}</div>`,
+              iconSize: [0, 0]
             });
-          }
-          customTextsLayerGroup.addLayer(marker);
-        });
+            const marker = L.marker([t.lat, t.lng], { icon: txtIcon, interactive: isEditorOpen });
+            if (isEditorOpen) {
+              marker.on('click', (e) => {
+                L.DomEvent.stopPropagation(e);
+                selectCustomText(t.id);
+              });
+            }
+            customTextsLayerGroup.addLayer(marker);
+          });
+        }
       }
 
       updateLabelsVisibilityByZoom();
@@ -2118,8 +2164,116 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       selectedLotId = null;
       syncProjectFormUI();
       syncLotDataForm();
+      updateVisibilityButtonState();
       renderAllProjectsAndLots();
       if (shouldFly) flyToProject(currentProject);
+    }
+
+    // =========================================================================
+    // VISUALIZAR Y ELIMINAR PROYECTOS (Item solicitado por el usuario)
+    // =========================================================================
+    function toggleCurrentProjectVisibility() {
+      if (!currentProject) return;
+      currentProject.visible = currentProject.visible === false ? true : false;
+      saveProjectsLocal();
+      updateVisibilityButtonState();
+      syncProjectFormUI();
+      renderAllProjectsAndLots();
+      renderCustomTextsLightweight();
+      renderCustomLinesLightweight();
+      rebuildEditorHandles();
+      updateCalcoOverlayPosition();
+      showToast(currentProject.visible !== false ? '👁️ Visualización del proyecto activada.' : '👁️‍🗨️ Visualización del proyecto desactivada.');
+    }
+
+    function updateVisibilityButtonState() {
+      const btn = document.getElementById('btnToggleProjectVis');
+      const iconOn = document.getElementById('iconProjectVisOn');
+      const iconOff = document.getElementById('iconProjectVisOff');
+      if (!btn || !currentProject) return;
+      const isVis = currentProject.visible !== false;
+      if (isVis) {
+        if (iconOn) iconOn.classList.remove('hidden');
+        if (iconOff) iconOff.classList.add('hidden');
+        btn.className = 'w-9 h-9 shrink-0 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 flex items-center justify-center transition cursor-pointer shadow';
+        btn.title = 'Visualización activada (clic para ocultar)';
+      } else {
+        if (iconOn) iconOn.classList.add('hidden');
+        if (iconOff) iconOff.classList.remove('hidden');
+        btn.className = 'w-9 h-9 shrink-0 rounded-xl bg-slate-800/90 hover:bg-slate-700 border border-slate-600 text-slate-400 flex items-center justify-center transition cursor-pointer';
+        btn.title = 'Visualización desactivada (clic para mostrar)';
+      }
+    }
+
+    function confirmDeleteCurrentProject() {
+      if (!currentProject) {
+        showToast('No hay ningún proyecto activo para eliminar.');
+        return;
+      }
+      const projName = currentProject.nombre || currentProject.title || 'Proyecto sin nombre';
+      const nameEl = document.getElementById('deleteProjectModalTargetName');
+      if (nameEl) nameEl.textContent = `"${projName}" (${(currentProject.lotes || []).length} lotes)`;
+      const modal = document.getElementById('deleteProjectConfirmModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+      } else {
+        if (window.confirm(`¿DESEA BORRAR ESTE PROYECTO "${projName}"?\n\nEsta acción eliminará todos sus lotes, polígonos, textos y líneas tanto localmente como en la tabla nova_propiedades de Supabase.`)) {
+          executeDeleteCurrentProject();
+        }
+      }
+    }
+
+    function closeDeleteProjectModal() {
+      const modal = document.getElementById('deleteProjectConfirmModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function executeDeleteCurrentProject() {
+      if (!currentProject) {
+        closeDeleteProjectModal();
+        return;
+      }
+
+      const projId = currentProject.id;
+      const projName = currentProject.nombre || currentProject.title || 'Proyecto';
+      closeDeleteProjectModal();
+      showToast(`Eliminando proyecto "${projName}"...`);
+
+      // 1. Eliminar de Supabase (tabla nova_propiedades)
+      try {
+        const client = getSupabaseClient();
+        if (client) {
+          const { error } = await client.from('nova_propiedades').delete().eq('id', projId);
+          if (error) {
+            console.warn('[Supabase Delete Aviso]:', error.message);
+          } else {
+            console.log('[Supabase Delete OK]: Proyecto eliminado de nova_propiedades:', projId);
+          }
+        }
+      } catch (err) {
+        console.error('Error al eliminar en Supabase:', err);
+      }
+
+      // 2. Eliminar localmente
+      projects = (projects || []).filter(p => p.id !== projId);
+      expandedProjectIds.delete(projId);
+
+      if (projects.length === 0) {
+        currentProject = createDefaultProject();
+        projects = [currentProject];
+      } else {
+        currentProject = projects[0];
+      }
+
+      saveProjectsLocal();
+      syncProjectFormUI();
+      renderAllProjectsAndLots();
+      renderProjectsSidebar();
+      renderEditorLotsList();
+      renderEditorTextsList();
+      renderEditorLinesList();
+      flyToProject(currentProject);
+      showToast(`✅ Proyecto "${projName}" eliminado de nova_propiedades.`);
     }
 
     function flyToProject(proj) {
@@ -2233,10 +2387,12 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     function syncProjectFormUI() {
       const sel = document.getElementById('editorProjectSelect');
       if (sel) {
-        sel.innerHTML = (projects || []).filter(p => !isExcludedProject(p)).map(p =>
-          `<option value="${escapeHtml(p.id)}" ${currentProject && p.id === currentProject.id ? 'selected' : ''}>${escapeHtml(p.nombre)} (${(p.lotes || []).length} lotes)</option>`
-        ).join('');
+        sel.innerHTML = (projects || []).filter(p => !isExcludedProject(p)).map(p => {
+          const visLabel = p.visible === false ? ' [Oculto]' : '';
+          return `<option value="${escapeHtml(p.id)}" ${currentProject && p.id === currentProject.id ? 'selected' : ''}>${escapeHtml(p.nombre)} (${(p.lotes || []).length} lotes)${visLabel}</option>`;
+        }).join('');
       }
+      updateVisibilityButtonState();
       renderEditorTextsList();
       renderEditorLinesList();
       if (!currentProject) return;
@@ -2959,7 +3115,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       if (!currentProject) return;
       const contentInp = document.getElementById('inpEditorTextContent');
       const textVal = (contentInp?.value || '').trim() || 'Rótulo Plano';
-      const sizeVal = Number(document.getElementById('inpEditorTextSize')?.value) || 15;
+      const sizeVal = Number(document.getElementById('inpEditorTextSize')?.value) || 20;
       const colorVal = document.getElementById('selEditorTextColor')?.value || '#ffffff';
 
       const center = map2d ? map2d.getCenter() : { lat: currentProject.lat, lng: currentProject.lng };
@@ -2998,7 +3154,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const sInp = document.getElementById('inpEditorTextSize');
         const colSel = document.getElementById('selEditorTextColor');
         if (cInp) cInp.value = t.text || '';
-        if (sInp) sInp.value = t.size || 15;
+        if (sInp) sInp.value = t.size || 20;
         if (colSel) colSel.value = t.color || '#ffffff';
       }
       renderAllProjectsAndLots();
@@ -3329,6 +3485,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
     function updateCalcoOverlayPosition() {
       if (!calcoOverlayEl || !currentProject || !map2d) return;
+      if (!showCalco || !currentProject.plano_url || currentProject.visible === false) {
+        calcoOverlayEl.style.display = 'none';
+        return;
+      }
+      calcoOverlayEl.style.display = 'block';
       const cfg = currentProject.calco_config || {
         lat: currentProject.lat, lng: currentProject.lng, widthM: 88, heightM: 58, rotationDeg: 0, opacity: 0.65
       };
@@ -3396,7 +3557,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     function rebuildEditorHandles() {
       if (!editorHandlesGroup) return;
       editorHandlesGroup.clearLayers();
-      if (!isEditorOpen || !currentProject || isDrawingPolygon || viewMode !== '2d') return;
+      if (!isEditorOpen || !currentProject || currentProject.visible === false || isDrawingPolygon || viewMode !== '2d') return;
 
       // A. Nodos del Calco Guía Privado (si está visible en el Editor)
       if (showCalco) {
@@ -4321,12 +4482,13 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     function renderCustomTextsLightweight() {
       if (!customTextsLayerGroup) return;
       customTextsLayerGroup.clearLayers();
+      if (!currentProject || currentProject.visible === false) return;
       (currentProject?.custom_texts || []).forEach(t => {
         if (typeof t.lat !== 'number' || typeof t.lng !== 'number') return;
         const isSel = t.id === selectedCustomTextId;
         const txtIcon = L.divIcon({
           className: 'custom-map-text-icon',
-          html: `<div style="color:${t.color || '#ffffff'}; font-size:${t.size || 15}px; font-weight:900; text-shadow:0 1px 3px #000, 0 0 6px #000; padding:2px 4px; border-radius:4px; ${isSel ? 'border:1.5px dashed #f59e0b; background:rgba(0,0,0,0.6);' : ''} cursor:pointer; user-select:none; white-space:nowrap; transform: rotate(${t.rotation || 0}deg); transform-origin: center center;">${escapeHtml(t.text || '')}</div>`,
+          html: `<div style="color:${t.color || '#ffffff'}; font-size:${t.size || 20}px !important; font-weight:900; text-shadow:0 1px 3px #000, 0 0 6px #000; padding:2px 4px; border-radius:4px; ${isSel ? 'border:1.5px dashed #f59e0b; background:rgba(0,0,0,0.6);' : ''} cursor:pointer; user-select:none; white-space:nowrap; transform: rotate(${t.rotation || 0}deg); transform-origin: center center;">${escapeHtml(t.text || '')}</div>`,
           iconSize: [0, 0]
         });
         const marker = L.marker([t.lat, t.lng], { icon: txtIcon, interactive: isEditorOpen });
@@ -4343,6 +4505,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     function renderCustomLinesLightweight() {
       if (!customLinesLayerGroup) return;
       customLinesLayerGroup.clearLayers();
+      if (!currentProject || currentProject.visible === false) return;
       (currentProject?.custom_lines || []).forEach(line => {
         const pts = getLineLatLngPoints(line);
         if (pts.length < 2) return;
