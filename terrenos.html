@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
 
 <head>
@@ -122,7 +122,7 @@
 
             <!-- Centro: Accesos Rápidos Activos -->
             <nav class="hidden md:flex items-center gap-6 text-xs sm:text-sm font-bold text-[#dae5dd]">
-                <a href="mapaterrenos.html" class="hover:text-[#f2ca50] transition-colors flex items-center gap-1.5" title="Explorar terrenos en el mapa satelital 3D">
+                <a href="mapainteractivo.html" class="hover:text-[#f2ca50] transition-colors flex items-center gap-1.5" title="Explorar terrenos en el mapa satelital 3D">
                     <span class="material-symbols-outlined text-[18px]">map</span>
                     <span>Ver en el Mapa</span>
                 </a>
@@ -194,9 +194,9 @@
                         físico-legal garantizado y el respaldo de <strong class="text-[#f2ca50]">Agencia NOVA</strong>.
                     </p>
 
-                    <!-- Botón Interactivo: VER EN EL MAPA (Llama a mapaterrenos.html con Vista Satelital 3D y Carreteras) -->
+                    <!-- Botón Interactivo: VER EN EL MAPA (Llama a mapainteractivo.html con Vista Satelital 3D y Carreteras) -->
                     <div class="pt-4 flex flex-wrap items-center gap-4">
-                        <a href="mapaterrenos.html"
+                        <a href="mapainteractivo.html"
                             class="inline-flex items-center gap-3.5 px-8 py-4 rounded-2xl bg-gradient-to-r from-[#d4af37] via-[#f2ca50] to-[#d4af37] text-[#1c1300] font-black text-sm uppercase tracking-wider shadow-[0_0_35px_rgba(212,175,55,0.65)] hover:shadow-[0_0_50px_rgba(242,202,80,0.9)] border-2 border-[#fff5c0] hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer"
                             title="Explorar el mapa satelital interactivo 3D con carreteras y lotizaciones">
                             <span class="material-symbols-outlined text-[26px] text-[#1c1300] group-hover:rotate-12 transition-transform">satellite_alt</span>
@@ -1368,7 +1368,7 @@ CREATE POLICY "Escritura publica nova_propiedades" ON public.nova_propiedades FO
                                     class="px-3.5 py-2.5 rounded-xl text-white hover:text-[#f2ca50] transition-colors text-xs font-bold border border-[#d4af37]/30 bg-[#142c1e]">
                                 Detalles
                             </button>
-                            <a href="mapaterrenos.html" 
+                            <a href="mapainteractivo.html" 
                                class="px-2.5 py-2.5 rounded-xl text-[#f2ca50] hover:text-white transition-colors text-xs font-bold border border-[#d4af37]/40 bg-[#08150e] flex items-center justify-center"
                                title="Ver en mapa satelital 3D">
                                 <span class="material-symbols-outlined text-[17px]">satellite_alt</span>
@@ -2054,7 +2054,7 @@ CREATE POLICY "Escritura publica nova_propiedades" ON public.nova_propiedades FO
                 }
             }
 
-            // Campos de lotización y planos integrados (mapaterrenos.html / mapaterrenoscontrol.html)
+            // Campos de lotización y planos integrados (mapainteractivo.html / mapaterrenoscontrol.html)
             let lotDataJson = row.lot_data_json || row.lotDataJson || '';
             if (typeof lotDataJson === 'object' && lotDataJson !== null) {
                 try { lotDataJson = JSON.stringify(lotDataJson, null, 2); } catch (e) { lotDataJson = ''; }
