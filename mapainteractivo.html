@@ -555,81 +555,35 @@
           </div>
         </div>
 
-        <!-- MÓDULO CONSOLIDADO DE PLANO Y DETECCIÓN AUTOMÁTICA -->
-        <div class="p-3.5 rounded-2xl bg-slate-900/85 border border-amber-400/30 space-y-3 shadow-lg">
+                <!-- BOTÓN ACCESO DIRECTO AL CONVERTIDOR DE PLANOS OCR -->
+        <button onclick="abrirModuloDetectarLotes('lotes')" type="button" class="w-full py-3 px-3 rounded-2xl bg-gradient-to-r from-sky-500/20 via-indigo-500/20 to-emerald-500/20 hover:from-sky-500/30 hover:to-emerald-500/30 border border-sky-400/40 text-sky-200 text-xs font-black transition flex items-center justify-center gap-2 shadow-lg shadow-sky-500/10 cursor-pointer">
+          <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 22 8.5 18 21 6 21 2 8.5 12 2"></polygon></svg>
+          <span>Abrir Convertidor de Plano a Polígonos (OCR)</span>
+        </button>
+
+        <!-- Calco Guía Privado -->
+        <div class="p-3.5 rounded-2xl bg-slate-900/75 border border-white/10 space-y-3">
           <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-              <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              <span>Plano y Detección de Polígonos</span>
-            </h3>
-            <span id="drawerPlanBadge" class="text-[9.5px] font-bold text-emerald-300 px-2 py-0.5 rounded-full bg-emerald-400/15 border border-emerald-400/30">Activo</span>
+            <div>
+              <h3 class="text-xs font-bold text-white">Calco Guía Privado</h3>
+              <p class="text-[10px] text-slate-400">Alinear plano sobre satélite</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="chkShowCalco" onchange="toggleCalcoVisibility(this.checked)" class="sr-only peer" />
+              <div class="w-10 h-5 bg-slate-700 rounded-full peer peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-5"></div>
+            </label>
           </div>
 
           <div>
-            <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Imagen del Plano (URL o Archivo)</label>
+            <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Imagen del Calco (URL o Archivo)</label>
             <div class="flex gap-1.5">
               <input id="inpPlanUrl" type="url" placeholder="https://... URL del plano" onchange="handlePlanUrlChange(this.value)" class="flex-1 bg-slate-950 border border-white/15 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-400" />
-              <button onclick="document.getElementById('inpDrawerPlanFile').click()" type="button" class="px-3 py-2 bg-gradient-to-r from-sky-500/20 to-emerald-500/20 hover:bg-white/15 border border-sky-400/30 text-sky-200 text-xs font-bold rounded-xl transition flex items-center gap-1.5" title="Subir imagen desde equipo">
+              <button onclick="document.getElementById('inpDrawerPlanFile').click()" type="button" class="px-3 py-2 bg-gradient-to-r from-sky-500/20 to-emerald-500/20 hover:bg-white/15 border border-sky-400/30 text-sky-200 text-xs font-bold rounded-xl transition flex items-center gap-1.5 cursor-pointer" title="Subir imagen desde equipo">
                 📁 Subir
               </button>
               <input type="file" id="inpDrawerPlanFile" accept="image/*" class="hidden" onchange="handleDrawerPlanUpload(event)" />
             </div>
           </div>
-
-          <!-- CUADRO VISOR / VISTA PREVIA DE LA IMAGEN DEL PLANO (AGRANDADO) -->
-          <div id="drawerPlanPreviewContainer" class="rounded-2xl border border-white/15 bg-slate-950 p-3 flex flex-col gap-2.5 shadow-xl">
-            <div class="flex items-center justify-between text-[11px]">
-              <span class="font-extrabold text-amber-300 flex items-center gap-1.5">
-                <span>🔍 Vista de la Imagen del Plano</span>
-              </span>
-              <div class="flex items-center gap-1">
-                <span id="lblDrawerPlanDimensions" class="font-mono text-sky-300 text-[10px] mr-1">Resolución: -</span>
-                <button type="button" onclick="zoomDrawerPlanPreview(-0.25)" class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center justify-center transition" title="Alejar">-</button>
-                <button type="button" onclick="zoomDrawerPlanPreview(0.25)" class="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center justify-center transition" title="Acercar">+</button>
-                <button type="button" onclick="resetDrawerPlanPreviewZoom()" class="px-1.5 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-sky-300 flex items-center justify-center transition" title="Restablecer tamaño">100%</button>
-              </div>
-            </div>
-            <div id="drawerPlanViewport" class="relative w-full h-80 sm:h-96 min-h-[320px] max-h-[440px] rounded-xl overflow-auto bg-slate-900 border border-white/10 flex items-center justify-center custom-scroll select-none">
-              <img id="imgDrawerPlanPreview" src="" alt="Vista previa del plano" class="hidden max-w-none transition-transform duration-200 cursor-grab active:cursor-grabbing origin-center" style="transform: scale(1);" />
-              <div id="imgDrawerPlanPlaceholder" class="text-xs text-slate-500 flex flex-col items-center gap-2 text-center p-6">
-                <span class="text-3xl">🗺️</span>
-                <span class="font-bold text-slate-300">Ningún plano cargado aún</span>
-                <span class="text-[11px] text-slate-500 max-w-xs">Pega la URL de una imagen o sube el plano en formato JPG / PNG para visualizarlo en alta definición y detectar sus polígonos</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2.5 pt-1 text-[10.5px] text-slate-300">
-            <div>
-              <div class="flex justify-between mb-0.5">
-                <span>Sensibilidad</span>
-                <strong id="lblThresholdDrawer" class="text-sky-300 font-mono">185</strong>
-              </div>
-              <input type="range" id="rngThresholdDrawer" min="80" max="240" value="185" oninput="document.getElementById('lblThresholdDrawer').textContent=this.value" class="w-full accent-sky-400 cursor-pointer" />
-            </div>
-            <div>
-              <div class="flex justify-between mb-0.5">
-                <span>Área Mínima</span>
-                <strong id="lblMinAreaDrawer" class="text-sky-300 font-mono">350px</strong>
-              </div>
-              <input type="range" id="rngMinAreaDrawer" min="80" max="3000" step="20" value="350" oninput="document.getElementById('lblMinAreaDrawer').textContent=this.value+'px'" class="w-full accent-sky-400 cursor-pointer" />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2 pt-1">
-            <button onclick="detectLotsDirectlyFromDrawer()" class="py-2.5 px-2 rounded-xl bg-gradient-to-r from-amber-400 to-sky-400 hover:from-amber-300 hover:to-sky-300 text-slate-950 text-xs font-black uppercase tracking-wider transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1.5">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              <span>Detectar Lotes</span>
-            </button>
-            <button onclick="pegarLadosContiguosDrawer()" class="py-2.5 px-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-bold transition flex items-center justify-center gap-1.5" title="Unir bordes de lotes contiguos">
-              <span>🧲 Pegar Lados</span>
-            </button>
-          </div>
-          <button onclick="abrirModuloDetectarLotes('lotes')" class="w-full py-2.5 px-3 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/40 text-sky-200 text-xs font-extrabold transition flex items-center justify-center gap-1.5">
-            <span>🗺️ Abrir Convertidor de Plano a Polígonos (OCR)</span>
-          </button>
-        </div>
-
         <!-- Calco Guía Privado -->
         <div class="p-3.5 rounded-2xl bg-slate-900/75 border border-white/10 space-y-3">
           <div class="flex items-center justify-between">
@@ -655,20 +609,11 @@
 
       <!-- PESTAÑA 2: POLÍGONOS LOTES -->
       <div id="editorTab2" class="hidden space-y-4">
-        <!-- Botones CREAR POLIGONO y DETECTAR LOTES -->
-        <div class="grid grid-cols-3 gap-1.5">
-          <button onclick="startDrawingPolygon()" class="py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-emerald-400 hover:from-sky-400 hover:to-emerald-300 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-sky-500/20 flex items-center justify-center gap-1 transition">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 22 8.5 18 21 6 21 2 8.5 12 2"/></svg>
-            <span>➕ Crear</span>
-          </button>
-          <button onclick="detectLotsDirectlyFromDrawer()" class="py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-sky-400 hover:from-amber-300 hover:to-sky-300 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-amber-500/20 flex items-center justify-center gap-1 transition">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            <span>⚡ Detectar</span>
-          </button>
-          <button onclick="pegarLadosContiguosDrawer()" class="py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 text-xs font-bold transition flex items-center justify-center gap-1" title="Unir bordes de polígonos contiguos">
-            <span>🧲 Pegar</span>
-          </button>
-        </div>
+                <!-- Botón CREAR POLIGONO -->
+        <button onclick="startDrawingPolygon()" class="w-full py-3 rounded-2xl bg-gradient-to-r from-sky-500 to-emerald-400 hover:from-sky-400 hover:to-emerald-300 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-sky-500/20 flex items-center justify-center gap-2 transition cursor-pointer">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 22 8.5 18 21 6 21 2 8.5 12 2"/></svg>
+          <span>➕ Crear Polígono</span>
+        </button>
 
         <!-- INSPECTOR DE DATOS DEL POLÍGONO SELECCIONADO (DATOS EN EL INTERIOR) -->
         <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-white/10 space-y-2.5 shadow-lg">
@@ -682,7 +627,7 @@
           <!-- BOTÓN SELECCIONAR TODOS LOS POLÍGONOS (Item 6) -->
           <button id="btnSelectAllPolygons" onclick="toggleSelectAllPolygons()" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400/20 via-sky-400/20 to-emerald-400/20 hover:from-amber-400/35 hover:to-sky-400/35 border border-amber-400/50 text-amber-300 hover:text-white text-xs font-black uppercase tracking-wider transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
             <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            <span id="lblBtnSelectAllPolygons">SELECCIONAR TODOS LOS POLÍGONOS</span>
+            <span id="lblBtnSelectAllPolygons">SELECCIONAR TODOS LOS POLÍGONOS, LÍNEAS Y TEXTOS</span>
           </button>
 
           <!-- PANEL CUANDO TODOS LOS POLÍGONOS ESTÁN SELECCIONADOS -->
@@ -3969,7 +3914,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       }
 
       // E. Nodos de MOVER, REDIMENSIONAR Y ROTAR TODA LA LOTIZACIÓN (Botón SELECCIONAR TODOS LOS POLÍGONOS)
-      if (activeEditorTab === 2 && isAllPolygonsSelected && (currentProject.lotes || []).length > 0) {
+      if (activeEditorTab === 2 && isAllPolygonsSelected && ((currentProject.lotes || []).length > 0 || (currentProject.custom_lines || []).length > 0 || (currentProject.custom_texts || []).length > 0)) {
         addLotGroupHandles();
       }
     }
@@ -4069,10 +4014,13 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     }
 
     function getAllLotsBoundsCenter() {
+      if (!currentProject) return null;
       let minE = Infinity, maxE = -Infinity, minN = Infinity, maxN = -Infinity;
       const refLat = currentProject.lat;
       const refLng = currentProject.lng;
       let count = 0;
+
+      // 1. Coordenadas de polígonos
       (currentProject.lotes || []).forEach(l => (l.coords || []).forEach(c => {
         const off = latLngToOffsetMeters(refLat, refLng, c.lat, c.lng);
         if (off.east < minE) minE = off.east;
@@ -4081,6 +4029,37 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         if (off.north > maxN) maxN = off.north;
         count++;
       }));
+
+      // 2. Coordenadas de líneas creadas
+      (currentProject.custom_lines || []).forEach(line => {
+        const pts = (Array.isArray(line.points) && line.points.length) ? line.points : [
+          { lat: line.lat1, lng: line.lng1 },
+          { lat: line.lat2, lng: line.lng2 }
+        ];
+        pts.forEach(c => {
+          if (typeof c.lat === 'number' && typeof c.lng === 'number') {
+            const off = latLngToOffsetMeters(refLat, refLng, c.lat, c.lng);
+            if (off.east < minE) minE = off.east;
+            if (off.east > maxE) maxE = off.east;
+            if (off.north < minN) minN = off.north;
+            if (off.north > maxN) maxN = off.north;
+            count++;
+          }
+        });
+      });
+
+      // 3. Coordenadas de textos creados
+      (currentProject.custom_texts || []).forEach(t => {
+        if (typeof t.lat === 'number' && typeof t.lng === 'number') {
+          const off = latLngToOffsetMeters(refLat, refLng, t.lat, t.lng);
+          if (off.east < minE) minE = off.east;
+          if (off.east > maxE) maxE = off.east;
+          if (off.north < minN) minN = off.north;
+          if (off.north > maxN) maxN = off.north;
+          count++;
+        }
+      });
+
       if (!count) return null;
       const cx = (minE + maxE) / 2;
       const cy = (minN + maxN) / 2;
@@ -4096,7 +4075,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       const box = getAllLotsBoundsCenter();
       if (!box) return;
 
-      // Marco punteado de la lotización completa
+      // Marco punteado que engloba polígonos, líneas y textos
       const c1 = offsetMetersToLatLng(box.center.lat, box.center.lng, -box.halfW, box.halfH);
       const c2 = offsetMetersToLatLng(box.center.lat, box.center.lng, box.halfW, box.halfH);
       const c3 = offsetMetersToLatLng(box.center.lat, box.center.lng, box.halfW, -box.halfH);
@@ -4104,13 +4083,13 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
       L.polygon([[c1.lat, c1.lng], [c2.lat, c2.lng], [c3.lat, c3.lng], [c4.lat, c4.lng]], {
         color: '#fbbf24',
-        weight: 1.4,
+        weight: 1.5,
         dashArray: '5,5',
         fill: false,
         interactive: false
       }).addTo(editorHandlesGroup);
 
-      // 1. Nodo Verde Central (Mover toda la lotización)
+      // 1. Nodo Verde Central (Mover todos: polígonos, líneas y textos)
       let prevLatLng = null;
       const moveM = L.marker([box.center.lat, box.center.lng], {
         icon: createHandleIcon('move'),
@@ -4123,22 +4102,47 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const dLat = cur.lat - prevLatLng.lat;
         const dLng = cur.lng - prevLatLng.lng;
         prevLatLng = cur;
-        currentProject.lotes.forEach(l => {
+
+        // Mover polígonos
+        (currentProject.lotes || []).forEach(l => {
           l.coords = l.coords.map(pt => ({ lat: pt.lat + dLat, lng: pt.lng + dLng }));
         });
+
+        // Mover líneas
+        (currentProject.custom_lines || []).forEach(line => {
+          if (Array.isArray(line.points)) {
+            line.points = line.points.map(pt => ({ lat: pt.lat + dLat, lng: pt.lng + dLng }));
+          }
+          if (typeof line.lat1 === 'number') { line.lat1 += dLat; line.lng1 += dLng; }
+          if (typeof line.lat2 === 'number') { line.lat2 += dLat; line.lng2 += dLng; }
+        });
+
+        // Mover textos
+        (currentProject.custom_texts || []).forEach(t => {
+          if (typeof t.lat === 'number' && typeof t.lng === 'number') {
+            t.lat += dLat;
+            t.lng += dLng;
+          }
+        });
+
         renderPolygonsLightweight();
+        renderCustomLinesLightweight();
+        renderCustomTextsLightweight();
       });
       moveM.on('dragend', () => {
         saveProjectsLocal();
         renderAllProjectsAndLots();
+        rebuildEditorHandles();
       });
       editorHandlesGroup.addLayer(moveM);
 
-      // 2. 4 Nodos Ámbar de Esquina (Redimensionar toda la lotización)
+      // 2. 4 Nodos Ámbar de Esquina (Redimensionar todos: polígonos, líneas y textos)
       const signs = [[-1, 1], [1, 1], [1, -1], [-1, -1]];
       signs.forEach(([sx, sy]) => {
         const p = offsetMetersToLatLng(box.center.lat, box.center.lng, sx * box.halfW, sy * box.halfH);
         let snapLots = null;
+        let snapLines = null;
+        let snapTexts = null;
 
         const rm = L.marker([p.lat, p.lng], {
           icon: createHandleIcon('resize'),
@@ -4146,31 +4150,61 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           zIndexOffset: 950
         });
         rm.on('dragstart', () => {
-          snapLots = currentProject.lotes.map(l => l.coords.map(c => ({ ...c })));
+          snapLots = (currentProject.lotes || []).map(l => (l.coords || []).map(c => ({ ...c })));
+          snapLines = (currentProject.custom_lines || []).map(l => (l.points || []).map(c => ({ ...c })));
+          snapTexts = (currentProject.custom_texts || []).map(t => ({ lat: t.lat, lng: t.lng }));
         });
         rm.on('drag', (e) => {
           if (!snapLots) return;
           const ll = e.target.getLatLng();
           const off = latLngToOffsetMeters(box.center.lat, box.center.lng, ll.lat, ll.lng);
-          const scaleX = Math.max(0.25, Math.min(4, Math.abs(off.east) / box.halfW));
-          const scaleY = Math.max(0.25, Math.min(4, Math.abs(off.north) / box.halfH));
-          currentProject.lotes.forEach((l, i) => {
-            l.coords = scaleCoordsAroundCenter(snapLots[i], box.center, scaleX, scaleY);
+          const scaleX = Math.max(0.15, Math.min(5, Math.abs(off.east) / box.halfW));
+          const scaleY = Math.max(0.15, Math.min(5, Math.abs(off.north) / box.halfH));
+
+          // Escalar polígonos
+          (currentProject.lotes || []).forEach((l, i) => {
+            if (snapLots[i]) l.coords = scaleCoordsAroundCenter(snapLots[i], box.center, scaleX, scaleY);
           });
+
+          // Escalar líneas
+          (currentProject.custom_lines || []).forEach((l, i) => {
+            if (snapLines[i] && snapLines[i].length) {
+              l.points = scaleCoordsAroundCenter(snapLines[i], box.center, scaleX, scaleY);
+              if (l.points.length >= 2) {
+                l.lat1 = l.points[0].lat; l.lng1 = l.points[0].lng;
+                l.lat2 = l.points[l.points.length - 1].lat; l.lng2 = l.points[l.points.length - 1].lng;
+              }
+            }
+          });
+
+          // Escalar posiciones de textos
+          (currentProject.custom_texts || []).forEach((t, i) => {
+            if (snapTexts[i]) {
+              const pt = scaleCoordsAroundCenter([snapTexts[i]], box.center, scaleX, scaleY)[0];
+              t.lat = pt.lat;
+              t.lng = pt.lng;
+            }
+          });
+
           renderPolygonsLightweight();
+          renderCustomLinesLightweight();
+          renderCustomTextsLightweight();
         });
         rm.on('dragend', () => {
           saveProjectsLocal();
           renderAllProjectsAndLots();
+          rebuildEditorHandles();
         });
         editorHandlesGroup.addLayer(rm);
       });
 
-      // 3. 4 Nodos Cian Exteriores (Rotar toda la lotización)
+      // 3. 4 Nodos Cian Exteriores (Rotar todos: polígonos, líneas y textos)
       const pad = Math.max(5, Math.min(box.halfW, box.halfH) * 0.25);
       signs.forEach(([sx, sy]) => {
         const p = offsetMetersToLatLng(box.center.lat, box.center.lng, sx * (box.halfW + pad), sy * (box.halfH + pad));
         let snapLots = null;
+        let snapLines = null;
+        let snapTexts = null;
         let startAng = 0;
 
         const rotM = L.marker([p.lat, p.lng], {
@@ -4179,7 +4213,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           zIndexOffset: 955
         });
         rotM.on('dragstart', (e) => {
-          snapLots = currentProject.lotes.map(l => l.coords.map(c => ({ ...c })));
+          snapLots = (currentProject.lotes || []).map(l => (l.coords || []).map(c => ({ ...c })));
+          snapLines = (currentProject.custom_lines || []).map(l => (l.points || []).map(c => ({ ...c })));
+          snapTexts = (currentProject.custom_texts || []).map(t => ({ lat: t.lat, lng: t.lng, rotation: t.rotation || 0 }));
           const ll = e.target.getLatLng();
           const off = latLngToOffsetMeters(box.center.lat, box.center.lng, ll.lat, ll.lng);
           startAng = Math.atan2(off.east, off.north) * (180 / Math.PI);
@@ -4190,14 +4226,41 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           const off = latLngToOffsetMeters(box.center.lat, box.center.lng, ll.lat, ll.lng);
           const curAng = Math.atan2(off.east, off.north) * (180 / Math.PI);
           const deltaDeg = curAng - startAng;
-          currentProject.lotes.forEach((l, i) => {
-            l.coords = rotateCoordsAroundCenter(snapLots[i], box.center, deltaDeg);
+
+          // Rotar polígonos
+          (currentProject.lotes || []).forEach((l, i) => {
+            if (snapLots[i]) l.coords = rotateCoordsAroundCenter(snapLots[i], box.center, deltaDeg);
           });
+
+          // Rotar líneas
+          (currentProject.custom_lines || []).forEach((l, i) => {
+            if (snapLines[i] && snapLines[i].length) {
+              l.points = rotateCoordsAroundCenter(snapLines[i], box.center, deltaDeg);
+              if (l.points.length >= 2) {
+                l.lat1 = l.points[0].lat; l.lng1 = l.points[0].lng;
+                l.lat2 = l.points[l.points.length - 1].lat; l.lng2 = l.points[l.points.length - 1].lng;
+              }
+            }
+          });
+
+          // Rotar textos y orientación de texto
+          (currentProject.custom_texts || []).forEach((t, i) => {
+            if (snapTexts[i]) {
+              const pt = rotateCoordsAroundCenter([{ lat: snapTexts[i].lat, lng: snapTexts[i].lng }], box.center, deltaDeg)[0];
+              t.lat = pt.lat;
+              t.lng = pt.lng;
+              t.rotation = (snapTexts[i].rotation + deltaDeg) % 360;
+            }
+          });
+
           renderPolygonsLightweight();
+          renderCustomLinesLightweight();
+          renderCustomTextsLightweight();
         });
         rotM.on('dragend', () => {
           saveProjectsLocal();
           renderAllProjectsAndLots();
+          rebuildEditorHandles();
         });
         editorHandlesGroup.addLayer(rotM);
       });
@@ -4270,14 +4333,29 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       });
     }
 
-    // Botones de precisión para MOVER TODA LA LOTIZACION
+    // Botones de precisión para MOVER, REDIMENSIONAR Y ROTAR POLÍGONOS, LÍNEAS Y TEXTOS
     function moveAllLots(eastM, northM) {
-      if (!currentProject || !currentProject.lotes.length) return;
+      if (!currentProject) return;
       const dLat = northM / 111320;
       const dLng = eastM / metersPerDegLng(currentProject.lat);
-      currentProject.lotes.forEach(l => {
+
+      (currentProject.lotes || []).forEach(l => {
         l.coords = l.coords.map(pt => ({ lat: pt.lat + dLat, lng: pt.lng + dLng }));
       });
+
+      (currentProject.custom_lines || []).forEach(l => {
+        if (Array.isArray(l.points)) l.points = l.points.map(pt => ({ lat: pt.lat + dLat, lng: pt.lng + dLng }));
+        if (typeof l.lat1 === 'number') { l.lat1 += dLat; l.lng1 += dLng; }
+        if (typeof l.lat2 === 'number') { l.lat2 += dLat; l.lng2 += dLng; }
+      });
+
+      (currentProject.custom_texts || []).forEach(t => {
+        if (typeof t.lat === 'number' && typeof t.lng === 'number') {
+          t.lat += dLat;
+          t.lng += dLng;
+        }
+      });
+
       saveProjectsLocal();
       renderAllProjectsAndLots();
     }
@@ -4285,9 +4363,29 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     function scaleAllLots(sx, sy) {
       const box = getAllLotsBoundsCenter();
       if (!box) return;
-      currentProject.lotes.forEach(l => {
+
+      (currentProject.lotes || []).forEach(l => {
         l.coords = scaleCoordsAroundCenter(l.coords, box.center, sx, sy);
       });
+
+      (currentProject.custom_lines || []).forEach(l => {
+        if (Array.isArray(l.points)) {
+          l.points = scaleCoordsAroundCenter(l.points, box.center, sx, sy);
+          if (l.points.length >= 2) {
+            l.lat1 = l.points[0].lat; l.lng1 = l.points[0].lng;
+            l.lat2 = l.points[l.points.length - 1].lat; l.lng2 = l.points[l.points.length - 1].lng;
+          }
+        }
+      });
+
+      (currentProject.custom_texts || []).forEach(t => {
+        if (typeof t.lat === 'number' && typeof t.lng === 'number') {
+          const pt = scaleCoordsAroundCenter([{ lat: t.lat, lng: t.lng }], box.center, sx, sy)[0];
+          t.lat = pt.lat;
+          t.lng = pt.lng;
+        }
+      });
+
       saveProjectsLocal();
       renderAllProjectsAndLots();
     }
@@ -4295,9 +4393,30 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     function rotateAllLots(deg) {
       const box = getAllLotsBoundsCenter();
       if (!box) return;
-      currentProject.lotes.forEach(l => {
+
+      (currentProject.lotes || []).forEach(l => {
         l.coords = rotateCoordsAroundCenter(l.coords, box.center, deg);
       });
+
+      (currentProject.custom_lines || []).forEach(l => {
+        if (Array.isArray(l.points)) {
+          l.points = rotateCoordsAroundCenter(l.points, box.center, deg);
+          if (l.points.length >= 2) {
+            l.lat1 = l.points[0].lat; l.lng1 = l.points[0].lng;
+            l.lat2 = l.points[l.points.length - 1].lat; l.lng2 = l.points[l.points.length - 1].lng;
+          }
+        }
+      });
+
+      (currentProject.custom_texts || []).forEach(t => {
+        if (typeof t.lat === 'number' && typeof t.lng === 'number') {
+          const pt = rotateCoordsAroundCenter([{ lat: t.lat, lng: t.lng }], box.center, deg)[0];
+          t.lat = pt.lat;
+          t.lng = pt.lng;
+          t.rotation = ((t.rotation || 0) + deg) % 360;
+        }
+      });
+
       saveProjectsLocal();
       renderAllProjectsAndLots();
     }
@@ -4412,8 +4531,10 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     let isAllPolygonsSelected = false;
 
     function toggleSelectAllPolygons() {
-      if (!currentProject || !currentProject.lotes || !currentProject.lotes.length) {
-        showToast('El proyecto no tiene polígonos creados.');
+      if (!currentProject) return;
+      const totalElements = (currentProject.lotes?.length || 0) + (currentProject.custom_lines?.length || 0) + (currentProject.custom_texts?.length || 0);
+      if (!totalElements) {
+        showToast('No hay polígonos, líneas ni textos en este proyecto para seleccionar.');
         return;
       }
       isAllPolygonsSelected = !isAllPolygonsSelected;
@@ -4421,7 +4542,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         selectedLotId = null;
         selectedCustomTextId = null;
         selectedCustomLineId = null;
-        showToast('🌐 Todos los polígonos seleccionados. Puedes moverlos, rotarlos o redimensionarlos en grupo desde los puntos en el mapa.');
+        showToast('🌐 Todos los polígonos, líneas y textos seleccionados. Puedes moverlos, rotarlos o redimensionarlos en grupo desde los puntos en el mapa.');
       }
       updateSelectAllPolygonsUI();
       renderAllProjectsAndLots();
@@ -4436,22 +4557,27 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       const hint = document.getElementById('noLotSelectedHint');
       const badge = document.getElementById('editingLotBadge');
 
-      if (isAllPolygonsSelected && currentProject?.lotes?.length) {
+      const totalLots = currentProject?.lotes?.length || 0;
+      const totalLines = currentProject?.custom_lines?.length || 0;
+      const totalTexts = currentProject?.custom_texts?.length || 0;
+      const totalAll = totalLots + totalLines + totalTexts;
+
+      if (isAllPolygonsSelected && totalAll > 0) {
         if (btn) {
           btn.className = 'w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-sky-500 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer ring-2 ring-emerald-300';
         }
-        if (lbl) lbl.textContent = `✓ TODOS LOS POLÍGONOS SELECCIONADOS (${currentProject.lotes.length})`;
+        if (lbl) lbl.textContent = `✓ TODOS SELECCIONADOS (${totalLots} Lotes · ${totalLines} Líneas · ${totalTexts} Textos)`;
         if (badge) {
-          badge.textContent = `Todos (${currentProject.lotes.length})`;
+          badge.textContent = `Todos (${totalAll})`;
           badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-400/20 text-emerald-300 border border-emerald-400/40';
         }
 
         let totalArea = 0;
-        currentProject.lotes.forEach(l => { totalArea += (Number(l.area) || 0); });
+        (currentProject.lotes || []).forEach(l => { totalArea += (Number(l.area) || 0); });
         const countEl = document.getElementById('lblAllPolygonsCount');
         const areaEl = document.getElementById('lblAllPolygonsArea');
-        if (countEl) countEl.textContent = `${currentProject.lotes.length} Polígonos Totales Seleccionados`;
-        if (areaEl) areaEl.textContent = `Área Total: ${totalArea.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m²`;
+        if (countEl) countEl.textContent = `${totalLots} Lotes · ${totalLines} Líneas · ${totalTexts} Textos`;
+        if (areaEl) areaEl.textContent = `Área Lotes: ${totalArea.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m²`;
 
         if (allForm) allForm.classList.remove('hidden');
         if (lotForm) lotForm.classList.add('hidden');
@@ -4461,9 +4587,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         if (btn) {
           btn.className = 'w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400/20 via-sky-400/20 to-emerald-400/20 hover:from-amber-400/35 hover:to-sky-400/35 border border-amber-400/50 text-amber-300 hover:text-white text-xs font-black uppercase tracking-wider transition shadow-md flex items-center justify-center gap-2 cursor-pointer';
         }
-        if (lbl) lbl.textContent = 'SELECCIONAR TODOS LOS POLÍGONOS';
+        if (lbl) lbl.textContent = 'SELECCIONAR TODOS LOS POLÍGONOS, LÍNEAS Y TEXTOS';
         if (allForm) allForm.classList.add('hidden');
-        if (!selectedLotId) {
+        if (!selectedLotId && !selectedCustomLineId && !selectedCustomTextId) {
           if (hint) hint.classList.remove('hidden');
           if (lotForm) lotForm.classList.add('hidden');
           if (badge) {
