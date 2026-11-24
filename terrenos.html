@@ -1405,10 +1405,10 @@ CREATE POLICY "Escritura publica nova_propiedades" ON public.nova_propiedades FO
                     scrollWheelZoom: false
                 }).setView(defaultCenter, 8);
 
-                // Capa Satélite HD (Esri World Imagery) - Vista Exclusiva del Mapa
-                baseSatelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                    maxZoom: 19,
-                    attribution: 'Tiles &copy; Esri &mdash; World Imagery'
+                // Capa Satélite Google Earth Puro (100% Satelital, sin respaldo de Esri)
+                baseSatelliteLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                    maxZoom: 20,
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
                 }).addTo(leafletMapInstance);
 
                 propertyMarkersGroup = L.featureGroup().addTo(leafletMapInstance);

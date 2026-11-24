@@ -1415,30 +1415,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         map2d.getPane('calcoPane').style.zIndex = 350;
         map2d.getPane('calcoPane').style.pointerEvents = 'none';
 
-        // Respaldo automático por tesela hacia Esri World Imagery ante cualquier error
-        const attachEsriFallback = (layer) => {
-          layer.on('tileerror', (evt) => {
-            const tile = evt.tile;
-            const coords = evt.coords;
-            if (!tile || tile.dataset.esriFallbackDone) return;
-            tile.dataset.esriFallbackDone = '1';
-            const z = Math.min(coords.z, 18);
-            const scale = Math.pow(2, coords.z - z);
-            const x = Math.floor(coords.x / scale);
-            const y = Math.floor(coords.y / scale);
-            tile.src = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
-          });
-        };
-
-        // Capa base principal Google Earth Satélite (siempre activa en Satélite e Híbrido)
-        googleSatLayer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s&hl=es&x={x}&y={y}&z={z}', {
-          subdomains: ['0', '1', '2', '3'],
+        // Capa base principal Google Earth Satélite Puro (100% Satelital, sin calles de Maps ni respaldo de Esri)
+        googleSatLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+          subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
           maxZoom: 22,
           maxNativeZoom: 20,
           keepBuffer: 6,
           updateWhenIdle: false
         }).addTo(map2d);
-        attachEsriFallback(googleSatLayer);
 
         // Capa de SOLO carreteras principales (sin calles locales) para Modo Híbrido
         roadsOverlayLayer = L.layerGroup();
@@ -5612,11 +5596,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
       function loadTileTextureWithFallback(tx, ty, z, material) {
         const sub = Math.abs(tx + ty) % 4;
-        // Siempre base satelital pura (sin POIs ni comercios)
-        const googleUrl = `https://mt${sub}.google.com/vt/lyrs=s&hl=es&x=${tx}&y=${ty}&z=${z}`;
-        const esriZ = Math.min(z, 18);
-        const scale = Math.pow(2, z - esriZ);
-        const esriUrl = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${esriZ}/${Math.floor(ty / scale)}/${Math.floor(tx / scale)}`;
+        // Base satelital Google Earth pura (sin respaldo de Esri)
+        const googleUrl = `https://mt${sub}.google.com/vt/lyrs=s&x=${tx}&y=${ty}&z=${z}`;
 
         const loader = new THREE.TextureLoader();
         loader.setCrossOrigin('anonymous');
@@ -5628,9 +5609,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           material.color.setHex(0xffffff);
           material.needsUpdate = true;
         };
-        loader.load(googleUrl, applyTex, undefined, () => {
-          loader.load(esriUrl, applyTex, undefined, () => {});
-        });
+        loader.load(googleUrl, applyTex, undefined, () => {});
       }
 
       // Textura acentuada de carreteras (Esri World Transportation) para Modo Híbrido 3D
