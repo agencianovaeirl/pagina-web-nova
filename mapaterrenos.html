@@ -133,6 +133,8 @@
       white-space: nowrap;
       line-height: 1.15;
       pointer-events: none;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.85));
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 6px rgba(0, 0, 0, 0.85);
     }
 
     .lot-label-inner.is-selected {
@@ -146,9 +148,14 @@
       letter-spacing: 0.02em;
     }
     .lot-lbl-area {
-      font-size: 10px;
-      font-weight: 700;
+      font-size: 16px;
+      font-weight: 800;
       color: #f1f5f9;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+    }
+
+    .custom-map-text-icon {
+      pointer-events: auto !important;
     }
     .lot-lbl-price {
       font-size: 10px;
@@ -512,9 +519,6 @@
         <span id="editorDrawerModeBadge" class="text-[9.5px] font-bold text-amber-300 px-2 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/30">Consolidado</span>
       </div>
       <div class="flex items-center gap-1.5">
-        <button onclick="toggleEditorDrawerExpand()" id="btnExpandDrawer" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition" title="Ampliar / Reducir Cuadro">
-          <svg id="iconExpandDrawer" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-        </button>
         <button onclick="toggleEditor()" class="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition" title="Cerrar Editor">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
@@ -1940,14 +1944,6 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                 </div>
               </button>
               <div class="flex items-center gap-1 shrink-0">
-                <!-- Botón VISUALIZAR en Sidebar -->
-                <button onclick="L.DomEvent.stopPropagation(event); toggleProjectVisibilityById('${escapeHtml(proj.id)}')" class="p-1.5 rounded-lg ${proj.visible === false ? 'text-slate-500 bg-slate-800' : 'text-emerald-400 bg-emerald-500/20'} hover:bg-white/15 transition cursor-pointer" title="${proj.visible === false ? 'Visualización desactivada (clic para activar)' : 'Visualización activada (clic para desactivar)'}">
-                  ${proj.visible === false ? '👁️‍🗨️' : '👁️'}
-                </button>
-                <!-- Botón ELIMINAR en Sidebar -->
-                <button onclick="L.DomEvent.stopPropagation(event); confirmDeleteProjectById('${escapeHtml(proj.id)}')" class="p-1.5 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/25 transition cursor-pointer" title="Eliminar proyecto">
-                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </button>
                 <!-- Desplegar lotes -->
                 <button onclick="toggleProjectDropdown('${escapeHtml(proj.id)}')" class="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition shrink-0" title="Desplegar lotes">
                   <svg class="w-3.5 h-3.5 proj-chevron ${isOpen ? 'is-open' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
@@ -2369,6 +2365,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     // 9. CUADRO MODO EDITOR (ACCESO DIRECTO, SIN CLAVE)
     // =========================================================================
     function toggleEditor() {
+      if (!isEditorOpen) {
+        const pin = prompt('Ingrese la clave de acceso para el MODO EDITOR:');
+        if (pin === null) return;
+        if (pin.trim() !== 'NOVA2026') {
+          showToast('❌ Clave incorrecta. Acceso denegado.');
+          return;
+        }
+      }
       if (!isEditorOpen && viewMode === '3d') {
         setViewMode('2d');
       }

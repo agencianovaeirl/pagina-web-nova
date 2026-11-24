@@ -1662,6 +1662,12 @@ GRANT ALL ON TABLE public.galeria_carrusles TO service_role;</pre>
 
         // ================= FUNCIONES DEL MODAL EDITOR =================
         function openEditor() {
+            const pin = prompt('Ingrese la clave de administrador para editar la galería:');
+            if (pin === null) return;
+            if (pin.trim() !== 'NOVA2026') {
+                alert('Clave incorrecta. Acceso denegado.');
+                return;
+            }
             const modal = document.getElementById('galleryEditorModal');
             if (modal) {
                 modal.classList.add('active');
