@@ -155,7 +155,38 @@
     }
 
     .custom-map-text-icon {
+      background: transparent !important;
+      border: none !important;
       pointer-events: auto !important;
+    }
+
+    .custom-map-text-inner {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: max-content;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transform: translate(-50%, -50%);
+      transform-origin: center center;
+      white-space: nowrap;
+      line-height: 1.15;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.85));
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 6px rgba(0, 0, 0, 0.85);
+      user-select: none;
+      cursor: pointer;
+    }
+
+    .custom-map-text-inner.is-selected {
+      border: 1.5px dashed #f59e0b;
+      padding: 2px 4px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.45);
     }
     .lot-lbl-price {
       font-size: 10px;
@@ -749,7 +780,7 @@
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Tamaño (px)</label>
-                <input id="inpEditorTextSize" type="number" value="20" min="8" max="72" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
+                <input id="inpEditorTextSize" type="number" value="11" min="8" max="72" class="w-full bg-slate-950/80 border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-400" />
               </div>
               <div>
                 <label class="block text-[10.5px] font-semibold text-slate-300 mb-1">Color</label>
@@ -1321,7 +1352,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
                 if (!Array.isArray(p.custom_lines)) p.custom_lines = [];
                 if (!Array.isArray(p.custom_texts)) p.custom_texts = [];
                 p.custom_texts.forEach(t => {
-                  if (!t.size || t.size === 15 || t.size === 16) t.size = 20;
+                  if (!t.size || t.size === 15 || t.size === 16 || t.size === 20) t.size = 11;
                 });
               });
               currentProject = projects[0];
@@ -1731,12 +1762,20 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           (currentProject?.custom_texts || []).forEach(t => {
             if (typeof t.lat !== 'number' || typeof t.lng !== 'number') return;
             const isSel = t.id === selectedCustomTextId;
+            const rot = t.rotation || 0;
+            const size = t.size || 11;
             const txtIcon = L.divIcon({
               className: 'custom-map-text-icon',
-              html: `<div style="color:${t.color || '#ffffff'}; font-size:${t.size || 20}px !important; font-weight:900; text-shadow:0 1px 3px #000, 0 0 6px #000; padding:2px 4px; border-radius:4px; ${isSel ? 'border:1.5px dashed #f59e0b; background:rgba(0,0,0,0.6);' : ''} cursor:pointer; user-select:none; white-space:nowrap; transform: rotate(${t.rotation || 0}deg); transform-origin: center center;">${escapeHtml(t.text || '')}</div>`,
+              html: `
+                <div class="custom-map-text-inner ${isSel ? 'is-selected' : ''}" style="color:${t.color || '#ffffff'}; font-size:${size}px;">
+                  ${escapeHtml(t.text || '')}
+                </div>
+              `,
               iconSize: [0, 0]
             });
             const marker = L.marker([t.lat, t.lng], { icon: txtIcon, interactive: isEditorOpen });
+            marker._customTextRot = rot;
+            marker._textSize = size;
             if (isEditorOpen) {
               marker.on('click', (e) => {
                 L.DomEvent.stopPropagation(e);
@@ -1760,52 +1799,82 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     }
 
     function updateLabelsVisibilityByZoom() {
-      if (!map2d || !labelsLayerGroup) return;
-      labelsLayerGroup.eachLayer(layer => {
-        const el = layer.getElement();
-        if (!el) return;
-        const inner = el.querySelector('.lot-label-inner');
-        if (!inner) return;
+      if (!map2d) return;
 
-        const coords = layer._lotCoords;
-        const centroid = layer._lotCentroid;
-        if (!coords || coords.length < 3 || !centroid) {
-          el.style.display = 'none';
-          return;
-        }
+      let totalFitScale = 0;
+      let labelCount = 0;
 
-        const cPt = map2d.latLngToLayerPoint([centroid.lat, centroid.lng]);
-        const pts = coords.map(c => map2d.latLngToLayerPoint([c.lat, c.lng]));
+      if (labelsLayerGroup) {
+        labelsLayerGroup.eachLayer(layer => {
+          const el = layer.getElement();
+          if (!el) return;
+          const inner = el.querySelector('.lot-label-inner');
+          if (!inner) return;
 
-        // Radio inscrito mínimo desde el centroide hasta cualquier borde del polígono
-        let minEdgeDist = Infinity;
-        for (let i = 0; i < pts.length; i++) {
-          const a = pts[i];
-          const b = pts[(i + 1) % pts.length];
-          const dx = b.x - a.x;
-          const dy = b.y - a.y;
-          const lenSq = dx * dx + dy * dy;
-          const t = lenSq === 0 ? 0 : Math.max(0, Math.min(1, ((cPt.x - a.x) * dx + (cPt.y - a.y) * dy) / lenSq));
-          const px = a.x + t * dx;
-          const py = a.y + t * dy;
-          const d = Math.hypot(cPt.x - px, cPt.y - py);
-          if (d < minEdgeDist) minEdgeDist = d;
-        }
+          const coords = layer._lotCoords;
+          const centroid = layer._lotCentroid;
+          if (!coords || coords.length < 3 || !centroid) {
+            el.style.display = 'none';
+            return;
+          }
 
-        if (minEdgeDist < 2) {
-          el.style.display = 'none';
-          return;
-        }
+          const cPt = map2d.latLngToLayerPoint([centroid.lat, centroid.lng]);
+          const pts = coords.map(c => map2d.latLngToLayerPoint([c.lat, c.lng]));
 
-        const textW = Math.max(70, inner.offsetWidth || 86);
-        const textH = Math.max(50, inner.offsetHeight || 60);
-        const halfDiag = Math.hypot(textW / 2, textH / 2);
-        const fitScale = Math.max(0.15, Math.min(1.4, (minEdgeDist * 0.86) / halfDiag));
+          // Radio inscrito mínimo desde el centroide hasta cualquier borde del polígono
+          let minEdgeDist = Infinity;
+          for (let i = 0; i < pts.length; i++) {
+            const a = pts[i];
+            const b = pts[(i + 1) % pts.length];
+            const dx = b.x - a.x;
+            const dy = b.y - a.y;
+            const lenSq = dx * dx + dy * dy;
+            const t = lenSq === 0 ? 0 : Math.max(0, Math.min(1, ((cPt.x - a.x) * dx + (cPt.y - a.y) * dy) / lenSq));
+            const px = a.x + t * dx;
+            const py = a.y + t * dy;
+            const d = Math.hypot(cPt.x - px, cPt.y - py);
+            if (d < minEdgeDist) minEdgeDist = d;
+          }
 
-        el.style.display = 'block';
-        inner.style.transform = `translate(-50%, -50%) scale(${fitScale.toFixed(4)})`;
-        inner.style.transformOrigin = 'center center';
-      });
+          if (minEdgeDist < 2) {
+            el.style.display = 'none';
+            return;
+          }
+
+          const textW = Math.max(70, inner.offsetWidth || 86);
+          const textH = Math.max(50, inner.offsetHeight || 60);
+          const halfDiag = Math.hypot(textW / 2, textH / 2);
+          const fitScale = Math.max(0.15, Math.min(1.4, (minEdgeDist * 0.86) / halfDiag));
+
+          totalFitScale += fitScale;
+          labelCount++;
+
+          el.style.display = 'block';
+          inner.style.transform = `translate(-50%, -50%) scale(${fitScale.toFixed(4)})`;
+          inner.style.transformOrigin = 'center center';
+        });
+      }
+
+      // Escalar textos adicionales creados en el Modo Editor con el MISMO efecto y escala que los datos de los polígonos
+      const curScale = labelCount > 0 ? (totalFitScale / labelCount) : Math.max(0.15, Math.min(1.4, Math.pow(2, map2d.getZoom() - 18)));
+
+      if (customTextsLayerGroup) {
+        customTextsLayerGroup.eachLayer(layer => {
+          const el = layer.getElement();
+          if (!el) return;
+          const inner = el.querySelector('.custom-map-text-inner');
+          if (!inner) return;
+
+          const rot = layer._customTextRot || 0;
+          if (curScale <= 0.16) {
+            el.style.display = 'none';
+          } else {
+            el.style.display = 'block';
+            inner.style.transform = `translate(-50%, -50%) rotate(${rot}deg) scale(${curScale.toFixed(4)})`;
+            inner.style.transformOrigin = 'center center';
+          }
+        });
+      }
     }
 
     function toggleLotSelection(lotId) {
@@ -3156,7 +3225,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       if (!currentProject) return;
       const contentInp = document.getElementById('inpEditorTextContent');
       const textVal = (contentInp?.value || '').trim() || 'Rótulo Plano';
-      const sizeVal = Number(document.getElementById('inpEditorTextSize')?.value) || 20;
+      const sizeVal = Number(document.getElementById('inpEditorTextSize')?.value) || 11;
       const colorVal = document.getElementById('selEditorTextColor')?.value || '#ffffff';
 
       const center = map2d ? map2d.getCenter() : { lat: currentProject.lat, lng: currentProject.lng };
@@ -3195,7 +3264,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const sInp = document.getElementById('inpEditorTextSize');
         const colSel = document.getElementById('selEditorTextColor');
         if (cInp) cInp.value = t.text || '';
-        if (sInp) sInp.value = t.size || 20;
+        if (sInp) sInp.value = t.size || 11;
         if (colSel) colSel.value = t.color || '#ffffff';
       }
       renderAllProjectsAndLots();
@@ -3210,7 +3279,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       const t = (currentProject?.custom_texts || []).find(x => x.id === selectedCustomTextId);
       if (!t) return;
       t.text = document.getElementById('inpEditorTextContent')?.value || t.text;
-      t.size = Number(document.getElementById('inpEditorTextSize')?.value) || t.size;
+      t.size = Number(document.getElementById('inpEditorTextSize')?.value) || t.size || 11;
       t.color = document.getElementById('selEditorTextColor')?.value || t.color;
 
       currentProject.updated_at = new Date().toISOString();
@@ -3809,7 +3878,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       if (selectedCustomTextId) {
         const t = (currentProject.custom_texts || []).find(x => x.id === selectedCustomTextId);
         if (t && typeof t.lat === 'number' && typeof t.lng === 'number') {
-          const textSize = t.size || 15;
+          const textSize = t.size || 11;
           const textRot = t.rotation || 0;
           const textLen = (t.text || 'Texto').length;
           const widthM = Math.max(3, (textLen * textSize * 0.12));
@@ -3849,7 +3918,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             const ll = e.target.getLatLng();
             const off = latLngToOffsetMeters(t.lat, t.lng, ll.lat, ll.lng);
             startDist = Math.hypot(off.east, off.north);
-            startSize = t.size || 15;
+            startSize = t.size || 11;
           });
           resTxtM.on('drag', (e) => {
             const ll = e.target.getLatLng();
@@ -4527,12 +4596,20 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       (currentProject?.custom_texts || []).forEach(t => {
         if (typeof t.lat !== 'number' || typeof t.lng !== 'number') return;
         const isSel = t.id === selectedCustomTextId;
+        const rot = t.rotation || 0;
+        const size = t.size || 11;
         const txtIcon = L.divIcon({
           className: 'custom-map-text-icon',
-          html: `<div style="color:${t.color || '#ffffff'}; font-size:${t.size || 20}px !important; font-weight:900; text-shadow:0 1px 3px #000, 0 0 6px #000; padding:2px 4px; border-radius:4px; ${isSel ? 'border:1.5px dashed #f59e0b; background:rgba(0,0,0,0.6);' : ''} cursor:pointer; user-select:none; white-space:nowrap; transform: rotate(${t.rotation || 0}deg); transform-origin: center center;">${escapeHtml(t.text || '')}</div>`,
+          html: `
+            <div class="custom-map-text-inner ${isSel ? 'is-selected' : ''}" style="color:${t.color || '#ffffff'}; font-size:${size}px;">
+              ${escapeHtml(t.text || '')}
+            </div>
+          `,
           iconSize: [0, 0]
         });
         const marker = L.marker([t.lat, t.lng], { icon: txtIcon, interactive: isEditorOpen });
+        marker._customTextRot = rot;
+        marker._textSize = size;
         if (isEditorOpen) {
           marker.on('click', (e) => {
             L.DomEvent.stopPropagation(e);
@@ -4541,6 +4618,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         }
         customTextsLayerGroup.addLayer(marker);
       });
+      updateLabelsVisibilityByZoom();
     }
 
     function renderCustomLinesLightweight() {
