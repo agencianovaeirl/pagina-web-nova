@@ -5626,17 +5626,24 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         // Base satelital Google Earth pura (sin respaldo de Esri)
         const googleUrl = `https://mt${sub}.google.com/vt/lyrs=s&x=${tx}&y=${ty}&z=${z}`;
 
-        const loader = new THREE.TextureLoader();
-        loader.setCrossOrigin('anonymous');
-        const applyTex = (tex) => {
-          tex.anisotropy = renderer ? Math.min(8, renderer.capabilities.getMaxAnisotropy()) : 4;
-          tex.minFilter = THREE.LinearMipmapLinearFilter;
-          tex.magFilter = THREE.LinearFilter;
-          material.map = tex;
-          material.color.setHex(0xffffff);
-          material.needsUpdate = true;
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          try {
+            const c = document.createElement('canvas');
+            c.width = img.width; c.height = img.height;
+            c.getContext('2d').drawImage(img, 0, 0);
+            const tex = new THREE.CanvasTexture(c);
+            tex.anisotropy = renderer ? Math.min(16, renderer.capabilities.getMaxAnisotropy()) : 8;
+            tex.minFilter = THREE.LinearFilter;
+            tex.magFilter = THREE.LinearFilter;
+            tex.generateMipmaps = false;
+            material.map = tex;
+            material.color.setHex(0xffffff);
+            material.needsUpdate = true;
+          } catch(e) {}
         };
-        loader.load(googleUrl, applyTex, undefined, () => {});
+        img.src = googleUrl;
       }
 
       // Textura acentuada de carreteras (Esri World Transportation) para Modo Híbrido 3D
@@ -5704,8 +5711,12 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
               const nwW = latLngToWorldXZ(nw.lat, nw.lng);
               const seW = latLngToWorldXZ(se.lat, se.lng);
 
-              const width = Math.abs(seW.x - nwW.x);
-              const height = Math.abs(seW.z - nwW.z);
+              const rawWidth  = Math.abs(seW.x - nwW.x);
+              const rawHeight = Math.abs(seW.z - nwW.z);
+              // Solapamiento del 0.8% para eliminar juntas de cuadrícula entre tiles
+              const overlap = 1.008;
+              const width  = rawWidth  * overlap;
+              const height = rawHeight * overlap;
               const centerX = (nwW.x + seW.x) / 2;
               const centerZ = (nwW.z + seW.z) / 2;
 
