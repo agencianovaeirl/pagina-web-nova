@@ -176,8 +176,8 @@
       font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.02em;
-      filter: drop-shadow(0 1.5px 3px rgba(0, 0, 0, 0.68));
-      text-shadow: 0 1px 2.5px rgba(0, 0, 0, 0.76), 0 0 5px rgba(0, 0, 0, 0.68);
+      filter: drop-shadow(0 1px 2.5px rgba(0, 0, 0, 0.55));
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6), 0 0 4px rgba(0, 0, 0, 0.55);
       user-select: none;
       cursor: pointer;
     }
@@ -5943,7 +5943,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             const txtEl = document.createElement('div');
             txtEl.style.position = 'absolute';
             txtEl.style.pointerEvents = 'none';
-            txtEl.innerHTML = `<div class="editor-custom-text-rendered" style="color:${ct.color || '#facc15'}; font-size:11px; font-weight:800; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.68)); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.76);">${escapeHtml(ct.text)}</div>`;
+            txtEl.innerHTML = `<div class="editor-custom-text-rendered" style="color:${ct.color || '#facc15'}; font-size:11px; font-weight:800; filter: drop-shadow(0 1px 2.5px rgba(0, 0, 0, 0.55)); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6), 0 0 4px rgba(0, 0, 0, 0.55);">${escapeHtml(ct.text)}</div>`;
             if (labelsHost) labelsHost.appendChild(txtEl);
             customText3DItems.push({ worldPos: new THREE.Vector3(tXZ.x, tY, tXZ.z), el: txtEl });
           });
