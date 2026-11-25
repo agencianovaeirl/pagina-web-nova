@@ -433,7 +433,7 @@
           <div class="text-left min-w-0">
             <div class="flex items-center gap-1.5">
               <span class="text-[11px] font-extrabold text-white">Proyectos (<span id="sidebarProjCount">1</span>)</span>
-              <span id="badgeViewMode" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">2D</span>
+              <button onclick="toggleViewMode()" id="badgeViewMode" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-400/40 hover:scale-105 transition cursor-pointer" title="Modo Google Earth 3D activo (clic para alternar)">3D</button>
               <span id="badgeDbState" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-white/10">Local</span>
             </div>
             <div id="hudProjectName" class="text-[10.5px] font-semibold text-slate-300 truncate max-w-[165px]">Proyecto Fortunato</div>
@@ -474,6 +474,18 @@
 
   <!-- 5. DOCK FLOTANTE INFERIOR CENTRADO (TODOS LOS ICONOS PRINCIPALES) -->
   <nav id="bottomDock" class="glass-panel rounded-2xl p-1.5 flex items-center gap-1 overflow-x-auto">
+    <!-- 0) Modo Google Earth 3D / 2D -->
+    <button onclick="toggleViewMode()" id="btn3DToggle" class="dock-btn bg-emerald-500 text-slate-950 font-extrabold border border-emerald-300 shadow-lg shadow-emerald-500/25" title="Alternar entre Google Earth 3D y vista 2D cenital">
+      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+      </svg>
+      <span id="lbl3DToggle">Vista 2D</span>
+    </button>
+
+    <div class="w-px h-6 bg-white/10 mx-0.5 shrink-0"></div>
+
     <!-- 1) Satélite / Híbrido -->
     <button onclick="toggleSatelliteStyle()" id="btnSatToggle" class="dock-btn bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 border border-sky-400/30" title="Alternar entre Satélite puro e Híbrido (carreteras + distritos)">
       <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1491,6 +1503,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         renderAllProjectsAndLots();
         syncProjectFormUI();
         startAutoPilot();
+
+        // Arrancar por defecto en Modo 3D igual a la página principal de Google Earth
+        setTimeout(() => {
+          setViewMode('3d');
+        }, 50);
       } catch (err) {
         console.error('Error iniciando mapa 2D:', err);
         showToast('Error al inicializar el mapa 2D.');
@@ -2089,7 +2106,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     }
 
     function setViewMode(mode) {
-      if (mode === viewMode) return;
+      if (mode === viewMode && earth3D && earth3D.isActive && earth3D.isActive()) return;
       const btn3d = document.getElementById('btn3DToggle');
       const lbl3d = document.getElementById('lbl3DToggle');
       const badge = document.getElementById('badgeViewMode');
@@ -2098,13 +2115,16 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       if (mode === '3d') {
         if (isEditorOpen) toggleEditor();
         viewMode = '3d';
-        if (lbl3d) lbl3d.textContent = '2D';
-        if (btn3d) btn3d.className = 'dock-btn bg-emerald-500 text-slate-950 font-extrabold border border-emerald-300';
-        if (badge) badge.textContent = '3D';
-        map3dEl.style.display = 'block';
+        if (lbl3d) lbl3d.textContent = 'Vista 2D';
+        if (btn3d) btn3d.className = 'dock-btn bg-emerald-500 text-slate-950 font-extrabold border border-emerald-300 shadow-lg shadow-emerald-500/25';
+        if (badge) {
+          badge.textContent = '3D';
+          badge.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-400/40 hover:scale-105 transition cursor-pointer';
+        }
+        if (map3dEl) map3dEl.style.display = 'block';
 
-        const center = map2d.getCenter();
-        const zoom = map2d.getZoom();
+        const center = map2d ? map2d.getCenter() : (currentProject ? { lat: currentProject.lat, lng: currentProject.lng } : { lat: DEFAULT_LAT, lng: DEFAULT_LNG });
+        const zoom = map2d ? map2d.getZoom() : 19;
         earth3D.activate(center.lat, center.lng, zoom);
       } else {
         const targetGps = earth3D.getTargetLatLng();
@@ -2112,10 +2132,13 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         earth3D.deactivate();
 
         viewMode = '2d';
-        if (lbl3d) lbl3d.textContent = '3D';
+        if (lbl3d) lbl3d.textContent = 'Google Earth 3D';
         if (btn3d) btn3d.className = 'dock-btn text-slate-200 hover:bg-white/10 border border-transparent';
-        if (badge) badge.textContent = '2D';
-        map3dEl.style.display = 'none';
+        if (badge) {
+          badge.textContent = '2D';
+          badge.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30 hover:scale-105 transition cursor-pointer';
+        }
+        if (map3dEl) map3dEl.style.display = 'none';
 
         if (map2d) {
           map2d.invalidateSize();
@@ -2417,6 +2440,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     // =========================================================================
     // 9. CUADRO MODO EDITOR (ACCESO DIRECTO, SIN CLAVE)
     // =========================================================================
+    let previousViewModeBeforeEditor = null;
     function toggleEditor() {
       if (!isEditorOpen) {
         const pin = prompt('Ingrese la clave de acceso para el MODO EDITOR:');
@@ -2427,6 +2451,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         }
       }
       if (!isEditorOpen && viewMode === '3d') {
+        previousViewModeBeforeEditor = '3d';
         setViewMode('2d');
       }
       isEditorOpen = !isEditorOpen;
@@ -2454,6 +2479,10 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         // Ocultar Calco Privado automáticamente al cerrar el editor
         removeCalcoOverlay();
         if (editorHandlesGroup) editorHandlesGroup.clearLayers();
+        if (previousViewModeBeforeEditor === '3d') {
+          previousViewModeBeforeEditor = null;
+          setTimeout(() => setViewMode('3d'), 60);
+        }
       }
     }
 
@@ -5348,6 +5377,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       let lotMeshes = [];
       let pinItems = [];
       let district3DItems = [];
+      let customText3DItems = [];
+      let customLine3DItems = [];
 
       function latLngToTileFloat(lat, lng, z) {
         const n = Math.pow(2, z);
@@ -5750,6 +5781,8 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         lotMeshes = [];
         pinItems = [];
         district3DItems = [];
+        customText3DItems = [];
+        customLine3DItems = [];
 
         const svg = document.getElementById('svg3dOverlay');
         const labelsHost = document.getElementById('labels3dOverlay');
@@ -5894,6 +5927,38 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
               polyEl, labelEl
             });
           });
+
+          // Textos personalizados en Google Earth 3D
+          (proj.custom_texts || []).forEach(ct => {
+            if (typeof ct.lat !== 'number' || typeof ct.lng !== 'number') return;
+            const tXZ = latLngToWorldXZ(ct.lat, ct.lng);
+            const tY = getWorldY(ct.lat, ct.lng) + 1.2;
+            const txtEl = document.createElement('div');
+            txtEl.style.position = 'absolute';
+            txtEl.style.pointerEvents = 'none';
+            txtEl.innerHTML = `<div class="editor-custom-text-rendered" style="color:${ct.color || '#facc15'}; font-size:11px; font-weight:800; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.68)); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.76);">${escapeHtml(ct.text)}</div>`;
+            if (labelsHost) labelsHost.appendChild(txtEl);
+            customText3DItems.push({ worldPos: new THREE.Vector3(tXZ.x, tY, tXZ.z), el: txtEl });
+          });
+
+          // Líneas y trazos personalizados en Google Earth 3D
+          (proj.custom_lines || []).forEach(cl => {
+            if (!cl.coords || cl.coords.length < 2) return;
+            const lineEl = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            lineEl.setAttribute('fill', 'none');
+            lineEl.setAttribute('stroke', cl.color || '#38bdf8');
+            lineEl.setAttribute('stroke-width', String(cl.width || 2.5));
+            lineEl.setAttribute('stroke-linecap', 'round');
+            lineEl.setAttribute('stroke-linejoin', 'round');
+            if (cl.style === 'dashed') lineEl.setAttribute('stroke-dasharray', '6,6');
+            if (svg) svg.appendChild(lineEl);
+            const worldPts = cl.coords.map(pt => {
+              const w = latLngToWorldXZ(pt.lat, pt.lng);
+              const ty = getWorldY(pt.lat, pt.lng) + 0.4;
+              return { x: w.x, y: ty, z: w.z };
+            });
+            customLine3DItems.push({ lineEl, worldPts });
+          });
         });
       }
 
@@ -5986,6 +6051,36 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             d.el.style.top = `${sp.y.toFixed(1)}px`;
           }
         }
+
+        for (let i = 0; i < customText3DItems.length; i++) {
+          const ct = customText3DItems[i];
+          const sp = projectToScreen(ct.worldPos);
+          if (!showLabels || sp.z >= 1 || sp.x < -120 || sp.x > window.innerWidth + 120 || sp.y < -80 || sp.y > window.innerHeight + 80) {
+            ct.el.style.display = 'none';
+          } else {
+            ct.el.style.display = 'block';
+            ct.el.style.left = `${sp.x.toFixed(1)}px`;
+            ct.el.style.top = `${sp.y.toFixed(1)}px`;
+          }
+        }
+
+        for (let i = 0; i < customLine3DItems.length; i++) {
+          const item = customLine3DItems[i];
+          let allBehind = true;
+          const ptsStr = [];
+          for (let j = 0; j < item.worldPts.length; j++) {
+            tmp.set(item.worldPts[j].x, item.worldPts[j].y, item.worldPts[j].z);
+            const sp = projectToScreen(tmp);
+            if (sp.z < 1) allBehind = false;
+            ptsStr.push(`${sp.x.toFixed(1)},${sp.y.toFixed(1)}`);
+          }
+          if (allBehind) {
+            item.lineEl.style.display = 'none';
+          } else {
+            item.lineEl.style.display = '';
+            item.lineEl.setAttribute('points', ptsStr.join(' '));
+          }
+        }
       }
 
       return {
@@ -5996,10 +6091,10 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           originLng = currentProject ? currentProject.lng : centerLng;
 
           const startXZ = latLngToWorldXZ(centerLat, centerLng);
-          const approxRadius = Math.max(85, Math.min(2400, 240 * Math.pow(2, 18.8 - zoom)));
+          const approxRadius = Math.max(130, Math.min(2400, 260 * Math.pow(2, 18.8 - zoom)));
           desiredRadius = approxRadius;
           spherical.radius = approxRadius;
-          spherical.phi = 0.92;
+          spherical.phi = 1.02; // Inclinación oblicua 3D natural estilo Google Earth
           spherical.theta = 0.52;
 
           rebuildTerrainTiles();
@@ -6015,6 +6110,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         deactivate() {
           active = false;
           cancelAnimationFrame(rafId);
+        },
+        isActive() {
+          return active;
         },
         rebuildTerrainTiles() {
           if (initialized && active) rebuildTerrainTiles();
