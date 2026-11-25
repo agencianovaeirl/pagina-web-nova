@@ -1405,11 +1405,26 @@ CREATE POLICY "Escritura publica nova_propiedades" ON public.nova_propiedades FO
                     scrollWheelZoom: false
                 }).setView(defaultCenter, 8);
 
-                // Capa Satélite Google Earth Puro (100% Satelital, sin respaldo de Esri)
-                baseSatelliteLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                // Capa Satélite Google Earth con respaldo automático Esri ante cualquier fallo
+                const attachEsriFallback = (layer) => {
+                    layer.on('tileerror', (evt) => {
+                        const tile = evt.tile;
+                        const coords = evt.coords;
+                        if (!tile || tile.dataset.esriFallbackDone) return;
+                        tile.dataset.esriFallbackDone = '1';
+                        const z = Math.min(coords.z, 18);
+                        const scale = Math.pow(2, coords.z - z);
+                        const x = Math.floor(coords.x / scale);
+                        const y = Math.floor(coords.y / scale);
+                        tile.src = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
+                    });
+                };
+
+                baseSatelliteLayer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
                     maxZoom: 20,
-                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+                    subdomains: ['0', '1', '2', '3']
                 }).addTo(leafletMapInstance);
+                attachEsriFallback(baseSatelliteLayer);
 
                 propertyMarkersGroup = L.featureGroup().addTo(leafletMapInstance);
             } else {

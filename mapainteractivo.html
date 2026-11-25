@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>Agencia Nova E.I.R.L. | Tour Inmobiliario Google Earth 2D / 3D</title>
+  <title>Agencia Nova E.I.R.L. | Tour Inmobiliario Satelital HD</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -54,15 +54,15 @@
       background: #0b1120;
     }
 
-    /* Contenedor Mapa 3D (Three.js, oculto hasta activar 3D) */
+    /* Contenedor Mapa 3D (Desactivado, vista exclusivamente 2D Satelital) */
     #map3d {
       position: fixed;
       inset: 0;
       width: 100vw;
       height: 100vh;
       z-index: 2;
-      display: none;
-      background: linear-gradient(180deg, #0b1e38 0%, #24568a 42%, #7ea9ce 74%, #c7ddf2 100%);
+      display: none !important;
+      background: #0b1120;
       overflow: hidden;
     }
 
@@ -433,7 +433,6 @@
           <div class="text-left min-w-0">
             <div class="flex items-center gap-1.5">
               <span class="text-[11px] font-extrabold text-white">Proyectos (<span id="sidebarProjCount">1</span>)</span>
-              <button onclick="toggleViewMode()" id="badgeViewMode" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-400/40 hover:scale-105 transition cursor-pointer" title="Modo Google Earth 3D activo (clic para alternar)">3D</button>
               <span id="badgeDbState" class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-white/10">Local</span>
             </div>
             <div id="hudProjectName" class="text-[10.5px] font-semibold text-slate-300 truncate max-w-[165px]">Proyecto Fortunato</div>
@@ -474,18 +473,6 @@
 
   <!-- 5. DOCK FLOTANTE INFERIOR CENTRADO (TODOS LOS ICONOS PRINCIPALES) -->
   <nav id="bottomDock" class="glass-panel rounded-2xl p-1.5 flex items-center gap-1 overflow-x-auto">
-    <!-- 0) Modo Google Earth 3D / 2D -->
-    <button onclick="toggleViewMode()" id="btn3DToggle" class="dock-btn bg-emerald-500 text-slate-950 font-extrabold border border-emerald-300 shadow-lg shadow-emerald-500/25" title="Alternar entre Google Earth 3D y vista 2D cenital">
-      <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-        <line x1="12" y1="22.08" x2="12" y2="12"></line>
-      </svg>
-      <span id="lbl3DToggle">Vista 2D</span>
-    </button>
-
-    <div class="w-px h-6 bg-white/10 mx-0.5 shrink-0"></div>
-
     <!-- 1) Satélite / Híbrido -->
     <button onclick="toggleSatelliteStyle()" id="btnSatToggle" class="dock-btn bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 border border-sky-400/30" title="Alternar entre Satélite puro e Híbrido (carreteras + distritos)">
       <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1238,10 +1225,11 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     }
 
     function getStatusStyle(status) {
-      if (status === 'Vendido') {
+      const s = String(status || '').trim().toLowerCase();
+      if (s === 'vendido') {
         return { fill: '#ef4444', textColor: '#fca5a5', label: 'VENDIDO' };
       }
-      if (status === 'Reservado') {
+      if (s === 'reservado') {
         return { fill: '#f59e0b', textColor: '#fcd34d', label: 'RESERVADO' };
       }
       return { fill: '#10b981', textColor: '#6ee7b7', label: 'DISPONIBLE' };
@@ -1361,8 +1349,23 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             projects = parsed.filter(p => !isExcludedProject(p));
             if (projects.length > 0) {
               projects.forEach(p => {
+                p.visible = true; // Garantizar visibilidad de todas las propiedades
+                if (!p.lat || isNaN(p.lat)) p.lat = DEFAULT_LAT;
+                if (!p.lng || isNaN(p.lng)) p.lng = DEFAULT_LNG;
                 if (!Array.isArray(p.custom_lines)) p.custom_lines = [];
                 if (!Array.isArray(p.custom_texts)) p.custom_texts = [];
+                if (!Array.isArray(p.lotes) || p.lotes.length === 0) {
+                  if (p.id === 'proj-fortunato' || (p.nombre && p.nombre.toLowerCase().includes('fortunato'))) {
+                    p.lotes = buildFortunatoLots(p.lat, p.lng);
+                  }
+                }
+                // Normalizar estados de los lotes
+                (p.lotes || []).forEach(lot => {
+                  const s = String(lot.status || '').trim().toLowerCase();
+                  if (s === 'vendido') lot.status = 'Vendido';
+                  else if (s === 'reservado') lot.status = 'Reservado';
+                  else lot.status = 'Disponible';
+                });
                 p.custom_texts.forEach(t => {
                   if (!t.size || t.size === 15 || t.size === 16 || t.size === 20) t.size = 11;
                 });
@@ -1427,14 +1430,30 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         map2d.getPane('calcoPane').style.zIndex = 350;
         map2d.getPane('calcoPane').style.pointerEvents = 'none';
 
-        // Capa base principal Google Earth Satélite Puro (100% Satelital, sin calles de Maps ni respaldo de Esri)
-        googleSatLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-          subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        // Respaldo automático por tesela hacia Esri World Imagery ante cualquier error de Google o red
+        const attachEsriFallback = (layer) => {
+          layer.on('tileerror', (evt) => {
+            const tile = evt.tile;
+            const coords = evt.coords;
+            if (!tile || tile.dataset.esriFallbackDone) return;
+            tile.dataset.esriFallbackDone = '1';
+            const z = Math.min(coords.z, 18);
+            const scale = Math.pow(2, coords.z - z);
+            const x = Math.floor(coords.x / scale);
+            const y = Math.floor(coords.y / scale);
+            tile.src = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
+          });
+        };
+
+        // Capa base principal Google Earth Satélite
+        googleSatLayer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+          subdomains: ['0', '1', '2', '3'],
           maxZoom: 22,
           maxNativeZoom: 20,
           keepBuffer: 6,
           updateWhenIdle: false
         }).addTo(map2d);
+        attachEsriFallback(googleSatLayer);
 
         // Capa de SOLO carreteras principales (sin calles locales) para Modo Híbrido
         roadsOverlayLayer = L.layerGroup();
@@ -1502,7 +1521,12 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
         renderAllProjectsAndLots();
         syncProjectFormUI();
-        startAutoPilot();
+        updateHudCounters();
+
+        // Centrar y encuadrar las propiedades en pantalla de inmediato
+        if (currentProject) {
+          flyToProject(currentProject);
+        }
 
       } catch (err) {
         console.error('Error iniciando mapa 2D:', err);
@@ -1616,12 +1640,12 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         const isCurrent = currentProject && proj.id === currentProject.id;
         const isVisible = proj.visible !== false;
 
-        // Si el proyecto tiene la visualización desactivada, no dibujarlo en el mapa
-        if (!isVisible) return;
+        // Si el proyecto tiene la visualización desactivada y no es el actual, no dibujarlo
+        if (!isVisible && !isCurrent) return;
 
         // 1. Pin flotante del proyecto
-        let pinLat = proj.lat;
-        let pinLng = proj.lng;
+        let pinLat = proj.lat || DEFAULT_LAT;
+        let pinLng = proj.lng || DEFAULT_LNG;
         if (Array.isArray(proj.lotes) && proj.lotes.length > 0) {
           let maxLat = -Infinity, sumLng = 0, cnt = 0;
           proj.lotes.forEach(l => (l.coords || []).forEach(c => {
@@ -1635,14 +1659,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
           }
         }
 
-        const dispCount = (proj.lotes || []).filter(l => l.status === 'Disponible').length;
+        const dispCount = (proj.lotes || []).filter(l => String(l.status || '').trim().toLowerCase() === 'disponible').length;
         const pinIcon = L.divIcon({
           className: 'project-pin-icon',
           html: `
             <div class="project-pin-wrap ${isCurrent ? 'is-active' : ''}">
               <div class="project-pin-pill">
                 <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span>${escapeHtml(proj.nombre)}</span>
+                <span>${escapeHtml(proj.nombre || proj.title || 'Propiedad')}</span>
                 <span class="text-[9.5px] font-semibold text-sky-300">${dispCount} disp.</span>
               </div>
               <div class="project-pin-stem"></div>
@@ -1663,8 +1687,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         (proj.lotes || []).forEach(lot => {
           if (!lot.coords || lot.coords.length < 3) return;
           const isSelected = isCurrent && lot.id === selectedLotId;
-          const matchesFilter = (filterStatus === 'ALL' || lot.status === filterStatus);
-          const style = getStatusStyle(lot.status);
+          const lotStat = String(lot.status || '').trim();
+          const matchesFilter = (filterStatus === 'ALL' || lotStat.toLowerCase() === filterStatus.toLowerCase());
+          const style = getStatusStyle(lotStat);
           const centroid = getPolygonCentroid(lot.coords);
 
           const latLngs = lot.coords.map(c => [c.lat, c.lng]);
@@ -2026,9 +2051,9 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
 
     function updateHudCounters() {
       const lots = currentProject ? (currentProject.lotes || []) : [];
-      const disp = lots.filter(l => l.status === 'Disponible').length;
-      const res = lots.filter(l => l.status === 'Reservado').length;
-      const vend = lots.filter(l => l.status === 'Vendido').length;
+      const disp = lots.filter(l => String(l.status || '').trim().toLowerCase() === 'disponible').length;
+      const res = lots.filter(l => String(l.status || '').trim().toLowerCase() === 'reservado').length;
+      const vend = lots.filter(l => String(l.status || '').trim().toLowerCase() === 'vendido').length;
 
       document.getElementById('hudProjectName').textContent = currentProject ? currentProject.nombre : 'Sin Proyecto';
       document.getElementById('cntAll').textContent = lots.length;
@@ -2048,7 +2073,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
       Object.keys(ids).forEach(k => {
         const btn = document.getElementById(ids[k]);
         if (!btn) return;
-        if (k === status) {
+        if (k.toLowerCase() === status.toLowerCase()) {
           btn.classList.add('bg-white/15', 'ring-1', 'ring-white/30');
         } else {
           btn.classList.remove('bg-white/15', 'ring-1', 'ring-white/30');
@@ -2098,54 +2123,17 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
     }
 
     function toggleViewMode() {
-      setViewMode(viewMode === '2d' ? '3d' : '2d');
+      // Modo 2D Satelital permanente
+      setViewMode('2d');
     }
 
     function setViewMode(mode) {
-      if (mode === viewMode && earth3D && earth3D.isActive && earth3D.isActive()) return;
-      const btn3d = document.getElementById('btn3DToggle');
-      const lbl3d = document.getElementById('lbl3DToggle');
-      const badge = document.getElementById('badgeViewMode');
+      viewMode = '2d';
       const map3dEl = document.getElementById('map3d');
-
-      if (mode === '3d') {
-        if (isEditorOpen) toggleEditor();
-        viewMode = '3d';
-        if (lbl3d) lbl3d.textContent = 'Vista 2D';
-        if (btn3d) btn3d.className = 'dock-btn bg-emerald-500 text-slate-950 font-extrabold border border-emerald-300 shadow-lg shadow-emerald-500/25';
-        if (badge) {
-          badge.textContent = '3D';
-          badge.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-400/40 hover:scale-105 transition cursor-pointer';
-        }
-        if (map3dEl) map3dEl.style.display = 'block';
-
-        const center = map2d ? map2d.getCenter() : (currentProject ? { lat: currentProject.lat, lng: currentProject.lng } : { lat: DEFAULT_LAT, lng: DEFAULT_LNG });
-        const zoom = map2d ? map2d.getZoom() : 19;
-        earth3D.activate(center.lat, center.lng, zoom);
-      } else {
-        const targetGps = earth3D.getTargetLatLng();
-        const eqZoom = earth3D.getEquivalentZoom();
-        earth3D.deactivate();
-
-        viewMode = '2d';
-        if (lbl3d) lbl3d.textContent = 'Google Earth 3D';
-        if (btn3d) btn3d.className = 'dock-btn text-slate-200 hover:bg-white/10 border border-transparent';
-        if (badge) {
-          badge.textContent = '2D';
-          badge.className = 'text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30 hover:scale-105 transition cursor-pointer';
-        }
-        if (map3dEl) map3dEl.style.display = 'none';
-
-        if (map2d) {
-          map2d.invalidateSize();
-          if (targetGps) {
-            isProgrammaticMove = true;
-            map2d.setView([targetGps.lat, targetGps.lng], eqZoom, { animate: false });
-            setTimeout(() => { isProgrammaticMove = false; }, 220);
-          }
-          renderAllProjectsAndLots();
-          if (autoPilotActive) startAutoPilot2DLoop();
-        }
+      if (map3dEl) map3dEl.style.display = 'none';
+      if (map2d) {
+        map2d.invalidateSize();
+        renderAllProjectsAndLots();
       }
     }
 
@@ -5261,6 +5249,14 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             lotes = buildFortunatoLots(lat, lng);
           }
 
+          // Normalizar estados de los lotes
+          (lotes || []).forEach(lot => {
+            const s = String(lot.status || '').trim().toLowerCase();
+            if (s === 'vendido') lot.status = 'Vendido';
+            else if (s === 'reservado') lot.status = 'Reservado';
+            else lot.status = 'Disponible';
+          });
+
           return {
             id,
             nombre,
@@ -5278,6 +5274,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
             lotes,
             custom_lines,
             custom_texts,
+            visible: true,
             updated_at: r.updated_at || r.created_at || new Date().toISOString()
           };
         });
@@ -5295,6 +5292,7 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         renderProjectsSidebar();
         renderEditorTextsList();
         renderEditorLinesList();
+        updateHudCounters();
         flyToProject(currentProject);
 
         const badge = document.getElementById('badgeDbState');
