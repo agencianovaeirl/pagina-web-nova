@@ -1504,10 +1504,6 @@ CREATE POLICY "Escritura autorizada de propiedades" ON public.nova_propiedades F
         syncProjectFormUI();
         startAutoPilot();
 
-        // Arrancar por defecto en Modo 3D igual a la página principal de Google Earth
-        setTimeout(() => {
-          setViewMode('3d');
-        }, 50);
       } catch (err) {
         console.error('Error iniciando mapa 2D:', err);
         showToast('Error al inicializar el mapa 2D.');
